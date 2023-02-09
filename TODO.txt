@@ -1,0 +1,9 @@
+input e output dir
+
+binning anche a data quando si usa demodulation matrix binnata
+
+test per tutte le classi
+files di test con dimensioni ragionevoli da poter passare
+compressione dei files necessari
+
+rimettere a posto il file md e scrivere un po di esempi per rendere utilizzabile la libreria
