@@ -15,5 +15,14 @@ pip install .
 ## Usage
 
 ```
-image = 
+import micropolarray
+import numpy as np
+
+# Can initialize images from np arrays or filenames. If multiple filenames are used
+# the average is taken
+micropolimage_from_file = micropolarray.MicroPolarizerArrayImage("image.fits")
+micropolimage_from_nparray = micropolarray.MicroPolarizerArrayImage(np.ones(shape=(30,30)))
+micropolimage_from_image = micropolarray.MicroPolarizerArrayImage(image)
+
+
 ```
