@@ -23,10 +23,11 @@ import numpy as np
 micropolimage_from_file = micropolarray.MicroPolarizerArrayImage("image.fits")
 micropolimage_from_nparray = micropolarray.MicroPolarizerArrayImage(np.ones(shape=(30,30)))
 image = micropolarray.MicroPolarizerArrayImage(image)
+```
 
+Multiple useful members can be used to get polarization parameters
 
-# Multiple useful members can be used to get polarization parameters
-
+```
 angle_of_linear_polarization = image.AoLP.data  # Get the angle of linear polarization
 Stokes_I, Stokes_Q, Stokes_U = self.Stokes_vec  # Get the stokes vector components as np.ndarray
 pol_0_image = image.single_pol_subimages[image.angle_dic[0]]
