@@ -60,3 +60,18 @@ def mean_minus_std(data: np.array, stds_n: int = 1) -> float:
 
 def mean_plus_std(data: np.array, stds_n: int = 1) -> float:
     return np.mean(data) + stds_n * np.std(data)
+
+
+def normalize2pi(angles_list):
+    if type(angles_list) is not list:
+        angles_list = [
+            angles_list,
+        ]
+    for i, angle in enumerate(angles_list):
+        while angle > 90:
+            angle -= 180
+        while angle <= -90:
+            angle += 180
+        angles_list[i] = angle
+
+    return angles_list
