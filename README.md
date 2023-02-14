@@ -1,4 +1,4 @@
-# micropolarray_lib
+# micropolarray
 
 Python module for loading and using micropolarizer array and polarcam images.
 
