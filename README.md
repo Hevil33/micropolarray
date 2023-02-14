@@ -5,10 +5,11 @@ Python module for loading and using micropolarizer array and polarcam images.
 
 ## Installation 
 
-Open a terminal inside the master directory and then launch TWICE the following command
+Run the following command inside a terminal.
+If an error message about wheels appear, launch it again.
 
 ```
-pip install .
+pip install git+https://github.com/Hevil33/micropolarray_master
 ```
 
 
