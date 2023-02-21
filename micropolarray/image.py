@@ -44,7 +44,12 @@ class Image:
             with fits.open(filename) as hul:
                 hul.verify("fix")
 
-                try:
+                try:  # standard format
+                    datetimes[idx] = datetime.datetime.strptime(
+                        hul[0].header["DATE-OBS"],
+                        "%Y-%m-%dT%H:%M:%S",
+                    )
+                except ValueError:  # antarticor format
                     datetimes[idx] = datetime.datetime.strptime(
                         hul[0].header["DATE-OBS"]
                         + "-"
