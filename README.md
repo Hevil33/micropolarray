@@ -1,4 +1,4 @@
-# micropolarray_lib
+# micropolarray
 
 Python module for loading and using micropolarizer array and polarcam images.
 
@@ -12,6 +12,8 @@ If an error message about wheels appear, launch it again.
 pip install git+https://github.com/Hevil33/micropolarray_master
 ```
 
+You can run the `test.py` script to verify the correct installation of the micopolarray package.
+
 
 ## Usage
 
@@ -19,9 +21,10 @@ pip install git+https://github.com/Hevil33/micropolarray_master
 import micropolarray
 import numpy as np
 
-# Can initialize images from np arrays or filenames. If multiple filenames are used then the average is taken 
+# Can initialize images from np arrays or fitsfilenames.
+# If multiple filenames are used then the average is taken 
 
-micropolimage_from_file = micropolarray.MicroPolarizerArrayImage("image.fits")
+micropolimage_from_file = micropolarray.MicroPolarizerArrayImage("test_data/image.fits.fits")
 micropolimage_from_nparray = micropolarray.MicroPolarizerArrayImage(np.ones(shape=(30,30)))
 image = micropolarray.MicroPolarizerArrayImage(image)
 ```
