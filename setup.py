@@ -18,10 +18,19 @@ setup(
         "wheel",
         "tqdm",
     ],
-    # packages=["lib"],  # name of the uppermost package directory
-    # package_dir={"micropolarray": "lib"},
-    py_modules=[
+    packages=[
         "micropolarray",
         "micropolarray.processing",
-    ],
+    ],  # name of the uppermost package directory
+    # package_dir={"micropolarray": "lib"},
+    # py_modules=[
+    #    "micropolarray",
+    #    # "micropolarray.processing",
+    #    "micropolarray.image",
+    #    "micropolarray.utils",
+    #    "micropolarray.micropol_image",
+    #    "micropolarray.parallelize",
+    #    "micropolarray.polarization_functions",
+    #    "micropolarray.cameras",
+    # ],
 )
