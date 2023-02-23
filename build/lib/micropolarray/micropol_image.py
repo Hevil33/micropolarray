@@ -22,7 +22,7 @@ from micropolarray.processing.chen_wan_liang_calibration import (
     ifov_jitcorrect,
 )
 from micropolarray.processing.nrgf import roi_from_polar
-from micropolarray.utils import mean_minus_std, mean_plus_std
+from micropolarray.utils import mean_minus_std, mean_plus_std, timer
 
 
 @dataclass
@@ -253,6 +253,7 @@ class MicroPolarizerArrayImage(Image):
             # ],
             dtype=np.float,
         )
+
         self.single_pol_subimages = single_pol_subimages
         self.pol0 = PolParam(
             "0",

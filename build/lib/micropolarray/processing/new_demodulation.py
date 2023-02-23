@@ -118,6 +118,7 @@ def calculate_demodulation_tensor(
     """
 
     DEBUG = False
+    correct_ifov = True
 
     # polarizations = array of polarizer orientations
     # filenames_list = list of filenames
@@ -125,7 +126,7 @@ def calculate_demodulation_tensor(
     if not np.all(np.isin([0, 45, 90, -45], polarizer_orientations)):
         raise ValueError(
             "All (0, 45, 90, -45) pols must be included in the polarizer orientation array"
-        )
+        )  # for calculating normalizing_S
     # Have to be sorted
     polarizer_orientations, filenames_list = (
         list(t)
@@ -180,7 +181,8 @@ def calculate_demodulation_tensor(
     if flat_filename:
         with fits.open(flat_filename) as file:
             flat = np.array(file[0].data, dtype=np.float)
-            flat = ifov_jitcorrect(flat, *flat.shape)
+            if correct_ifov:
+                flat = ifov_jitcorrect(flat, *flat.shape)
             flat = micropolarray_jitrebin(flat, *flat.shape, binning)
     if flat_filename and dark_filename:
         flat -= dark  # correct flat too
@@ -195,15 +197,12 @@ def calculate_demodulation_tensor(
     for idx, filename in enumerate(filenames_list):
         with fits.open(filename) as file:
             all_data_arr[idx] = np.array(file[0].data, dtype=float)
-            all_data_arr[idx] = ifov_jitcorrect(
-                all_data_arr[idx], *all_data_arr[idx].shape
-            )
+            if correct_ifov:
+                all_data_arr[idx] = ifov_jitcorrect(
+                    all_data_arr[idx], *all_data_arr[idx].shape
+                )
             all_data_arr[idx] = micropolarray_jitrebin(
                 all_data_arr[idx], *all_data_arr[idx].shape, binning
-            )
-            # correct instantaneous field of view error
-            all_data_arr[idx] = ifov_jitcorrect(
-                all_data_arr[idx], *all_data_arr[idx].shape
             )
             if dark_filename is not None:
                 all_data_arr[idx] -= dark
@@ -256,13 +255,13 @@ def calculate_demodulation_tensor(
                 ]
             )  # shape = (chunks_n*chunks_n, chunk_size_y, chunk_size_x)
 
-    # Normalizing S, has a spike of which maximum is taken
     S_max = np.zeros(
         shape=(height, width)
     )  # tk_sum = tk_0 + tk_45 + tk_90 + tk_45
     for pol, image in zip(polarizer_orientations, all_data_arr):
         if pol in [0, 90, 45, -45]:
             S_max += 0.5 * image
+    # Normalizing S, has a spike of which maximum is taken
     bins = 1000
     histo = np.histogram(S_max, bins=bins)
     index = np.where(histo[0] == np.max(histo[0]))[0][0]
@@ -270,6 +269,7 @@ def calculate_demodulation_tensor(
 
     normalizing_S = np.max(S_max)
 
+    # Debug
     if False:
         histo_0 = np.histogram(all_data_arr[5], bins=1000)
         fig, ax = plt.subplots(figsize=(9, 9))
@@ -431,7 +431,7 @@ def compute_demodulation_by_chunk(
     efficiency_prediction = 0.4
     fpn_prediction = 0.0
 
-    # Checked
+    # Checked errors
     sigma_S2 = np.sqrt(0.5 * normalizing_S / gain)
     normalizing_S2 = normalizing_S * normalizing_S
     pix_DN_sigma = np.sqrt(
@@ -440,6 +440,7 @@ def compute_demodulation_by_chunk(
         * (splitted_dara_arr * splitted_dara_arr)
         / (normalizing_S2 * normalizing_S2)
     )
+
     normalized_splitted_data = splitted_dara_arr / normalizing_S
     all_zeros = np.zeros(shape=(num_of_points))
 
@@ -453,7 +454,7 @@ def compute_demodulation_by_chunk(
     superpix_params = np.zeros(shape=(4, 4))
 
     predictions = np.zeros(shape=(4, 4))
-    predictions[:, 0] = [tk_prediction] * 4  # Throughput prediction
+    predictions[:, 0] = tk_prediction  # Throughput prediction
     predictions[:, 1] = efficiency_prediction  # Efficiency prediction
     predictions[:, 2] = rad_micropol_phases_previsions  # Angle prediction
     predictions[:, 3] = fpn_prediction  # FPN prediction
@@ -482,7 +483,7 @@ def compute_demodulation_by_chunk(
         int(3 * height / 4) + 1,
         int(height),
         int(height) + 1,
-    ]
+    ]  # used for printing progress
     for super_y in range(y_start, y_end, 2):
         if super_y in milestones:
             print(f"Thread at {super_y / height*100:.2f} %", flush=True)
@@ -572,6 +573,11 @@ def compute_demodulation_by_chunk(
                 eff = superpix_params[:, 1]
                 phi = superpix_params[:, 2]
                 FPN = superpix_params[:, 3]
+
+                # modified 2023_02_13, worse
+                # t = t * (1 + FPN)
+                # eff = eff * (1 + FPN)
+
                 modulation_matrix = np.array(
                     [
                         0.5 * t,
@@ -607,7 +613,7 @@ def compute_demodulation_by_chunk(
                     super_y : super_y + 2, super_x : super_x + 2
                 ] = np.array(FPN).reshape(2, 2)
 
-            else:
+            else:  # pixel is in occulter region
                 for i in range(2):
                     for j in range(2):
                         m_ij[
@@ -649,8 +655,27 @@ def compute_demodulation_by_chunk(
 
 
 def Malus(angle, throughput, efficiency, phase, FPN):
+    # original
     modulated_efficiency = efficiency * (
         np.cos(2.0 * phase) * np.cos(2.0 * angle)
         + np.sin(2.0 * phase) * np.sin(2.0 * angle)
     )
     return 0.5 * throughput * (1.0 + modulated_efficiency) + FPN
+
+
+"""
+
+
+def Malus(angle, throughput, efficiency, phase, FPN):
+    # modified version 2022_02_13
+    modulated_efficiency = efficiency * (
+        np.cos(2.0 * phase) * np.cos(2.0 * angle)
+        + np.sin(2.0 * phase) * np.sin(2.0 * angle)
+    )
+    return (
+        0.5
+        * throughput
+        * (1.0 + FPN)
+        * (1.0 + modulated_efficiency * (1.0 + FPN))
+    )
+"""

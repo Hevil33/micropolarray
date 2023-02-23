@@ -1,7 +1,7 @@
-from micropolarray_lib.micropol_image import MicroPolarizerArrayImage
-from micropolarray_lib.process.demodulation import Demodulator
-from micropolarray_lib.process.demosaic import demosaic
-from micropolarray_lib.image import Image
+from micropolarray.micropol_image import MicroPolarizerArrayImage
+from micropolarray.processing.new_demodulation import Demodulator
+from micropolarray.processing.demosaic import demosaic
+from micropolarray.image import Image
 import matplotlib.pyplot as plt
 import numpy as np
 import glob
@@ -153,3 +153,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     info("Done!")
+
+    print("-" * 30)
+    info("All tests performed successfully!")
+    print("-" * 30)

@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 from scipy import constants
 from pathlib import Path
+import time
 
 
 def make_abs_and_create_dir_old(filenames: str):
@@ -75,3 +76,17 @@ def normalize2pi(angles_list):
         angles_list[i] = angle
 
     return angles_list
+
+
+# timer decorator
+def timer(func):
+    def wrapper(*args, **kwargs):
+        start = time.time()
+        result = func(*args, **kwargs)
+        end = time.time()
+        print(
+            f"Function {func.__name__} took {round(end - start, 4)} ns to run"
+        )
+        return result
+
+    return wrapper

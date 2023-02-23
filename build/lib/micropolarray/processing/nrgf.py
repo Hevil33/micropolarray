@@ -3,8 +3,11 @@ import sys
 from scipy.optimize import curve_fit
 from logging import info
 import matplotlib.pyplot as plt
+from micropolarray.utils import timer
+from functools import lru_cache
 
 
+# @timer
 def roi_from_polar(
     data: np.array,
     center: list = None,
@@ -25,15 +28,28 @@ def roi_from_polar(
         np.array: array containing the input data inside the selection, and fill otherwise
     """
     height, width = data.shape
+    theta_min, theta_max = theta
+    rho_min, rho_max = rho
     if center is None:
         center = [int(height / 2), int(width / 2)]
     if rho is None:
         rho_max = np.max([height - center[0], width - center[1]])
         rho = [0.0, rho_max]
 
+    rho_coords, phi_coords = map_polar_coordinates(height, width, center)
+
+    theta_condition = np.logical_and(
+        phi_coords >= theta_min, phi_coords < theta_max
+    )
+    rho_condition = np.logical_and(rho_coords > rho_min, rho_coords <= rho_max)
+    condition = np.logical_and(rho_condition, theta_condition)
+
+    return np.where(condition, data, fill)
+
+
+@lru_cache
+def map_polar_coordinates(height, width, center):
     y_center, x_center = center
-    theta_min, theta_max = theta
-    rho_min, rho_max = rho
 
     i_list, j_list = np.arange(width), np.arange(height)
     x_coords, y_coords = np.meshgrid(i_list, j_list)
@@ -45,14 +61,7 @@ def roi_from_polar(
         (np.arctan2(y_coords - y_center, x_coords - x_center) * 180 / np.pi)
         + 360
     ) % 360
-
-    theta_condition = np.logical_and(
-        phi_coords >= theta_min, phi_coords < theta_max
-    )
-    rho_condition = np.logical_and(rho_coords > rho_min, rho_coords <= rho_max)
-    condition = np.logical_and(rho_condition, theta_condition)
-
-    return np.where(condition, data, fill)
+    return rho_coords, phi_coords
 
 
 def nrgf(

@@ -22,7 +22,7 @@ setup(
         "micropolarray",
         "micropolarray.processing",
     ],  # name of the uppermost package directory
-    # package_dir={"micropolarray": "lib"},
+    package_dir={"micropolarray": "build/lib/micropolarray"},
     # py_modules=[
     #    "micropolarray",
     #    # "micropolarray.processing",
