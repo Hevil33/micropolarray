@@ -6,6 +6,10 @@ from logging import info
 @njit
 def micropolarray_jitrebin(data, height, width, binning=2):
     """Fast rebinning function for the micropolarray image."""
+    # Skip useless binning
+    if binning == 1:
+        return data
+
     # Skip last row/columns until they are divisible by binning,
     # allows any binning
     trimmed = False
