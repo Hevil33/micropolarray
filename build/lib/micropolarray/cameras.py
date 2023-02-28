@@ -113,7 +113,7 @@ class Antarticor:
         self.effectiveFocalLength = 700  # [mm]
         self.fratio = self.effectiveFocalLength / self.aperture
         self.spectralRange = 591  # (591 +- 5) [nm]
-        self.platescale = 4.3  # [arcsec/pixel]
+        self.platescale = 4.3  # [arcsec/superpixel]
         self.FoV_degree = 0.6  # +/- 0.6 [degree]
         self.FoV_Rsun = 2.24  # +/- 2.24 [solar radii]
 

@@ -771,7 +771,7 @@ class MicroPolarizerArrayImage(Image):
 
         relative_y = y / camera.h_image
         relative_x = x / camera.w_image
-        relative_r = r / (camera.h_image + camera.w_image) * 2
+        relative_r = (r + overoccult) / (camera.h_image + camera.w_image) * 2
 
         abs_y = int(relative_y * self.height)
         abs_x = int(relative_x * self.width)

@@ -33,10 +33,12 @@ def roi_from_polar(
     if center is None:
         center = [int(height / 2), int(width / 2)]
     if rho is None:
-        rho_max = np.max([height - center[0], width - center[1]])
+        rho_max = np.min([height - center[0], width - center[1]])
         rho = [0.0, rho_max]
 
-    rho_coords, phi_coords = map_polar_coordinates(height, width, center)
+    rho_coords, phi_coords = map_polar_coordinates(
+        height, width, tuple(center)
+    )  # cast it to a tuple (which is hashable)
 
     theta_condition = np.logical_and(
         phi_coords >= theta_min, phi_coords < theta_max
@@ -71,6 +73,7 @@ def nrgf(
     rho_min: int = None,
     step: int = 1,
     phi_to_mean=[0.0, 360],
+    output_phi=[0.0, 360],
 ) -> np.array:
     """
     Performs nrgf filtering on the image, starting from center and radius. Mean is performed between phi_to_mean, 0 is horizontal right, anti-clockwise.
@@ -83,6 +86,7 @@ def nrgf(
         rho_min (int, optional): minimun radius in pixels to perform nrgf to. Defaults to None (radius 0).
         step (int, optional): step to which apply the nrgf from center, in pixels. Defaults to 1 pixel.
         phi_to_mean (list[float, float], optional): polar angle to calculate the mean value from. Defaults to [0, 360].
+        output_phi (list[float, float], optional): polar angle to include in output data. Defaults to [0, 360].
 
     Returns:
         np.array: nrgf-filtered input data
@@ -92,30 +96,28 @@ def nrgf(
     if (y_center is None) or (x_center is None) or (rho_min is None):
         info("Calculating occulter position...")
         y_center, x_center, rho_min = find_occulter_position(data)
+    center = [int(y_center), int(x_center)]
 
     newdata = np.zeros(shape=data.shape, dtype=float)
     i_list, j_list = np.arange(width), np.arange(height)
     x_coords, y_coords = np.meshgrid(i_list, j_list)
     # Map polar coordinates
-    rho_coords = np.sqrt(
-        (x_coords - x_center) ** 2 + (y_coords - y_center) ** 2
-    )
-    phi_coords = (
-        (np.arctan2(y_coords - y_center, x_coords - x_center) * 180 / np.pi)
-        + 360
-    ) % 360
+    rho_coords, phi_coords = map_polar_coordinates(
+        height, width, tuple(center)
+    )  # cast it to a tuple (which is hashable)
 
     mean_phi_condition = np.logical_and(
         phi_coords >= phi_to_mean[0], phi_coords < phi_to_mean[1]
     )  # Exclude angle from mean
 
     out_phi_condition = np.logical_and(
-        phi_coords >= 0, phi_coords < 360
+        phi_coords >= output_phi[0], phi_coords < output_phi[1]
     )  # Exclude angle from filter
 
     rho_max = int(np.max(rho_coords))
     rho_step = step
 
+    print("Applying nrgf filter...")
     for r in range(rho_min, rho_max, rho_step):
         rho_condition = np.logical_and(
             rho_coords > r, rho_coords <= r + rho_step
