@@ -5,6 +5,7 @@ from logging import info
 import matplotlib.pyplot as plt
 from micropolarray.utils import timer
 from functools import lru_cache
+from numpy.lib.stride_tricks import as_strided
 
 
 # @timer
@@ -15,7 +16,7 @@ def roi_from_polar(
     theta=[0, 360],
     fill: float = 0.0,
 ) -> np.array:
-    """Returns the input array in a circular selection, otherwise an arbitrary number.
+    """Returns the input array in a circular selection, otherwise an arbitrary number. If a pixel is not in the selection the ENTIRE superpixel is considered out of selection.
 
     Args:
         data (np.array): input data
@@ -36,17 +37,32 @@ def roi_from_polar(
         rho_max = np.min([height - center[0], width - center[1]])
         rho = [0.0, rho_max]
 
+    # make a map that is HALF THE SIZE, do condition, then resize to make all the superpixel outside selection
     rho_coords, phi_coords = map_polar_coordinates(
-        height, width, tuple(center)
+        int(height / 2),
+        int(width / 2),
+        tuple([int(center[0] / 2), int(center[1] / 2)]),
     )  # cast it to a tuple (which is hashable)
 
     theta_condition = np.logical_and(
         phi_coords >= theta_min, phi_coords < theta_max
     )
-    rho_condition = np.logical_and(rho_coords > rho_min, rho_coords <= rho_max)
+    rho_condition = np.logical_and(
+        rho_coords > rho_min / 2, rho_coords <= rho_max / 2
+    )  # half the radius because half the map
     condition = np.logical_and(rho_condition, theta_condition)
 
+    # resize condition to correct shape
+    condition = condition.repeat(2, axis=0).repeat(2, axis=1)
+
     return np.where(condition, data, fill)
+
+
+def tile_double(a):
+    height, width = a.shape
+    hs, ws = a.strides
+    tiles = as_strided(a, (height, 2, width, 2), (hs, 0, ws, 0))
+    return tiles.reshape(2 * height, 2 * width)
 
 
 @lru_cache
@@ -63,6 +79,7 @@ def map_polar_coordinates(height, width, center):
         (np.arctan2(y_coords - y_center, x_coords - x_center) * 180 / np.pi)
         + 360
     ) % 360
+
     return rho_coords, phi_coords
 
 

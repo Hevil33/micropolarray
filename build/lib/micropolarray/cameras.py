@@ -56,6 +56,8 @@ class PolarCam(Camera):
         # 916,
         # 948,
         # 524,
+        self.occulter_radius_sr = 1.1901  # occulter dimension in solar radii
+        self.sun_dimension_pixels = 446  # from standard astropy atan(R_sun/AU)
 
         self.gain = 9.28
 
@@ -79,9 +81,7 @@ class PolarCam(Camera):
 
         return roidata
 
-    def occulter_mask(
-        self, overoccult: int = 15, rmax: int = None
-    ) -> np.array:
+    def occulter_mask(self, overoccult: int = 0, rmax: int = None) -> np.array:
         """Returns an array of True inside the roi, False elsewhere. Useful for mean/std operations (where=occulter_mask).
 
         Args:

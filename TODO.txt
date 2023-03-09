@@ -14,3 +14,4 @@ implementare lettura di tipi di files diversi dal fits
 rifare test con assert
 
 METTERE A POSTO I FIXTO
+faster nrgf filter
