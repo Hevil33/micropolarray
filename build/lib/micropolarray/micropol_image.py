@@ -33,7 +33,7 @@ class PolParam:
       data (np.array): parameter image as numpy 2D array
       title (str): brief title of the parameter, useful for plotting
       measure_unit (str): initial measure units of the parameter
-      fix_data (bool): controls whether data has to be constrained to [0, 4096] interval
+      fix_data (bool): controls whether data has to be constrained to [0, 4096] interval (not implemented yet)
     """
 
     ID: str
@@ -260,28 +260,28 @@ class MicroPolarizerArrayImage(Image):
             single_pol_subimages[self.angle_dic[0]],
             "0 deg orientation pixels",
             "DN",
-            fix_data=True,
+            fix_data=False,
         )
         self.pol45 = PolParam(
             "45",
             single_pol_subimages[self.angle_dic[45]],
             "45 deg orientation pixels",
             "DN",
-            fix_data=True,
+            fix_data=False,
         )
         self.pol_45 = PolParam(
             "-45",
             single_pol_subimages[self.angle_dic[-45]],
             "-45 deg orientation pixels",
             "DN",
-            fix_data=True,
+            fix_data=False,
         )
         self.pol90 = PolParam(
             "90",
             single_pol_subimages[self.angle_dic[90]],
             "90 deg orientation pixels",
             "DN",
-            fix_data=True,
+            fix_data=False,
         )
 
     def _get_theo_Stokes_vec_components(self, single_pol_images) -> np.array:
@@ -518,7 +518,7 @@ class MicroPolarizerArrayImage(Image):
     # ----------------------------------------------------------------
 
     def save_single_pol_images(
-        self, filename: str, fixto: list[float, float] = [0, 4096]
+        self, filename: str, fixto: list[float, float] = None
     ) -> None:
         polslist = [self.pol0, self.pol45, self.pol90, self.pol_45]
         filepath = Path(make_abs_and_create_dir(filename))
@@ -528,7 +528,10 @@ class MicroPolarizerArrayImage(Image):
         for single_pol in polslist:
             hdr = self.header.copy()
             hdr["POL"] = (single_pol.ID, "Micropolarizer orientation")
-            data = fix_data(single_pol.data, *fixto)
+            if fixto:
+                data = fix_data(single_pol.data, *fixto)
+            else:
+                data = single_pol.data
             hdu = fits.PrimaryHDU(
                 data=data,
                 header=hdr,
@@ -603,7 +606,7 @@ class MicroPolarizerArrayImage(Image):
         info(f'All params successfully saved to "{group_filename}"')
 
     def save_demosaiced_images_as_fits(
-        self, filename: str, fixto: list[float, float] = [0, 4096]
+        self, filename: str, fixto: list[float, float] = None
     ) -> None:
         if not self._is_demosaiced:
             raise ValueError("Demosaiced images not yet calculated.")
@@ -621,7 +624,7 @@ class MicroPolarizerArrayImage(Image):
             if fixto:
                 data = fix_data(demo_image, *fixto)
             else:
-                data = fix_data(demo_image)
+                data = demo_image
             hdu = fits.PrimaryHDU(
                 data=data,
                 header=imageHdr,

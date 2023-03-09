@@ -48,7 +48,9 @@ def sigma_DN(pix_DN):
     return sigma_DN
 
 
-def fix_data(data: np.array, min=0.0, max=4096):
+def fix_data(data: np.array, min, max):
+    if not (min and max):
+        return data
     fixed_data = data.copy()
     fixed_data = np.where(fixed_data > min, fixed_data, min)
     fixed_data = np.where(fixed_data < max, fixed_data, max)

@@ -12,3 +12,5 @@ metterlo in pip come lib standard
 cambiare operazioni su flattened arrays se possibile per risparmiare tempo
 implementare lettura di tipi di files diversi dal fits
 rifare test con assert
+
+METTERE A POSTO I FIXTO

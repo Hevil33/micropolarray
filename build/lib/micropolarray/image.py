@@ -99,10 +99,7 @@ class Image:
     def _set_data(self, data: np.array):
         """Set image data and derived polarization informations, and
         consequently change header."""
-        fixed_data = data
-        # fixed_data = np.where(fixed_data > -4096, fixed_data, -4096)
-        # fixed_data = np.where(fixed_data < 4096, fixed_data, 4096)
-        self.data = fixed_data
+        self.data = data
         self.height, self.width = data.shape
         if self.header is None:
             self.header = self._set_default_header(data)
