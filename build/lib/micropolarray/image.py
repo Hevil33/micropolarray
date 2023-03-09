@@ -12,7 +12,7 @@ from pathlib import Path
 
 
 class Image:
-    """Basic image class. Can be initialized from a filename, a filenames list, a numpy array or another Image instance. If multiple filenames are provided, will perform a mean over them."""
+    """Basic image class. Can be initialized from a filename, a filenames list, a numpy array or another Image instance. If multiple filenames are provided, will perform the sum of them."""
 
     def __init__(
         self,
@@ -59,23 +59,22 @@ class Image:
                 except KeyError:
                     pass
                 if idx == 0:
-                    mean_data = hul[0].data
+                    data_sum = hul[0].data
                     self.header = hul[0].header
                 else:
                     if firstcall:
-                        info(f"Averaging {filenames_len} images...")
+                        info(f"Summing {filenames_len} images...")
                         firstcall = False
-                    mean_data = mean_data + hul[0].data
+                    data_sum = data_sum + hul[0].data
         datetimes = [datetime for datetime in datetimes if datetime != 0]
         if len(datetimes) == 0:
             datetimes = [0]
-        mean_data = mean_data / filenames_len
-        self._set_data(np.array(mean_data))
+        self._set_data(np.array(data_sum))
 
         if filenames_len > 1:
-            self.header["AVGFROM"] = (
+            self.header["SUMOF"] = (
                 filenames_len,
-                "Number of files the images is the average result of.",
+                "Number of files the images is the sum of.",
             )
             datetimes = sorted(datetimes)
             if not datetimes[0] == 0:
@@ -88,7 +87,7 @@ class Image:
                     "Date and time of last image.",
                 )
             tempfilename = filenames[0].split(os.path.sep)
-            tempfilename[-1] = "MEAN_" + tempfilename[-1]
+            tempfilename[-1] = "SUM_" + tempfilename[-1]
             self.filename = os.path.sep.join(tempfilename)
         else:
             self.filename = filenames[0]
@@ -124,9 +123,7 @@ class Image:
     # -------------------------- SAVING ------------------------------
     # ----------------------------------------------------------------
 
-    def save_as_fits(
-        self, filename: str, fixto: str[float, float] = [0, 4096]
-    ):
+    def save_as_fits(self, filename: str, fixto: str[float, float] = None):
         """Save image as fits file with current instance header."""
         filepath = Path(filename)
         if not filepath.suffix:

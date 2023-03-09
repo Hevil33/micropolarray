@@ -44,7 +44,7 @@ class PolParam:
 
 
 class MicroPolarizerArrayImage(Image):
-    """Micro-polarizer array image class. Can be initialized from a 2d array, a list of 1 or more file names (in which case the mean value is taken) or another MicroPolarizerArrayImage"""
+    """Micro-polarizer array image class. Can be initialized from a 2d array, a list of 1 or more file names (in which case the sum is taken) or another MicroPolarizerArrayImage"""
 
     first_call = True  # Avoid repeating messages
     default_angle_dic = PolarCam().angle_dic
