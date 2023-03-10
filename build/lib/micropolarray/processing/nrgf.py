@@ -3,12 +3,10 @@ import sys
 from scipy.optimize import curve_fit
 from logging import info
 import matplotlib.pyplot as plt
-from micropolarray.utils import timer
 from functools import lru_cache
 from numpy.lib.stride_tricks import as_strided
 
 
-# @timer
 def roi_from_polar(
     data: np.array,
     center: list = None,

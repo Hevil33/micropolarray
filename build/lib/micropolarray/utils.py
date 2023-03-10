@@ -4,6 +4,7 @@ import pandas as pd
 from scipy import constants
 from pathlib import Path
 import time
+from micropolarray.cameras import PolarCam
 
 
 def make_abs_and_create_dir_old(filenames: str):
@@ -92,3 +93,35 @@ def timer(func):
         return result
 
     return wrapper
+
+
+def align_keywords_and_data(header, data, binning=1):
+    data = np.rot90(data, k=-1)
+    data = np.flip(data, axis=0)
+
+    width = int(header["NAXIS1"] / binning)
+    height = int(header["NAXIS2"] / binning)
+    rotation_angle = -10  # degrees
+    platescale = 4.3 / 2  # [arcsec/pix]
+
+    header["DATE-OBS"] = header["DATE-OBS"] + "T" + header["TIME-OBS"]
+    header["WCSNAME"] = "HEEQ"
+    header["DSUN_OBS"] = 1.495978707e11
+    if binning > 1:
+        platescale *= binning
+    header["CDELT1"] = platescale
+    header["CDELT2"] = platescale
+    header["CROTA2"] = rotation_angle
+    (
+        header["CRPIX1"],
+        header["CRPIX2"],
+        _,
+    ) = PolarCam().occulter_pos_last  # y, x, radius
+    if binning > 1:
+        header["CRPIX1"] /= binning
+        header["CRPIX2"] /= binning
+    # one changes because of rotation, the other because of jhelioviewer representation
+    header["CRPIX1"] = width - header["CRPIX1"]  # x, checked
+    header["CRPIX2"] = height - header["CRPIX2"]  # y, checked
+
+    return header, data

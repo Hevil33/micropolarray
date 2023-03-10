@@ -24,7 +24,10 @@ from micropolarray.processing.chen_wan_liang_calibration import (
 )
 from micropolarray.processing.sky_brightness import normalize_to_B_sun
 from micropolarray.processing.congrid import congrid
-from micropolarray.utils import normalize2pi
+from micropolarray.utils import (
+    normalize2pi,
+    align_keywords_and_data,
+)
 
 import logging
 

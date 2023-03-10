@@ -73,6 +73,10 @@ class MicroPolarizerArrayImage(Image):
         self.demosaic_mode = demosaic_mode
         self.demosaiced_images = None
 
+        if type(initializer) is str and len(initializer) > 1:
+            self._num_of_images = len(initializer)
+        else:
+            self._num_of_images = 1
         super().__init__(
             initializer=initializer
         )  # Call generic Image() constructor
@@ -373,7 +377,7 @@ class MicroPolarizerArrayImage(Image):
         self, dark: MicroPolarizerArrayImage
     ) -> MicroPolarizerArrayImage:
         """Subtracts dark data from image data."""
-        self.data = self.data - dark.data
+        self.data = self.data - (dark.data * self._num_of_images)
         self.data = np.where(self.data >= 0, self.data, 0)
         self._set_data_and_Stokes()
         self._dark_subtracted = True
