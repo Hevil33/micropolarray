@@ -150,6 +150,7 @@ def calculate_demodulation_tensor(
         # (campagna_2022/mean_occulter_pos.py)
         occulter_y, occulter_x, occulter_r = PolarCam().occulter_pos_last
         overoccult = 16
+        overoccult = 0
         occulter_r = occulter_r + overoccult
 
         # Match binning if needed
@@ -190,6 +191,7 @@ def calculate_demodulation_tensor(
         if occulter:
             flat = np.where(occulter_flag, 1.0, flat)
         flat_max = np.max(flat, axis=(0, 1))
+    if flat_filename:
         normalized_flat = np.where(occulter_flag, 1.0, flat / flat_max)
 
     # collect data

@@ -44,7 +44,7 @@ class PolParam:
 
 
 class MicroPolarizerArrayImage(Image):
-    """Micro-polarizer array image class. Can be initialized from a 2d array, a list of 1 or more file names (in which case the sum is taken) or another MicroPolarizerArrayImage"""
+    """Micro-polarizer array image class. Can be initialized from a 2d array, a list of 1 or more file names (use the boolean keyword averageimages to select if sum or average is taken) or another MicroPolarizerArrayImage. Dark and flat micropolarray images can also be provided to automatically correct the result."""
 
     first_call = True  # Avoid repeating messages
     default_angle_dic = PolarCam().angle_dic
@@ -56,6 +56,7 @@ class MicroPolarizerArrayImage(Image):
         demosaic_mode: str = "mean",
         dark: MicroPolarizerArrayImage = None,
         flat: MicroPolarizerArrayImage = None,
+        averageimages: bool = True,
     ):
         self._is_demodulated = False
         self._is_demosaiced = False
@@ -78,7 +79,7 @@ class MicroPolarizerArrayImage(Image):
         else:
             self._num_of_images = 1
         super().__init__(
-            initializer=initializer
+            initializer=initializer, averageimages=averageimages
         )  # Call generic Image() constructor
 
         if (type(initializer) is list) or (type(initializer) is str):
@@ -169,7 +170,7 @@ class MicroPolarizerArrayImage(Image):
             "DoLP",
             DoLP(self.Stokes_vec),
             "Degree of linear polarization",
-            "%",
+            "",
             fix_data=False,
         )
         self.polparam_list = [

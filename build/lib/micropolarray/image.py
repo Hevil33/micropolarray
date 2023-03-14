@@ -12,15 +12,16 @@ from pathlib import Path
 
 
 class Image:
-    """Basic image class. Can be initialized from a filename, a filenames list, a numpy array or another Image instance. If multiple filenames are provided, will perform the sum of them."""
+    """Basic image class. Can be initialized from a filename, a filenames list, a numpy array or another Image instance. If multiple filenames are provided, will perform the mean of them unless averageimages is False."""
 
     def __init__(
         self,
         initializer: str | np.ndarray | Image,
+        averageimages=True,
     ):
         self.header = None
         if type(initializer) is str or type(initializer) is list:
-            self._init_image_from_file(initializer)
+            self._init_image_from_file(initializer, averageimages)
         elif type(initializer) is np.ndarray:
             self._init_image_from_data(initializer)
         elif type(initializer) is Image:
@@ -30,7 +31,7 @@ class Image:
         self._set_data(np.array(data))
         self.filename = "image.fits"
 
-    def _init_image_from_file(self, filenames) -> None:
+    def _init_image_from_file(self, filenames, averageimages) -> None:
         filenames_list = (
             [filenames] if type(filenames) is not list else filenames
         )
@@ -59,17 +60,22 @@ class Image:
                 except KeyError:
                     pass
                 if idx == 0:
-                    data_sum = hul[0].data
+                    combined_data = hul[0].data
                     self.header = hul[0].header
                 else:
                     if firstcall:
-                        info(f"Summing {filenames_len} images...")
+                        if averageimages:
+                            info(f"Averaging {filenames_len} images...")
+                        else:
+                            info(f"Summing {filenames_len} images...")
                         firstcall = False
-                    data_sum = data_sum + hul[0].data
+                    combined_data = combined_data + hul[0].data
+        if averageimages:
+            combined_data = combined_data / len(filenames_list)
         datetimes = [datetime for datetime in datetimes if datetime != 0]
         if len(datetimes) == 0:
             datetimes = [0]
-        self._set_data(np.array(data_sum))
+        self._set_data(np.array(combined_data))
 
         if filenames_len > 1:
             self.header["SUMOF"] = (
