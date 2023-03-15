@@ -302,7 +302,6 @@ def calculate_demodulation_tensor(
     if parallelize:
         try:
             with mp.Pool(processes=chunks_n_y * chunks_n_x) as p:
-                # with mp.Pool() as p:
                 result = p.starmap(
                     compute_demodulation_by_chunk,
                     args,

@@ -162,7 +162,10 @@ class Image:
         if vmax is None:
             vmax = np.max(data_to_plot)
         pos = imageax.imshow(data_to_plot, cmap=cmap, vmin=vmin, vmax=vmax)
-        imageax.set_title("Image data", color="black")
+        imageax.set_title(
+            f"Image data (avrg {np.mean(data_to_plot, where=np.where(data_to_plot>0, True, False)):3.2f}+-{np.std(data_to_plot, where=np.where(data_to_plot>0, True, False)):3.2f})",
+            color="black",
+        )
         imageax.set_xlabel("x")
         imageax.set_ylabel("y")
         image_fig.colorbar(

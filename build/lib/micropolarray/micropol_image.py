@@ -427,7 +427,12 @@ class MicroPolarizerArrayImage(Image):
             vmin=mean_minus_std(self.data),
             vmax=mean_plus_std(self.data),
         )
-        imageax.set_title("Image data", color="black")
+        avg = np.mean(self.data)
+        stdev = np.std(self.data)
+        imageax.set_title(
+            f"Image data (avrg {avg:3.2f}+-{stdev:3.2f})",
+            color="black",
+        )
         imageax.set_xlabel("x [px]")
         imageax.set_ylabel("y [px]")
         image_fig.colorbar(
@@ -442,10 +447,16 @@ class MicroPolarizerArrayImage(Image):
         for i, stokes in enumerate(stokesax):
             vmin = mean_minus_std(self.polparam_list[i].data)
             vmax = mean_plus_std(self.polparam_list[i].data)
+            avg = np.mean(self.polparam_list[i].data)
+            stdev = np.std(self.polparam_list[i].data)
             mappable_stokes = stokes.imshow(
                 self.polparam_list[i].data, cmap=cmap, vmin=vmin, vmax=vmax
             )
-            stokes.set_title(self.polparam_list[i].title, color="black")
+            stokes.set_title(
+                self.polparam_list[i].title
+                + f" (avrg {avg:3.2f}+-{stdev:3.2f})",
+                color="black",
+            )
             stokes.set_xlabel("x [px]")
             stokes.set_ylabel("y [px]")
             stokes_fig.colorbar(

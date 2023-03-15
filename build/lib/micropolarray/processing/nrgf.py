@@ -13,8 +13,9 @@ def roi_from_polar(
     rho: list = None,
     theta=[0, 360],
     fill: float = 0.0,
+    return_boolean=False,
 ) -> np.array:
-    """Returns the input array in a circular selection, otherwise an arbitrary number. If a pixel is not in the selection the ENTIRE superpixel is considered out of selection.
+    """Returns the input array in a circular selection, otherwise an arbitrary number. If a pixel is not in the selection the ENTIRE superpixel is considered out of selection. If return_boolean is True then a boolean array is returned instead (useful for mean/stdev operations).
 
     Args:
         data (np.array): input data
@@ -22,6 +23,7 @@ def roi_from_polar(
         rho (list, optional): radius to exclude. Defaults to None (center to image border).
         theta (list, optional): polar selection angle, 0 is horizonta, anti-clockwise direction. Defaults to [0, 360].
         fill (float, optional): number to fill the outer selection. Defaults to 0.0.
+        return_boolean (bool, optional): if set to true, function returns a boolean array of the roi. Defaults to False.
 
     Returns:
         np.array: array containing the input data inside the selection, and fill otherwise
@@ -52,6 +54,9 @@ def roi_from_polar(
 
     # resize condition to correct shape
     condition = condition.repeat(2, axis=0).repeat(2, axis=1)
+
+    if return_boolean:
+        return np.where(condition, True, False)
 
     return np.where(condition, data, fill)
 
