@@ -732,40 +732,6 @@ class MicroPolarizerArrayImage(Image):
         data = np.asarray(image)
         return MicroPolarizerArrayImage(data)
 
-    def normalize_all_pars_to_B_sun(
-        self,
-        sun: str | MicroPolarizerArrayImage | np.array,
-        texp_data: float = 70.0e-3,
-        t_exp_sun: float = 70.0e-3,
-    ):
-        sun = MicroPolarizerArrayImage(sun)
-        k = 1.083 * 1.0e-5  # diffusion angle
-        T_diff = 0.28  # diffuser transmittancy
-        normalized_image = MicroPolarizerArrayImage(self)
-        sundata = np.where(sun.data != 0, sun.data, 1.0)
-        normalizing_factor = (
-            (1.0 / texp_data) * T_diff * k / (sundata / t_exp_sun)
-        )
-
-        normalized_image.data *= normalizing_factor
-        for single_pol_subimage in normalized_image.single_pol_subimages:
-            single_pol_subimage *= congrid(
-                normalizing_factor, single_pol_subimage.shape
-            )
-        if normalized_image._is_demosaiced:
-            normalized_image.demosaiced_images *= normalizing_factor
-        to_normalize = [
-            normalized_image.I,
-            normalized_image.Q,
-            normalized_image.U,
-            normalized_image.pB,
-        ]
-        for param in to_normalize:
-            param.data *= normalizing_factor
-            param.measure_unit = "B_sun"
-
-        return normalized_image
-
     def mask_occulter(
         self,
         y: int = PolarCam().occulter_pos_last[0],

@@ -17,12 +17,12 @@ from micropolarray.utils import (
     sigma_DN,
     mean_minus_std,
     mean_plus_std,
+    get_Bsun_units,
 )
 from micropolarray.processing.chen_wan_liang_calibration import (
     chen_wan_liang_calibration,
     ifov_jitcorrect,
 )
-from micropolarray.processing.sky_brightness import normalize_to_B_sun
 from micropolarray.processing.congrid import congrid
 from micropolarray.utils import (
     normalize2pi,

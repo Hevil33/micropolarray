@@ -125,3 +125,31 @@ def align_keywords_and_data(header, data, binning=1):
     header["CRPIX2"] = height - header["CRPIX2"]  # y, checked
 
     return header, data
+
+
+def get_Bsun_units(
+    mean_sun_brightness: float,
+    texp_image: float = 1.0,
+    texp_diffuser: float = 1.0,
+) -> float:
+    """Returns the conversion unit for expressing brightness in units of sun brightness. Usage is
+    data [units of B_sun] = data[DN] * get_Bsun_units(mean_Bsun_brightness, texp_image, texp_diffuser)
+
+    Args:
+        mean_sun_brightness (float): diffuser mean in DN
+        texp_image (float, optional): image exposure time. Defaults to 1.0.
+        texp_diffuser (float, optional): diffuser exposure time. Defaults to 1.0.
+
+    Returns:
+        float: Bsun units conversion factor
+    """
+    diffusion_solid_angle = 1.083 * 1.0e-5
+    diffuser_transmittancy = 0.28
+    Bsun_unit = (
+        diffusion_solid_angle
+        * diffuser_transmittancy
+        * texp_diffuser
+        / texp_image
+    )
+
+    return Bsun_unit
