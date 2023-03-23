@@ -1,6 +1,6 @@
 from micropolarray.image import Image
 from micropolarray.micropol_image import MicroPolarizerArrayImage
-from micropolarray.cameras import PolarCam, Kasi
+from micropolarray.cameras import PolarCam, Kasi, Antarticor
 
 from micropolarray.processing.new_demodulation import Demodulator
 from micropolarray.processing.new_demodulation import (

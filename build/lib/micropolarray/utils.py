@@ -128,7 +128,7 @@ def align_keywords_and_data(header, data, binning=1):
 
 
 def get_Bsun_units(
-    mean_sun_brightness: float,
+    sun_I: float,
     texp_image: float = 1.0,
     texp_diffuser: float = 1.0,
 ) -> float:
@@ -150,6 +150,12 @@ def get_Bsun_units(
         * diffuser_transmittancy
         * texp_diffuser
         / texp_image
+    )
+    Bsun_unit = (
+        (1.0 / texp_image)
+        * diffuser_transmittancy
+        * diffusion_solid_angle
+        / (sun_I / texp_diffuser)
     )
 
     return Bsun_unit

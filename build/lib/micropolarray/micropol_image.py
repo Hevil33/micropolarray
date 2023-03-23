@@ -378,8 +378,8 @@ class MicroPolarizerArrayImage(Image):
         self, dark: MicroPolarizerArrayImage
     ) -> MicroPolarizerArrayImage:
         """Subtracts dark data from image data."""
-        self.data = self.data - (dark.data * self._num_of_images)
-        self.data = np.where(self.data >= 0, self.data, 0)
+        self.data = self.data - dark.data
+        self.data = np.where(self.data >= 0, self.data, 0)  # Fix data
         self._set_data_and_Stokes()
         self._dark_subtracted = True
         return self
