@@ -36,6 +36,10 @@ class Image:
             [filenames] if type(filenames) is not list else filenames
         )
         filenames_len = len(filenames_list)
+        if averageimages:
+            normalizer = filenames_len
+        else:
+            normalizer = 1
         if filenames_len == 0:
             raise NameError("Can't load files, empty filenames list.")
         datetimes = [0] * filenames_len
@@ -60,7 +64,7 @@ class Image:
                 except KeyError:
                     pass
                 if idx == 0:
-                    combined_data = hul[0].data
+                    combined_data = hul[0].data / normalizer
                     self.header = hul[0].header
                 else:
                     if firstcall:
@@ -69,9 +73,8 @@ class Image:
                         else:
                             info(f"Summing {filenames_len} images...")
                         firstcall = False
-                    combined_data = combined_data + hul[0].data
-        if averageimages:
-            combined_data = combined_data / len(filenames_list)
+                    combined_data = combined_data + (hul[0].data / normalizer)
+
         datetimes = [datetime for datetime in datetimes if datetime != 0]
         if len(datetimes) == 0:
             datetimes = [0]
