@@ -64,6 +64,7 @@ class Demodulator:
             dtype=float,
         )
 
+        FPN = None
         for filename in filenames_list:
             if (
                 re.search("[Mm][0-9]{2}", filename.split(os.path.sep)[-1])
@@ -81,6 +82,9 @@ class Demodulator:
             elif re.search("FPN", filename.split(os.path.sep)[-1]):
                 with fits.open(filename) as hul:
                     FPN = hul[0].data
+
+        if FPN is None:  # if FPN not found assume it is 0
+            FPN = np.zeros_like(Mij[0, 0])
 
         return Mij, FPN
 

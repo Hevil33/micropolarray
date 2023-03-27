@@ -17,7 +17,7 @@ class Image:
     def __init__(
         self,
         initializer: str | np.ndarray | Image,
-        averageimages=True,
+        averageimages: bool = True,
     ):
         self.header = None
         if type(initializer) is str or type(initializer) is list:
@@ -36,17 +36,25 @@ class Image:
             [filenames] if type(filenames) is not list else filenames
         )
         filenames_len = len(filenames_list)
-        if averageimages:
-            normalizer = filenames_len
-        else:
-            normalizer = 1
         if filenames_len == 0:
             raise NameError("Can't load files, empty filenames list.")
         datetimes = [0] * filenames_len
 
-        firstcall = True
+        print_info_message = True
         for idx, filename in enumerate(filenames_list):
             with fits.open(filename) as hul:
+                if idx == 0:
+                    combined_data = hul[0].data
+                    self.header = hul[0].header
+                else:
+                    if print_info_message:
+                        if averageimages:
+                            info(f"Averaging {filenames_len} images...")
+                        else:
+                            info(f"Summing {filenames_len} images...")
+                        print_info_message = False
+                    combined_data = combined_data + hul[0].data
+
                 hul.verify("fix")
 
                 try:  # standard format
@@ -63,17 +71,10 @@ class Image:
                     )
                 except KeyError:
                     pass
-                if idx == 0:
-                    combined_data = hul[0].data / normalizer
-                    self.header = hul[0].header
-                else:
-                    if firstcall:
-                        if averageimages:
-                            info(f"Averaging {filenames_len} images...")
-                        else:
-                            info(f"Summing {filenames_len} images...")
-                        firstcall = False
-                    combined_data = combined_data + (hul[0].data / normalizer)
+
+            combined_data = combined_data / (
+                1 + int(averageimages) * (filenames_len - 1)
+            )  # divide by 1 if summing, either n if averaging
 
         datetimes = [datetime for datetime in datetimes if datetime != 0]
         if len(datetimes) == 0:

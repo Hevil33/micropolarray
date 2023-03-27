@@ -350,7 +350,7 @@ class MicroPolarizerArrayImage(Image):
             mij[0, 0].shape[1] != IMG[0].shape[1]
         ):
             raise ValueError(
-                "demodulation matrix and demosaiced images have different shape. Check that binning is correct."
+                f"demodulation matrix and demosaiced images have different shape {mij[0,0].shape} {IMG[0].shape}. Check that binning is correct."
             )  # sanity check
 
         T_ij = np.zeros(
@@ -517,7 +517,12 @@ class MicroPolarizerArrayImage(Image):
     def show_pol_param(self, polparam: PolParam, cmap="Greys_r"):
         data_ratio = self.data.shape[0] / self.data.shape[1]
         fig, ax = plt.subplots(figsize=(9, 9))
-        mappable = ax.imshow(polparam.data, cmap=cmap)
+        mappable = ax.imshow(
+            polparam.data,
+            cmap=cmap,
+            vmin=mean_minus_std(polparam.data),
+            vmax=mean_plus_std(polparam.data),
+        )
         ax.set_title(polparam.title)
         ax.set_xlabel("x [px]")
         ax.set_ylabel("y [px]")

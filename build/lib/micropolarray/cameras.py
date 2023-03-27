@@ -52,10 +52,11 @@ class PolarCam(Camera):
             950,
             531,
         ]  # Occulter y, x, radius [px, px, px] updated January 2023
-        # Old vals
-        # 916,
-        # 948,
-        # 524,
+        self.occulter_pos_2021 = [
+            925,
+            934,
+            532,
+        ]  # updated march 27, 2021/2022 campaign
         self.occulter_radius_sr = 1.1901  # occulter dimension in solar radii
         self.sun_dimension_pixels = 446  # from standard astropy atan(R_sun/AU)
 
