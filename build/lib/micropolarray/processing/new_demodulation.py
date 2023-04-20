@@ -1,5 +1,5 @@
 from micropolarray.processing.rebin import (
-    standard_jitrebin,
+    standard_rebin,
     micropolarray_jitrebin,
     trim_to_match_binning,
 )
@@ -88,6 +88,35 @@ class Demodulator:
 
         return Mij, FPN
 
+    def rebin(self, binning):  # TODO
+        if (int(self.mij.shape[2] / binning) % 2) or (
+            int(self.mij.shape[3] / binning) % 2
+        ):
+            raise ValueError(
+                f"incorrect binning, resulting matrix would be {int(self.mij.shape[2] / binning)}x{int(self.mij.shape[3] / binning)} (not even values)."
+            )
+        new_demodulator = Demodulator(self.demo_matrices_path)
+        new_mij = np.zeros(
+            shape=(
+                new_demodulator.n_malus_params,
+                new_demodulator.n_pixels_in_superpix,
+                int(new_demodulator.mij.shape[2] / binning),
+                int(new_demodulator.mij.shape[3] / binning),
+            )
+        )
+        for j in range(new_demodulator.n_malus_params):
+            for i in range(new_demodulator.n_pixels_in_superpix):
+                new_mij[j, i] = standard_rebin(
+                    new_demodulator.mij[j, i], binning
+                ) / (binning * binning)
+        new_FPN = standard_rebin(new_demodulator.FPN, binning) / (
+            binning * binning
+        )
+        new_demodulator.mij = new_mij
+        new_demodulator.FPN = new_FPN
+
+        return new_demodulator
+
 
 def calculate_demodulation_tensor(
     polarizer_orientations,
@@ -97,7 +126,7 @@ def calculate_demodulation_tensor(
     output_dir,
     binning=1,
     occulter=False,
-    parallelize=True,
+    proc_per_side=4,
     dark_filename=None,
     flat_filename=None,
 ):
@@ -110,7 +139,7 @@ def calculate_demodulation_tensor(
         gain (float): Detector [e-/DN], required to compute errors.
         binning (int, optional): Output matrices binning. Defaults to 1 (no binning). Be warned that binning matrices AFTER calculation is an incorrect operation.
         occulter (bool, optional): Whether to account for a central circle to exclude from calculation. Defaults to False.
-        parallelize (bool, optional): Whether to allow parallelization to greatly speed up calculations. Defaults to True.
+        proc_per_side (int, optional): number of processors per side n, parallelization will be done in a nxn grid. Defaults to 4 (16 procs in a 4x4 grid).
         dark_filename (str, optional): Dark image filename to correct input images. Defaults to None.
         flat_filename (str, optional): Flat image filename to correct input images. Defaults to None.
 
@@ -224,16 +253,17 @@ def calculate_demodulation_tensor(
     all_data_arr = np.array(all_data_arr)
 
     if DEBUG:
-        parallelize = False
+        proc_per_side = 1
 
-    # parallelize
-    chunks_n_x = 4  # Will be divided into chunks_n_x*chunks_n_y squares
-    chunks_n_y = 4
-    if DEBUG:
-        chunks_n_x = 1
-        chunks_n_y = 1
+    # parallelize into a procs_per_size x procs_per_size grid
+    chunks_n_x = proc_per_side
+    chunks_n_y = proc_per_side
     chunk_size_y = int(height / chunks_n_y)
     chunk_size_x = int(width / chunks_n_x)
+    if (chunk_size_x % 2) or (chunk_size_y % 2):
+        raise ValueError(
+            f"cant decompose into a {proc_per_side}x{proc_per_side} grid (odd side grid {chunk_size_x}x{chunk_size_x}). Try changing the number of processors."
+        )
     splitted_data = np.zeros(
         shape=(
             chunks_n_y * chunks_n_x,
@@ -270,18 +300,59 @@ def calculate_demodulation_tensor(
     # Normalizing S, has a spike of which maximum is taken
     bins = 1000
     histo = np.histogram(S_max, bins=bins)
-    index = np.where(histo[0] == np.max(histo[0]))[0][0]
-    normalizing_S = 0.5 * (histo[1][index] + histo[1][index + 1])
+    maxvalue = np.max(histo[0])
+    index = np.where(histo[0] == maxvalue)[0][0]
+    normalizing_S = (
+        histo[1][index] + histo[1][index + 1] + histo[1][index - 1]
+    ) / 3
+    # normalizing_S = np.max(S_max) # old
 
-    normalizing_S = np.max(S_max)
+    # ----------------------------------------------
+    # fit gaussian to S for normalization signal
+    def gauss(x, norm, x_0, sigma):
+        return norm * np.exp(-((x - x_0) ** 2) / (4 * sigma**2))
+
+    hist_roi = 10  # bins around max value
+    xvalues = np.array(histo[1])[index - hist_roi : index + hist_roi]
+    yvalues = np.array(histo[0])[index - hist_roi : index + hist_roi]
+    yvalues_sum = np.sum(yvalues)
+    yvalues = yvalues / yvalues_sum
+    xvalues = np.array(
+        [value + (xvalues[1] - xvalues[0]) / 2 for value in xvalues]
+    )  # shift each bin to center
+    prediction = [
+        yvalues[int(len(yvalues) / 2)],  # normalization
+        xvalues[int(len(xvalues) / 2)],  # center
+        xvalues[int(len(xvalues) / 2) + int(hist_roi / 2)]
+        - xvalues[int(len(xvalues) / 2)],  # sigma
+    ]
+    params, cov = curve_fit(
+        gauss,
+        xvalues,
+        yvalues,
+        prediction,
+    )
+    normalizing_S = params[1] + 4 * params[2]  # center of gaussian + 2sigma
+    # 3sigma -> P = 2.7e-3 outliers
+    # 4sigma -> P = 6.3e-5 outliers
+    # ----------------------------------------------
 
     # Debug
     if False:
-        histo_0 = np.histogram(all_data_arr[5], bins=1000)
+        index = 5
+        histo_0 = np.histogram(all_data_arr[index], bins=1000)
         fig, ax = plt.subplots(figsize=(9, 9))
         ax.stairs(histo_0[0], histo_0[1], label="sample image")
-        ax.stairs(histo[0], histo[1], label="S")
-        ax.axvline(normalizing_S, color="red")
+        ax.stairs(histo[0], histo[1], label=f"S, max = {np.max(S_max)}")
+        ax.axvline(normalizing_S, color="red", label="normalizing_S")
+        ax.plot(
+            xvalues,
+            gauss(xvalues, params[0] * yvalues_sum, params[1], params[2]),
+            label="Fitted curve for normalizing S",
+        )
+        ax.set_title(f"Prepol at {polarizer_orientations[index]} deg")
+        ax.set_xlabel("S [DN]")
+        ax.set_ylabel("Counts")
         ax.legend()
         plt.show()
         sys.exit()
@@ -301,9 +372,11 @@ def calculate_demodulation_tensor(
 
     starting_time = time.perf_counter()
     loc_time = time.strftime("%H:%M:%S  (%Y/%m/%d)", time.localtime())
-    info(f"Starting parallel calculation")
+    info(
+        f"Starting parallel calculation ({proc_per_side}x{proc_per_side}) processors"
+    )
 
-    if parallelize:
+    if proc_per_side > 1:
         try:
             with mp.Pool(processes=chunks_n_y * chunks_n_x) as p:
                 result = p.starmap(
@@ -316,6 +389,7 @@ def calculate_demodulation_tensor(
 
             info(f"Elapsed : {(ending_time - starting_time)/60:3.2f} mins")
             sys.exit()
+
     else:
         arglist = [arg for arg in args]
         result = [[0.0, 0.0]] * chunks_n_y * chunks_n_x

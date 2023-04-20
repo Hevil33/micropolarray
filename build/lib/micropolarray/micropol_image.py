@@ -659,7 +659,7 @@ class MicroPolarizerArrayImage(Image):
         )
 
     # ----------------------------------------------------------------
-    # ------------------------ DEMOSAICING ---------------------------
+    # -------------------- DATA MANIPULATION -------------------------
     # ----------------------------------------------------------------
     def demosaic(self) -> MicroPolarizerArrayImage:
         self.demosaiced_images = demosaic(self.data, option=self.demosaic_mode)
@@ -673,8 +673,7 @@ class MicroPolarizerArrayImage(Image):
 
     def rebin(self, binning: int) -> MicroPolarizerArrayImage:
         """Rebins the micropolarizer array image, binned each
-        binningxbinning. Sum bins by default, unless mean = True
-        is specified."""
+        binningxbinning. Sum bins by default."""
         if binning > 0:
             rebinned_data = micropolarray_jitrebin(
                 self.data, self.width, self.height, binning

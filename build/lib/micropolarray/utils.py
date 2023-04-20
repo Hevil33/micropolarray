@@ -95,40 +95,62 @@ def timer(func):
     return wrapper
 
 
-def align_keywords_and_data(header, data, binning=1):
+def align_keywords_and_data(header, data, platescale, binning=1):
+    """Fixes antarticor keywords and data to reflect each other.
+
+    Args:
+        header (dict): fits file header
+        data (ndarray): data as np array
+        platescale (float): plate scale in arcsec/pixel
+        binning (int, optional): binning applied to image. Defaults to 1 (no binning).
+
+    Returns:
+        header, data: new fixed header and data
+    """
     data = np.rot90(data, k=-1)
     data = np.flip(data, axis=0)
 
-    width = int(header["NAXIS1"] / binning)
-    height = int(header["NAXIS2"] / binning)
+    header["NAXIS1"] = data.shape[0]
+    header["NAXIS2"] = data.shape[1]
+    height = header["NAXIS1"]
+    width = header["NAXIS2"]
     rotation_angle = -10  # degrees
-    platescale = 4.3 / 2  # [arcsec/pix]
+    if binning > 1:
+        platescale = platescale * binning
 
     header["DATE-OBS"] = header["DATE-OBS"] + "T" + header["TIME-OBS"]
-    header["WCSNAME"] = "HEEQ"
-    header["DSUN_OBS"] = 1.495978707e11
-    if binning > 1:
-        platescale *= binning
+
+    header["WCSNAME"] = "helioprojective-cartesian"
+    # header["DSUN_OBS"] = 1.495978707e11
+    header["CTYPE1"] = "HPLN-TAN"
+    header["CTYPE2"] = "HPLT-TAN"
     header["CDELT1"] = platescale
     header["CDELT2"] = platescale
+    header["CUNIT1"] = "arcsec"
+    header["CUNIT2"] = "arcsec"
+    header["CRVAL1"] = 0
+    header["CRVAL2"] = 0
     header["CROTA2"] = rotation_angle
     (
-        header["CRPIX1"],
-        header["CRPIX2"],
+        y,
+        x,
         _,
-    ) = PolarCam().occulter_pos_last  # y, x, radius
-    if binning > 1:
-        header["CRPIX1"] /= binning
-        header["CRPIX2"] /= binning
+        # ) = PolarCam().occulter_pos_last
+    ) = PolarCam().occulter_pos_2021
+    relative_y = y / 1952
+    relative_x = x / 1952
+    sun_x = int(width * relative_x)
+    sun_y = int(height * relative_y)
+
     # one changes because of rotation, the other because of jhelioviewer representation
-    header["CRPIX1"] = width - header["CRPIX1"]  # x, checked
-    header["CRPIX2"] = height - header["CRPIX2"]  # y, checked
+    header["CRPIX1"] = height - sun_y  # y, checked
+    header["CRPIX2"] = width - sun_x  # x, checked
 
     return header, data
 
 
 def get_Bsun_units(
-    sun_I: float,
+    diffuser_I: float,
     texp_image: float = 1.0,
     texp_diffuser: float = 1.0,
 ) -> float:
@@ -155,7 +177,7 @@ def get_Bsun_units(
         (1.0 / texp_image)
         * diffuser_transmittancy
         * diffusion_solid_angle
-        / (sun_I / texp_diffuser)
+        / (diffuser_I / texp_diffuser)
     )
 
     return Bsun_unit

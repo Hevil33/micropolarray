@@ -38,45 +38,42 @@ def micropolarray_jitrebin(data, height, width, binning=2):
     return new_data
 
 
-def standard_rebin(image, binning: int) -> np.array:
-    """Rebins the image, binned each binningxbinning. Sum bins by
-    default, unless mean = True is specified.
+def standard_rebin(data, binning: int) -> np.array:
+    """Rebins the data, binned each binningxbinning.
 
     Args:
-        image (MicroPolarizerArrayImage): image to be binned
+        image (np.array): data to be binned
         binning (int): binning to be applied. A value of 2 will result in a 2x2 binning (1 pixel is a sum of 4 neighbour pixels)
 
     Raises:
         KeyError: cannot divide image height/width by the binning value
 
     Returns:
-        np.array: binned image
+        np.array: binned data
     """
-    if (image.width % binning) or (image.height % binning):
+    if (data.shape[0] % binning) or (data.shape[1] % binning):
         raise KeyError(
             "Invalid binning, must be divisor of both image height and width."
         )
-    rebinned_data = standard_jitrebin(
-        image.data, image.width, image.height, binning
-    )
+    rebinned_data = standard_jitrebin(data, *data.shape, binning)
     return rebinned_data
 
 
 @njit
-def standard_jitrebin(data, width, height, binning=2):
+def standard_jitrebin(data, height, width, binning=2):
     trimmed = False
-    while width % (2 * binning):
-        width -= 2
-        trimmed = True
     while height % (2 * binning):
         height -= 2
+        trimmed = True
+    while width % (2 * binning):
+        width -= 2
         trimmed = True
     if trimmed:
         print(
             "Data trimmed to fit rebinning. Starting from new shape: (",
-            width,
-            ", ",
             height,
+            ", ",
+            width,
             ")",
         )
     new_height = int(height / binning)
