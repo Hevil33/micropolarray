@@ -53,7 +53,10 @@ class Image:
                         else:
                             info(f"Summing {filenames_len} images...")
                         print_info_message = False
-                    combined_data = combined_data + hul[0].data
+                    combined_data = combined_data + (
+                        hul[0].data
+                        / (1 + int(averageimages) * (filenames_len - 1))
+                    )  # divide by 1 if summing, either n if averaging
 
                 hul.verify("fix")
 
@@ -71,10 +74,6 @@ class Image:
                     )
                 except KeyError:
                     pass
-
-            combined_data = combined_data / (
-                1 + int(averageimages) * (filenames_len - 1)
-            )  # divide by 1 if summing, either n if averaging
 
         datetimes = [datetime for datetime in datetimes if datetime != 0]
         if len(datetimes) == 0:

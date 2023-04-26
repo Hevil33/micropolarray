@@ -40,9 +40,9 @@ class Demodulator:
         self.n_malus_params = N_MALUS_PARAMS
         self.demo_matrices_path = demo_matrices_path
 
-        self.mij, self.FPN = self.get_demodulation_tensor_and_FPN()
+        self.mij = self.get_demodulation_tensor()
 
-    def get_demodulation_tensor_and_FPN(self):
+    def get_demodulation_tensor(self):
         """Reads files "MIJ.fits" from path folder and returns a (3,4,y,x)
         numpy array representing the demodulation tensor."""
 
@@ -64,7 +64,6 @@ class Demodulator:
             dtype=float,
         )
 
-        FPN = None
         for filename in filenames_list:
             if (
                 re.search("[Mm][0-9]{2}", filename.split(os.path.sep)[-1])
@@ -79,14 +78,8 @@ class Demodulator:
                 j = int(j)
                 with fits.open(filename) as hul:
                     Mij[i, j] = hul[0].data
-            elif re.search("FPN", filename.split(os.path.sep)[-1]):
-                with fits.open(filename) as hul:
-                    FPN = hul[0].data
 
-        if FPN is None:  # if FPN not found assume it is 0
-            FPN = np.zeros_like(Mij[0, 0])
-
-        return Mij, FPN
+        return Mij
 
     def rebin(self, binning):  # TODO
         if (int(self.mij.shape[2] / binning) % 2) or (
@@ -109,11 +102,7 @@ class Demodulator:
                 new_mij[j, i] = standard_rebin(
                     new_demodulator.mij[j, i], binning
                 ) / (binning * binning)
-        new_FPN = standard_rebin(new_demodulator.FPN, binning) / (
-            binning * binning
-        )
         new_demodulator.mij = new_mij
-        new_demodulator.FPN = new_FPN
 
         return new_demodulator
 
@@ -410,7 +399,6 @@ def calculate_demodulation_tensor(
     tks = np.zeros(shape=(height, width))
     efficiences = np.zeros(shape=(height, width))
     phases = np.zeros(shape=(height, width))
-    FPNs = np.zeros(shape=(height, width))
 
     for i in range(chunks_n_y):
         for j in range(chunks_n_x):
@@ -443,12 +431,6 @@ def calculate_demodulation_tensor(
             ] = result[i + chunks_n_y * j, 3].reshape(
                 chunk_size_y, chunk_size_x
             )
-            FPNs[
-                i * (chunk_size_y) : (i + 1) * chunk_size_y,
-                j * (chunk_size_x) : (j + 1) * chunk_size_x,
-            ] = result[i + chunks_n_y * j, 4].reshape(
-                chunk_size_y, chunk_size_x
-            )
 
     phases = np.rad2deg(phases)
 
@@ -468,8 +450,6 @@ def calculate_demodulation_tensor(
     hdu.writeto(output_dir + "efficiences.fits", overwrite=True)
     hdu = fits.PrimaryHDU(data=phases)
     hdu.writeto(output_dir + "phases.fits", overwrite=True)
-    hdu = fits.PrimaryHDU(data=FPNs)
-    hdu.writeto(output_dir + "FPNs.fits", overwrite=True)
 
     info("Demodulation matrices and fit data successfully saved!")
 
@@ -486,17 +466,19 @@ def compute_demodulation_by_chunk(
     DEBUG,
 ):
     """Utility function to parallelize calculations."""
+    N_MALUS_PARAMS = 3
+    N_PIXELS_IN_SUPERPIX = 4
     # Preemptly compute the theoretical demo matrix to save time
     theo_modulation_matrix = np.array(
         [
             [0.5, 0.5, 0.5, 0.5],
             [
                 0.5 * np.cos(2.0 * rad_micropol_phases_previsions[i])
-                for i in range(4)
+                for i in range(N_PIXELS_IN_SUPERPIX)
             ],
             [
                 0.5 * np.sin(2.0 * rad_micropol_phases_previsions[i])
-                for i in range(4)
+                for i in range(N_PIXELS_IN_SUPERPIX)
             ],
         ]
     )
@@ -508,7 +490,6 @@ def compute_demodulation_by_chunk(
     polarizations_rad = np.deg2rad(polarizer_orientations)
     tk_prediction = 0.5
     efficiency_prediction = 0.4
-    fpn_prediction = 0.0
 
     # Checked errors
     sigma_S2 = np.sqrt(0.5 * normalizing_S / gain)
@@ -529,21 +510,18 @@ def compute_demodulation_by_chunk(
     tk_data = np.ones(shape=(height, width)) * tk_prediction
     eff_data = np.ones(shape=(height, width)) * efficiency_prediction
     phase_data = np.zeros(shape=(height, width))
-    FPN_data = np.zeros(shape=(height, width))
-    superpix_params = np.zeros(shape=(4, 4))
+    superpix_params = np.zeros(shape=(N_PIXELS_IN_SUPERPIX, N_MALUS_PARAMS))
 
-    predictions = np.zeros(shape=(4, 4))
+    predictions = np.zeros(shape=(N_PIXELS_IN_SUPERPIX, N_MALUS_PARAMS))
     predictions[:, 0] = tk_prediction  # Throughput prediction
     predictions[:, 1] = efficiency_prediction  # Efficiency prediction
     predictions[:, 2] = rad_micropol_phases_previsions  # Angle prediction
-    predictions[:, 3] = fpn_prediction  # FPN prediction
 
-    bounds = np.zeros(shape=(4, 2, 4))
+    bounds = np.zeros(shape=(N_PIXELS_IN_SUPERPIX, 2, N_MALUS_PARAMS))
     bounds[:, 0, 0], bounds[:, 1, 0] = 0.1, 0.9999999  # Throughput bounds
     bounds[:, 0, 1], bounds[:, 1, 1] = 0.1, 0.9999999  # Efficiency bounds
     bounds[:, 0, 2] = rad_micropol_phases_previsions - 15  # Lower angle bounds
     bounds[:, 1, 2] = rad_micropol_phases_previsions + 15  # Upper angle bounds
-    bounds[:, 0, 3], bounds[:, 1, 3] = 0.0, 1.5  # FPN bounds
 
     # Fit for each superpixel. Use theoretical demodulation matrix for
     # occulter if present.
@@ -576,14 +554,14 @@ def compute_demodulation_by_chunk(
             ):
                 normalized_superpix_arr = normalized_splitted_data[
                     :, super_y : super_y + 2, super_x : super_x + 2
-                ].reshape(num_of_points, 4)
+                ].reshape(num_of_points, N_PIXELS_IN_SUPERPIX)
 
                 sigma_pix = pix_DN_sigma[
                     :, super_y : super_y + 2, super_x : super_x + 2
-                ].reshape(num_of_points, 4)
+                ].reshape(num_of_points, N_PIXELS_IN_SUPERPIX)
                 sigma_pix = np.where(sigma_pix != 0.0, sigma_pix, 1.0e-5)
 
-                for pixel_num in range(4):
+                for pixel_num in range(N_PIXELS_IN_SUPERPIX):
                     if np.array_equal(
                         normalized_superpix_arr[:, pixel_num], all_zeros
                     ):  # catch bad pixels
@@ -628,7 +606,7 @@ def compute_demodulation_by_chunk(
                         ax.plot(
                             np.rad2deg(x),
                             Malus(x, *superpix_params[i]),
-                            label=f"t = {superpix_params[i,0]:2.2f}, e = {superpix_params[i, 1]:2.2f}, phi = {np.rad2deg(superpix_params[i, 2]):2.2f}, FPN = {superpix_params[i, 3]:2.2e}",
+                            label=f"t = {superpix_params[i,0]:2.2f}, e = {superpix_params[i, 1]:2.2f}, phi = {np.rad2deg(superpix_params[i, 2]):2.2f}",
                         )
                         ax.set_title(
                             f"super_y = {super_y}, super_x = {super_x},"
@@ -651,7 +629,6 @@ def compute_demodulation_by_chunk(
                 t = superpix_params[:, 0]
                 eff = superpix_params[:, 1]
                 phi = superpix_params[:, 2]
-                FPN = superpix_params[:, 3]
 
                 # modified 2023_02_13, worse
                 # t = t * (1 + FPN)
@@ -688,9 +665,6 @@ def compute_demodulation_by_chunk(
                 phase_data[
                     super_y : super_y + 2, super_x : super_x + 2
                 ] = np.array(phi).reshape(2, 2)
-                FPN_data[
-                    super_y : super_y + 2, super_x : super_x + 2
-                ] = np.array(FPN).reshape(2, 2)
 
             else:  # pixel is in occulter region
                 for i in range(2):
@@ -717,29 +691,19 @@ def compute_demodulation_by_chunk(
                         [efficiency_prediction, efficiency_prediction],
                     ]
                 )
-                FPN_data[
-                    super_y : super_y + 2, super_x : super_x + 2
-                ] = np.array(
-                    [
-                        [fpn_prediction, fpn_prediction],
-                        [fpn_prediction, fpn_prediction],
-                    ]
-                ).reshape(
-                    2, 2
-                )
 
     m_ij_chunk = m_ij
 
-    return m_ij_chunk, tk_data, eff_data, phase_data, FPN_data
+    return m_ij_chunk, tk_data, eff_data, phase_data
 
 
-def Malus(angle, throughput, efficiency, phase, FPN):
+def Malus(angle, throughput, efficiency, phase):
     # original
     modulated_efficiency = efficiency * (
         np.cos(2.0 * phase) * np.cos(2.0 * angle)
         + np.sin(2.0 * phase) * np.sin(2.0 * angle)
     )
-    return 0.5 * throughput * (1.0 + modulated_efficiency) + FPN
+    return 0.5 * throughput * (1.0 + modulated_efficiency)
 
 
 """

@@ -324,13 +324,11 @@ class MicroPolarizerArrayImage(Image):
             stokes vector, shape=(3, poled_images.shape[1], poled_images.shape[0])
         """
         # Corrected with demodulation matrices, S.shape = (4, n, m)
-        num_of_malus_parameters = 3  # 3 multiplication params, 1 FPN noise
+        num_of_malus_parameters = 3  # 3 multiplication params
         pixels_in_superpix = 4
         mij = demodulator.mij
-        FPN = demodulator.FPN
 
-        data_minus_FPN = self.data - FPN
-        demosaiced_images = demosaic(data_minus_FPN, self.demosaic_mode)
+        demosaiced_images = demosaic(self.data, self.demosaic_mode)
 
         # IMG = np.array(
         #    [
