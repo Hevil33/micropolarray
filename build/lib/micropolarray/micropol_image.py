@@ -328,7 +328,9 @@ class MicroPolarizerArrayImage(Image):
         pixels_in_superpix = 4
         mij = demodulator.mij
 
-        demosaiced_images = demosaic(self.data, self.demosaic_mode)
+        self.demosaic()
+        demosaiced_images = self.demosaiced_images
+        # demosaiced_images = demosaic(self.data, self.demosaic_mode)
 
         # IMG = np.array(
         #    [
