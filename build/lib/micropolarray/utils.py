@@ -95,7 +95,7 @@ def timer(func):
     return wrapper
 
 
-def align_keywords_and_data(header, data, platescale, binning=1):
+def align_keywords_and_data(header, data, sun_center, platescale, binning=1):
     """Fixes antarticor keywords and data to reflect each other.
 
     Args:
@@ -131,12 +131,11 @@ def align_keywords_and_data(header, data, platescale, binning=1):
     header["CRVAL1"] = 0
     header["CRVAL2"] = 0
     header["CROTA2"] = rotation_angle
-    (
-        y,
-        x,
-        _,
-        # ) = PolarCam().occulter_pos_last
-    ) = PolarCam().occulter_pos_2021
+    y, x = sun_center
+    # if year == 2021:
+    #    y, x, _ = PolarCam().occulter_pos_2021
+    # elif year == 2022:
+    #    y, x, _ = PolarCam().occulter_pos_last
     relative_y = y / 1952
     relative_x = x / 1952
     sun_x = int(width * relative_x)
@@ -158,7 +157,7 @@ def get_Bsun_units(
     data [units of B_sun] = data[DN] * get_Bsun_units(mean_Bsun_brightness, texp_image, texp_diffuser)
 
     Args:
-        mean_sun_brightness (float): diffuser mean in DN
+        mean_sun_brightness (float): diffuser mean in DN.
         texp_image (float, optional): image exposure time. Defaults to 1.0.
         texp_diffuser (float, optional): diffuser exposure time. Defaults to 1.0.
 

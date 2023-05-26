@@ -3,6 +3,7 @@ import warnings
 from numba import njit
 from logging import info
 from micropolarray.processing.congrid import congrid
+import sys
 
 warnings.filterwarnings(
     "ignore", category=UserWarning, append=True
@@ -20,7 +21,12 @@ def demosaicmean(data):
     """
     data = 1.0 * data
     temp_data = data.copy()
-    demo_images = [data.copy(), data.copy(), data.copy(), data.copy()]
+    demo_images = [
+        np.zeros_like(temp_data),
+        np.zeros_like(temp_data),
+        np.zeros_like(temp_data),
+        np.zeros_like(temp_data),
+    ]
     counter = 0
     for j in range(2):
         for i in range(2):
@@ -86,7 +92,9 @@ def demosaic(image_data, option="adjacent"):
 
     if option == "mean":
         info("Demosaicing (mean method)... ")
-        demo_images = demosaicmean(image_data)
+        demo_images = demosaicmean(
+            np.array(image_data, dtype=np.double)
+        )  # casting needed by numba
 
     elif option == "adjacent":
         """
