@@ -1,3 +1,4 @@
+import os
 import numpy as np
 import multiprocessing as mp
 from astropy.io import fits
@@ -5,7 +6,7 @@ import sys
 import tqdm
 import datetime
 import pytz
-from logging import critical
+from logging import critical, info
 
 
 def three_bytes_to_two_ints(filecontent):
@@ -91,3 +92,31 @@ def convert_set(filenames, new_filename):
         "Datetime conversion from bin to fits file (Dome C timezone).",
     )
     hdu.writeto(new_filename, overwrite=True)
+
+
+def convert_rawfile_to_fits(
+    filename: str, height: int, width: int, remove_old: bool = False
+):
+    """Converts a raw file to a fits one, using default header
+
+    Args:
+        filename (str): raw filename
+        height (int): file height
+        width (int): file width
+        remove_old (bool, optional): remove old raw file after conversion. Defaults to False.
+
+    Raises:
+        ValueError: raised if the file does not end with ".raw"
+    """
+    if not ".raw" in filename:
+        raise ValueError("Can't convert: not a row file")
+    with open(filename, mode="rb") as file:
+        buffer = file.read()
+    data = np.ndarray(shape=(height, width), dtype="<u2", buffer=buffer)
+    HDU = fits.PrimaryHDU(data=data)
+    new_filename = "/".join(filename.split(".")[:-1]) + ".fits"
+    HDU.writeto(new_filename, overwrite=True)
+    info(f'Image successfully saved to "{new_filename}".')
+
+    if remove_old:
+        os.remove(filename)

@@ -11,7 +11,10 @@ from micropolarray.processing.nrgf import (
     roi_from_polar,
     nrgf,
 )
-from micropolarray.processing.convert import convert_set
+from micropolarray.processing.convert import (
+    convert_set,
+    convert_rawfile_to_fits,
+)
 from micropolarray.processing.demosaic import demosaic
 from micropolarray.utils import (
     sigma_DN,
