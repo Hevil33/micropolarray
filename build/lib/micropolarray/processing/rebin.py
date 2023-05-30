@@ -25,7 +25,7 @@ def micropolarray_jitrebin(data, height, width, binning=2):
         )
     new_width = int(width / binning)
     new_height = int(height / binning)
-    new_data = np.zeros(shape=(new_height, new_width))
+    new_data = np.zeros(shape=(new_height, new_width), dtype=np.double)
     for new_y in range(new_height):
         for new_x in range(new_width):
             for y_scaler in range((new_y % 2), (new_y % 2) + 2 * binning, 2):

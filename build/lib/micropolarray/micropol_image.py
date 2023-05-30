@@ -676,7 +676,10 @@ class MicroPolarizerArrayImage(Image):
         binningxbinning. Sum bins by default."""
         if binning > 0:
             rebinned_data = micropolarray_jitrebin(
-                self.data, self.width, self.height, binning
+                np.array(self.data, dtype=np.double),
+                self.width,
+                self.height,
+                binning,
             )
             newimage = MicroPolarizerArrayImage(
                 rebinned_data,
