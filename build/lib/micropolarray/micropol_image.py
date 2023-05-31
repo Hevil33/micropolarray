@@ -686,6 +686,7 @@ class MicroPolarizerArrayImage(Image):
                 angle_dic=self.angle_dic,
                 demosaic_mode=self.demosaic_mode,
             )
+            newimage.header = self.header
             if self._is_demosaiced:
                 newimage.demosaic()  # update demosaic
             newimage._set_data_and_Stokes()

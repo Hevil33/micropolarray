@@ -145,7 +145,6 @@ def nrgf(
         condition = np.logical_and(rho_condition, out_phi_condition)
         # condition = np.logical_and(rho_condition, mean_phi_condition)
         mean_condition = np.logical_and(rho_condition, mean_phi_condition)
-
         mean_over_ROI = np.mean(data, where=mean_condition)
         std_over_ROI = np.std(data, where=mean_condition)
         if std_over_ROI > 0:
@@ -156,6 +155,7 @@ def nrgf(
             )
         else:
             newdata = np.where(condition, 0, newdata)
+
     return newdata
 
 
