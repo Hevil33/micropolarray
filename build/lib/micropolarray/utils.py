@@ -5,6 +5,13 @@ from scipy import constants
 from pathlib import Path
 import time
 from micropolarray.cameras import PolarCam
+from scipy.optimize import curve_fit
+import matplotlib.pyplot as plt
+import sys
+from micropolarray.processing.demosaic import (
+    split_polarizations,
+    merge_polarizations,
+)
 
 
 def make_abs_and_create_dir_old(filenames: str):
@@ -107,8 +114,14 @@ def align_keywords_and_data(header, data, sun_center, platescale, binning=1):
     Returns:
         header, data: new fixed header and data
     """
-    data = np.rot90(data, k=-1)
-    data = np.flip(data, axis=0)
+
+    single_pol_images = split_polarizations(data)
+    # data = np.rot90(data, k=-1)
+    # data = np.flip(data, axis=0)
+    for i in range(4):
+        single_pol_images[i] = np.rot90(single_pol_images[i], k=-1)
+        single_pol_images[i] = np.flip(single_pol_images[i], axis=0)
+    data = merge_polarizations(single_pol_images)
 
     header["NAXIS1"] = data.shape[0]
     header["NAXIS2"] = data.shape[1]
@@ -180,3 +193,67 @@ def get_Bsun_units(
     )
 
     return Bsun_unit
+
+
+def get_malus_normalization(four_peaks_images, show_hist=False):
+    S_max = np.zeros_like(
+        four_peaks_images[0]
+    )  # tk_sum = tk_0 + tk_45 + tk_90 + tk_45
+    S_max = 0.5 * np.sum(four_peaks_images, axis=0)
+    # Normalizing S, has a spike of which maximum is taken
+    bins = 1000
+    histo = np.histogram(S_max, bins=bins)
+    maxvalue = np.max(histo[0])
+    index = np.where(histo[0] == maxvalue)[0][0]
+    normalizing_S = (
+        histo[1][index] + histo[1][index + 1] + histo[1][index - 1]
+    ) / 3
+    # normalizing_S = np.max(S_max) # old
+
+    # ----------------------------------------------
+    # fit gaussian to S for normalization signal
+    def gauss(x, norm, x_0, sigma):
+        return norm * np.exp(-((x - x_0) ** 2) / (4 * sigma**2))
+
+    hist_roi = 10  # bins around max value
+    xvalues = np.array(histo[1])[index - hist_roi : index + hist_roi]
+    yvalues = np.array(histo[0])[index - hist_roi : index + hist_roi]
+    yvalues_sum = np.sum(yvalues)
+    yvalues = yvalues / yvalues_sum
+    xvalues = np.array(
+        [value + (xvalues[1] - xvalues[0]) / 2 for value in xvalues]
+    )  # shift each bin to center
+    prediction = [
+        yvalues[int(len(yvalues) / 2)],  # normalization
+        xvalues[int(len(xvalues) / 2)],  # center
+        xvalues[int(len(xvalues) / 2) + int(hist_roi / 2)]
+        - xvalues[int(len(xvalues) / 2)],  # sigma
+    ]
+    params, cov = curve_fit(
+        gauss,
+        xvalues,
+        yvalues,
+        prediction,
+    )
+    normalizing_S = params[1] + 4 * params[2]  # center of gaussian + 2sigma
+    # 3sigma -> P = 2.7e-3 outliers
+    # 4sigma -> P = 6.3e-5 outliers
+    # ----------------------------------------------
+    if show_hist:
+        index = 5
+        fig, ax = plt.subplots(figsize=(9, 9))
+        ax.stairs(histo[0], histo[1], label=f"S, max = {np.max(S_max)}")
+        ax.axvline(normalizing_S, color="red", label="normalizing_S")
+        ax.plot(
+            xvalues,
+            gauss(xvalues, params[0] * yvalues_sum, params[1], params[2]),
+            label="Fitted curve for normalizing S",
+        )
+        ax.set_title(f"Normalizing S (t_0 + t_45 + t_90 + t_135)")
+        ax.set_xlabel("S [DN]")
+        ax.set_ylabel("Counts")
+        ax.legend()
+        plt.show()
+        sys.exit()
+
+    return normalizing_S

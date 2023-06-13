@@ -21,6 +21,7 @@ from micropolarray.utils import (
     mean_minus_std,
     mean_plus_std,
     get_Bsun_units,
+    get_malus_normalization,
 )
 from micropolarray.processing.chen_wan_liang_calibration import (
     chen_wan_liang_calibration,

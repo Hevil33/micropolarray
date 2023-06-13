@@ -6,6 +6,50 @@ class Camera:
     def __init__(self):
         pass
 
+    def occulter_roi(
+        self, data: np.array, fill: float = 0.0, overoccult: int = 0
+    ) -> np.array:
+        """Returns the array in the polar ROI, else fill
+
+        Args:
+            data (np.array): Input array
+            fill (float, optional): Value for filling. Defaults to 0.0.
+            overoccult (int, optional): Pixels to overoccult. Defaults to 0.
+
+        Returns:
+            np.array: Array if in ROI, fill elsewhere
+        """
+        y, x, r = self.occulter_pos_last
+        roidata = roi_from_polar(
+            data, [y, x], [r + overoccult, 5000], fill=fill
+        )
+
+        return roidata
+
+    def occulter_mask(self, overoccult: int = 0, rmax: int = None) -> np.array:
+        """Returns an array of True inside the roi, False elsewhere. Useful for mean/std operations (where=occulter_mask).
+
+        Args:
+            overoccult (int, optional): Pixels to overoccult. Defaults to 15.
+            rmax (int, optional): Maximum r of the ROI. Defaults to image nearest border.
+
+        Returns:
+            np.array: Boolean roi array
+        """
+        y, x, r = self.occulter_pos_last
+        r = r + overoccult
+        if rmax is None:
+            rmax = np.min([y, x])
+        occulter_mask = np.where(
+            roi_from_polar(
+                np.ones(shape=(self.h_image, self.w_image)), [y, x], [r, rmax]
+            )
+            != 0,
+            True,
+            False,
+        )
+        return occulter_mask
+
 
 class Kasi(Camera):
     def __init__(self):
@@ -61,50 +105,6 @@ class PolarCam(Camera):
         self.sun_dimension_pixels = 446  # from standard astropy atan(R_sun/AU)
 
         self.gain = 9.28
-
-    def occulter_roi(
-        self, data: np.array, fill: float = 0.0, overoccult: int = 0
-    ) -> np.array:
-        """Returns the array in the polar ROI, else fill
-
-        Args:
-            data (np.array): Input array
-            fill (float, optional): Value for filling. Defaults to 0.0.
-            overoccult (int, optional): Pixels to overoccult. Defaults to 0.
-
-        Returns:
-            np.array: Array if in ROI, fill elsewhere
-        """
-        y, x, r = self.occulter_pos_last
-        roidata = roi_from_polar(
-            data, [y, x], [r + overoccult, 5000], fill=fill
-        )
-
-        return roidata
-
-    def occulter_mask(self, overoccult: int = 0, rmax: int = None) -> np.array:
-        """Returns an array of True inside the roi, False elsewhere. Useful for mean/std operations (where=occulter_mask).
-
-        Args:
-            overoccult (int, optional): Pixels to overoccult. Defaults to 15.
-            rmax (int, optional): Maximum r of the ROI. Defaults to image nearest border.
-
-        Returns:
-            np.array: Boolean roi array
-        """
-        y, x, r = self.occulter_pos_last
-        r = r + overoccult
-        if rmax is None:
-            rmax = np.min([y, x])
-        occulter_mask = np.where(
-            roi_from_polar(
-                np.ones(shape=(self.h_image, self.w_image)), [y, x], [r, rmax]
-            )
-            != 0,
-            True,
-            False,
-        )
-        return occulter_mask
 
 
 class Antarticor:

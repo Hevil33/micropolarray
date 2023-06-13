@@ -210,7 +210,9 @@ def find_occulter_position(
             #        break
             # half_array[max_i:] = max_half_array
 
-            x = np.arange(0, half_y, 1)
+            # x = np.arange(0, half_y, 1)
+            x = np.arange(0, int(len(half_array / 2)), 1)
+
             params = [
                 np.max(half_array),
                 np.min(half_array),

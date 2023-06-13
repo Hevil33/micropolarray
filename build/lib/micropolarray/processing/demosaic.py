@@ -81,6 +81,36 @@ def demosaicadjacent(data):
     return demo_images
 
 
+def split_polarizations(data: np.ndarray):
+    single_pol_images = np.array(
+        [data[j::2, i::2] for j in range(2) for i in range(2)],
+        # [
+        #    self.data[0::2, 0::2], # x= 0, y = 0
+        #    self.data[0::2, 1::2], # x= 1, y = 0
+        #    self.data[1::2, 0::2], # x= 0, y = 1
+        #    self.data[1::2, 1::2], # x= 1, y = 1
+        # ],
+        dtype=np.float,
+    )
+
+    return single_pol_images
+
+
+@njit
+def merge_polarizations(single_pol_images: np.ndarray):
+    data = np.zeros(
+        shape=(
+            single_pol_images[0].shape[0] * 2,
+            single_pol_images[0].shape[1] * 2,
+        )
+    )
+    data[0::2, 0::2] = single_pol_images[0]
+    data[0::2, 1::2] = single_pol_images[1]
+    data[1::2, 0::2] = single_pol_images[2]
+    data[1::2, 1::2] = single_pol_images[3]
+    return data
+
+
 def demosaic(image_data, option="adjacent"):
     """
     Returns a [4,n,m] array of polarized images, starting from a

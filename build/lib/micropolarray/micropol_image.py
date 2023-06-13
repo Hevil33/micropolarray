@@ -5,7 +5,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 from micropolarray.polarization_functions import AoLP, DoLP, pB
 from micropolarray.image import Image
-from micropolarray.processing.demosaic import demosaic
+from micropolarray.processing.demosaic import (
+    demosaic,
+    split_polarizations,
+    merge_polarizations,
+)
 from micropolarray.processing.rebin import (
     micropolarray_jitrebin,
     trim_to_match_2xbinning,
@@ -735,9 +739,14 @@ class MicroPolarizerArrayImage(Image):
 
     def rotate(self, angle: float) -> MicroPolarizerArrayImage:
         """Rotates an image of angle degrees, counter-clockwise."""
-        image = PILImage.fromarray(self.data)
-        image = image.rotate(angle)
-        data = np.asarray(image)
+
+        single_pols = split_polarizations(self.data)
+        for i in range(4):
+            image = PILImage.fromarray(single_pols[i])
+            image = image.rotate(angle)
+            single_pols[i] = np.asarray(image)
+        data = merge_polarizations(single_pols)
+
         return MicroPolarizerArrayImage(data)
 
     def mask_occulter(
