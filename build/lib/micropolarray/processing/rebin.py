@@ -4,27 +4,21 @@ from logging import info
 
 
 @njit
+def print_trimming_info(height, width, new_height, new_width):
+    print(
+        f"Data trimmed to fit rebinning: ({height}, {width}) -> ({new_height}, {new_width})"
+    )
+
+
+@njit
 def micropolarray_jitrebin(data, height, width, binning=2):
     """Fast rebinning function for the micropolarray image."""
     # Skip last row/columns until they are divisible by binning,
     # allows any binning
     trimmed = False
-    while width % (2 * binning):
-        width -= 2
-        trimmed = True
-    while height % (2 * binning):
-        height -= 2
-        trimmed = True
-    if trimmed:
-        print(
-            "Data trimmed to fit rebinning. Starting from new shape: (",
-            width,
-            ", ",
-            height,
-            ")",
-        )
-    new_width = int(width / binning)
-    new_height = int(height / binning)
+    new_height, new_width = trim_to_match_2xbinning(height, width, binning)
+    new_height = int(new_height / binning)
+    new_width = int(new_width / binning)
     new_data = np.zeros(shape=(new_height, new_width), dtype=np.double)
     for new_y in range(new_height):
         for new_x in range(new_width):
@@ -35,6 +29,7 @@ def micropolarray_jitrebin(data, height, width, binning=2):
                     i = (new_y - new_y % 2) * binning + y_scaler
                     j = (new_x - new_x % 2) * binning + x_scaler
                     new_data[new_y, new_x] += data[i, j]
+
     return new_data
 
 
@@ -61,23 +56,9 @@ def standard_rebin(data, binning: int) -> np.array:
 
 @njit
 def standard_jitrebin(data, height, width, binning=2):
-    trimmed = False
-    while height % (2 * binning):
-        height -= 2
-        trimmed = True
-    while width % (2 * binning):
-        width -= 2
-        trimmed = True
-    if trimmed:
-        print(
-            "Data trimmed to fit rebinning. Starting from new shape: (",
-            height,
-            ", ",
-            width,
-            ")",
-        )
-    new_height = int(height / binning)
-    new_width = int(width / binning)
+    new_height, new_width = trim_to_match_2xbinning(height, width, binning)
+    new_height = int(new_height / binning)
+    new_width = int(new_width / binning)
     new_data = np.zeros(shape=(new_height, new_width))
     for new_y in range(new_height):
         for new_x in range(new_width):
@@ -91,36 +72,31 @@ def standard_jitrebin(data, height, width, binning=2):
     return new_data
 
 
-def trim_to_match_2xbinning(
-    height: int, width: int, binning: int, verbose=True
-):
+@njit
+def trim_to_match_2xbinning(height: int, width: int, binning: int):
     """Deletes the last image pixels until superpixel binning is compatible with new dimensions
 
     Args:
         height (int): image height_
         width (int): image width
         binning (int): image binning
-        verbose (bool, optional): warns user of trimming. Defaults to True.
 
     Returns:
         int, int: image new height and width
     """
     trimmed = False
-    while width % (2 * binning):
-        width -= 2
+    new_width = width
+    new_height = height
+    while new_width % (2 * binning):
+        new_width -= 2
         trimmed = True
-    while height % (2 * binning):
-        height -= 2
+    while new_height % (2 * binning):
+        new_height -= 2
         trimmed = True
-    if trimmed and verbose:
-        info(
-            "Data trimmed to fit rebinning. Starting from new shape: (",
-            width,
-            ", ",
-            height,
-            ")",
-        )
-    return height, width
+    if trimmed:
+        print_trimming_info(height, width, new_height, new_width)
+
+    return new_height, new_width
 
 
 def trim_to_match_binning(height, width, binning, verbose=True):
@@ -136,18 +112,14 @@ def trim_to_match_binning(height, width, binning, verbose=True):
         int, int: image new height and width
     """
     trimmed = False
-    while width % (binning):
-        width -= 1
+    new_height = height
+    new_width = width
+    while new_width % (binning):
+        new_width -= 1
         trimmed = True
-    while height % (binning):
-        height -= 1
+    while new_height % (binning):
+        new_height -= 1
         trimmed = True
     if trimmed and verbose:
-        info(
-            "Data trimmed to fit rebinning. Starting from new shape: (",
-            width,
-            ", ",
-            height,
-            ")",
-        )
-    return height, width
+        print_trimming_info(height, width, new_height, new_width)
+    return new_height, new_width

@@ -127,7 +127,7 @@ def align_keywords_and_data(header, data, sun_center, platescale, binning=1):
     header["NAXIS2"] = data.shape[1]
     height = header["NAXIS1"]
     width = header["NAXIS2"]
-    rotation_angle = -10  # degrees
+    rotation_angle = -9  # degrees
     if binning > 1:
         platescale = platescale * binning
 
@@ -144,6 +144,7 @@ def align_keywords_and_data(header, data, sun_center, platescale, binning=1):
     header["CRVAL1"] = 0
     header["CRVAL2"] = 0
     header["CROTA2"] = rotation_angle
+
     y, x = sun_center
     # if year == 2021:
     #    y, x, _ = PolarCam().occulter_pos_2021

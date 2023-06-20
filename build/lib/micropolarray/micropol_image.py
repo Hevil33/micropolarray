@@ -207,7 +207,7 @@ class MicroPolarizerArrayImage(Image):
 
         return demodulated_image
 
-    def set_data_only(self, data: np.array = None, check_data=True) -> None:
+    def set_data_only(self, data: np.array = None) -> None:
         if data is None:
             data = self.data
         self.data = data
@@ -678,25 +678,38 @@ class MicroPolarizerArrayImage(Image):
     def rebin(self, binning: int) -> MicroPolarizerArrayImage:
         """Rebins the micropolarizer array image, binned each
         binningxbinning. Sum bins by default."""
-        if binning > 0:
-            rebinned_data = micropolarray_jitrebin(
-                np.array(self.data, dtype=np.double),
-                self.width,
-                self.height,
-                binning,
-            )
-            newimage = MicroPolarizerArrayImage(
-                rebinned_data,
-                angle_dic=self.angle_dic,
-                demosaic_mode=self.demosaic_mode,
-            )
-            newimage.header = self.header
-            if self._is_demosaiced:
-                newimage.demosaic()  # update demosaic
-            newimage._set_data_and_Stokes()
-            return newimage
-        else:
-            return self
+        if binning <= 0:
+            raise ValueError(f"Negative binning {binning}x{binning}")
+        rebinned_image = MicroPolarizerArrayImage(self)
+        rebinned_data = micropolarray_jitrebin(
+            np.array(rebinned_image.data, dtype=np.double),
+            rebinned_image.width,
+            rebinned_image.height,
+            binning,
+        )
+        rebinned_image.set_data_only(rebinned_data)
+
+        # find a better way to do this
+        rebinned_image.I.data = standard_jitrebin(
+            self.I.data, *self.I.data.shape, binning=binning
+        )
+        rebinned_image.Q.data = standard_jitrebin(
+            self.Q.data, *self.Q.data.shape, binning=binning
+        )
+        rebinned_image.U.data = standard_jitrebin(
+            self.U.data, *self.U.data.shape, binning=binning
+        )
+        rebinned_image.pB.data = standard_jitrebin(
+            self.pB.data, *self.pB.data.shape, binning=binning
+        )
+        rebinned_image.AoLP.data = standard_jitrebin(
+            self.AoLP.data, *self.AoLP.data.shape, binning=binning
+        )
+        rebinned_image.DoLP.data = standard_jitrebin(
+            self.DoLP.data, *self.DoLP.data.shape, binning=binning
+        )
+
+        return rebinned_image
 
     def congrid(
         self, newdim_y: int, newdim_x: int
@@ -773,11 +786,11 @@ class MicroPolarizerArrayImage(Image):
 
         relative_y = y / camera.h_image
         relative_x = x / camera.w_image
-        relative_r = (r + overoccult) / (camera.h_image + camera.w_image) * 2
+        relative_r = (r + overoccult) / camera.h_image
 
         abs_y = int(relative_y * self.height)
         abs_x = int(relative_x * self.width)
-        abs_r = int(relative_r * (self.width + self.height) / 2)
+        abs_r = int(relative_r * self.height)
 
         self.data = roi_from_polar(
             self.data,
@@ -821,8 +834,6 @@ class MicroPolarizerArrayImage(Image):
                     2 * np.max((param.data.shape[0], param.data.shape[0])),
                 ],
             )
-
-        return self
 
     # ----------------------------------------------------------------
     # ------------------------ OVERLOADING ---------------------------

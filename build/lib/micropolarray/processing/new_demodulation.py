@@ -25,7 +25,6 @@ from micropolarray.processing.chen_wan_liang_calibration import (
     ifov_jitcorrect,
 )
 
-
 # Shape of the demodulation matrix
 N_PIXELS_IN_SUPERPIX = 4
 N_MALUS_PARAMS = 3
@@ -106,6 +105,17 @@ class Demodulator:
 
         return new_demodulator
 
+    def rot90(self, k=1):
+        # NB: rotation could switch micropol positions inside superpixel, but for demo matrix all px in superpix are equal
+        for i in range(self.n_malus_params):
+            for j in range(self.n_pixels_in_superpix):
+                self.mij[i, j] = np.rot90(self.mij[i, j], k=k)
+
+    def flip(self, axis):
+        for i in range(self.n_malus_params):
+            for j in range(self.n_pixels_in_superpix):
+                self.mij[i, j] = np.flip(self.mij[i, j], axis=axis)
+
 
 def calculate_demodulation_tensor(
     polarizer_orientations,
@@ -115,7 +125,7 @@ def calculate_demodulation_tensor(
     output_dir,
     binning=1,
     occulter=False,
-    proc_per_side=4,
+    procs_grid=[4, 4],
     dark_filename=None,
     flat_filename=None,
 ):
@@ -123,12 +133,12 @@ def calculate_demodulation_tensor(
 
     Args:
         polarizer_orientations (list[float]): List containing the orientations of the incoming light for each image.
-        filenames_list (list[str]): List of input images filenames to read.
-        micropol_phases_previsions (list[float]): Previsions for the micropolarizer orientations required to initialize fit. Must include [0, 45, 90, -45].
+        filenames_list (list[str]): List of input images filenames to read. Must include [0, 45, 90, -45].
+        micropol_phases_previsions (list[float]): Previsions for the micropolarizer orientations required to initialize fit.
         gain (float): Detector [e-/DN], required to compute errors.
         binning (int, optional): Output matrices binning. Defaults to 1 (no binning). Be warned that binning matrices AFTER calculation is an incorrect operation.
         occulter (bool, optional): Whether to account for a central circle to exclude from calculation. Defaults to False.
-        proc_per_side (int, optional): number of processors per side n, parallelization will be done in a nxn grid. Defaults to 4 (16 procs in a 4x4 grid).
+        procs_grid ([int, int], optional): number of processors per side [Y, X], parallelization will be done in a Y x X grid. Defaults to [4,4] (16 procs in a 4x4 grid).
         dark_filename (str, optional): Dark image filename to correct input images. Defaults to None.
         flat_filename (str, optional): Flat image filename to correct input images. Defaults to None.
 
@@ -147,7 +157,7 @@ def calculate_demodulation_tensor(
     firstcall = True
     if not np.all(np.isin([0, 45, 90, -45], polarizer_orientations)):
         raise ValueError(
-            "All (0, 45, 90, -45) pols must be included in the polarizer orientation array"
+            "Each one among (0, 45, 90, -45) polarizations must be included in the polarizer orientation array"
         )  # for calculating normalizing_S
     # Have to be sorted
     polarizer_orientations, filenames_list = (
@@ -168,6 +178,7 @@ def calculate_demodulation_tensor(
 
     occulter_flag = np.ones_like(data)  # 0 if not a occulted px, 1 otherwise
     if occulter:
+        info("Cleaning occulter...")
         # Mean values from coronal observations 2022_12_03
         # (campagna_2022/mean_occulter_pos.py)
         occulter_y, occulter_x, occulter_r = PolarCam().occulter_pos_last
@@ -218,6 +229,7 @@ def calculate_demodulation_tensor(
 
     # collect data
     all_data_arr = [0.0] * len(filenames_list)
+    info("Collecting data from files...")
     for idx, filename in enumerate(filenames_list):
         with fits.open(filename) as file:
             all_data_arr[idx] = np.array(file[0].data, dtype=float)
@@ -242,16 +254,16 @@ def calculate_demodulation_tensor(
     all_data_arr = np.array(all_data_arr)
 
     if DEBUG:
-        proc_per_side = 1
+        procs_grid = [1, 1]
 
     # parallelize into a procs_per_size x procs_per_size grid
-    chunks_n_x = proc_per_side
-    chunks_n_y = proc_per_side
+    info("Splitting into subdomains to parallelize...")
+    chunks_n_y, chunks_n_x = procs_grid
     chunk_size_y = int(height / chunks_n_y)
     chunk_size_x = int(width / chunks_n_x)
     if (chunk_size_x % 2) or (chunk_size_y % 2):
         raise ValueError(
-            f"cant decompose into a {proc_per_side}x{proc_per_side} grid (odd side grid {chunk_size_x}x{chunk_size_x}). Try changing the number of processors."
+            f"cant decompose into a {procs_grid[0]}x{procs_grid[1]} grid (odd side grid {chunk_size_y}x{chunk_size_x}). Try changing the number of processors."
         )
     splitted_data = np.zeros(
         shape=(
@@ -280,6 +292,7 @@ def calculate_demodulation_tensor(
                 ]
             )  # shape = (chunks_n*chunks_n, chunk_size_y, chunk_size_x)
 
+    info("Calculating normalization...")
     S_max = np.zeros(
         shape=(height, width)
     )  # tk_sum = tk_0 + tk_45 + tk_90 + tk_45
@@ -362,10 +375,10 @@ def calculate_demodulation_tensor(
     starting_time = time.perf_counter()
     loc_time = time.strftime("%H:%M:%S  (%Y/%m/%d)", time.localtime())
     info(
-        f"Starting parallel calculation ({proc_per_side}x{proc_per_side}) processors"
+        f"Starting parallel calculation ({procs_grid[0]}x{procs_grid[1]}) processors"
     )
 
-    if proc_per_side > 1:
+    if procs_grid != [1, 1]:
         try:
             with mp.Pool(processes=chunks_n_y * chunks_n_x) as p:
                 result = p.starmap(
