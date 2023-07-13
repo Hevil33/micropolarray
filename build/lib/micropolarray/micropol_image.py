@@ -27,6 +27,7 @@ from micropolarray.processing.chen_wan_liang_calibration import (
 )
 from micropolarray.processing.nrgf import roi_from_polar
 from micropolarray.utils import mean_minus_std, mean_plus_std, timer
+from micropolarray.processing.shift import shift
 
 
 @dataclass
@@ -769,7 +770,7 @@ class MicroPolarizerArrayImage(Image):
         r: int = PolarCam().occulter_pos_last[2],
         overoccult: int = 0,
         camera=PolarCam(),
-    ):
+    ) -> None:
         """Masks occulter for all image parameters
 
         Args:
@@ -780,7 +781,7 @@ class MicroPolarizerArrayImage(Image):
             camera (_type_, optional): Camera image type. Defaults to PolarCam().
 
         Returns:
-            _type_: _description_
+            None
         """
         # y, x, r = camera.occulter_pos_last
 
@@ -834,6 +835,22 @@ class MicroPolarizerArrayImage(Image):
                     2 * np.max((param.data.shape[0], param.data.shape[0])),
                 ],
             )
+
+    def shift(self, y: int, x: int) -> MicroPolarizerArrayImage:
+        """Shifts image by y, x pixels and fills with 0 the remaining space. Positive numbers for up/right shift and negative for down/left shift.
+
+        Args:
+            y (int): vertical shift in pix
+            x (int): horizontal shift in pix
+
+        Returns:
+            MicroPolarizerArrayImage: shifted image copied from the original
+        """
+        newdata = shift(self.data, y, x)
+        newimage = MicroPolarizerArrayImage(self)
+        newimage._set_data_and_Stokes(newdata)
+
+        return newimage
 
     # ----------------------------------------------------------------
     # ------------------------ OVERLOADING ---------------------------

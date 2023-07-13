@@ -128,6 +128,7 @@ def calculate_demodulation_tensor(
     procs_grid=[4, 4],
     dark_filename=None,
     flat_filename=None,
+    normalizing_S=None,
 ):
     """Calculates the demodulation tensor images and saves them. Requires a set of images with different polarizations to fit a Malus curve model.
 
@@ -141,6 +142,7 @@ def calculate_demodulation_tensor(
         procs_grid ([int, int], optional): number of processors per side [Y, X], parallelization will be done in a Y x X grid. Defaults to [4,4] (16 procs in a 4x4 grid).
         dark_filename (str, optional): Dark image filename to correct input images. Defaults to None.
         flat_filename (str, optional): Flat image filename to correct input images. Defaults to None.
+        normalizing_S (float, optional): maximum signal used to normalize single pixel signal. Defaults to None.
 
     Raises:
         ValueError: Raised if any among [0, 45, 90, -45] is not included in the input polarizations.
@@ -292,52 +294,55 @@ def calculate_demodulation_tensor(
                 ]
             )  # shape = (chunks_n*chunks_n, chunk_size_y, chunk_size_x)
 
-    info("Calculating normalization...")
-    S_max = np.zeros(
-        shape=(height, width)
-    )  # tk_sum = tk_0 + tk_45 + tk_90 + tk_45
-    for pol, image in zip(polarizer_orientations, all_data_arr):
-        if pol in [0, 90, 45, -45]:
-            S_max += 0.5 * image
-    # Normalizing S, has a spike of which maximum is taken
-    bins = 1000
-    histo = np.histogram(S_max, bins=bins)
-    maxvalue = np.max(histo[0])
-    index = np.where(histo[0] == maxvalue)[0][0]
-    normalizing_S = (
-        histo[1][index] + histo[1][index + 1] + histo[1][index - 1]
-    ) / 3
-    # normalizing_S = np.max(S_max) # old
+    if normalizing_S is None:
+        info("Calculating normalization...")
+        S_max = np.zeros(
+            shape=(height, width)
+        )  # tk_sum = tk_0 + tk_45 + tk_90 + tk_45
+        for pol, image in zip(polarizer_orientations, all_data_arr):
+            if pol in [0, 90, 45, -45]:
+                S_max += 0.5 * image
+        # Normalizing S, has a spike of which maximum is taken
+        bins = 1000
+        histo = np.histogram(S_max, bins=bins)
+        maxvalue = np.max(histo[0])
+        index = np.where(histo[0] == maxvalue)[0][0]
+        normalizing_S = (
+            histo[1][index] + histo[1][index + 1] + histo[1][index - 1]
+        ) / 3
+        # normalizing_S = np.max(S_max) # old
 
-    # ----------------------------------------------
-    # fit gaussian to S for normalization signal
-    def gauss(x, norm, x_0, sigma):
-        return norm * np.exp(-((x - x_0) ** 2) / (4 * sigma**2))
+        # ----------------------------------------------
+        # fit gaussian to S for normalization signal
+        def gauss(x, norm, x_0, sigma):
+            return norm * np.exp(-((x - x_0) ** 2) / (4 * sigma**2))
 
-    hist_roi = 10  # bins around max value
-    xvalues = np.array(histo[1])[index - hist_roi : index + hist_roi]
-    yvalues = np.array(histo[0])[index - hist_roi : index + hist_roi]
-    yvalues_sum = np.sum(yvalues)
-    yvalues = yvalues / yvalues_sum
-    xvalues = np.array(
-        [value + (xvalues[1] - xvalues[0]) / 2 for value in xvalues]
-    )  # shift each bin to center
-    prediction = [
-        yvalues[int(len(yvalues) / 2)],  # normalization
-        xvalues[int(len(xvalues) / 2)],  # center
-        xvalues[int(len(xvalues) / 2) + int(hist_roi / 2)]
-        - xvalues[int(len(xvalues) / 2)],  # sigma
-    ]
-    params, cov = curve_fit(
-        gauss,
-        xvalues,
-        yvalues,
-        prediction,
-    )
-    normalizing_S = params[1] + 4 * params[2]  # center of gaussian + 2sigma
-    # 3sigma -> P = 2.7e-3 outliers
-    # 4sigma -> P = 6.3e-5 outliers
-    # ----------------------------------------------
+        hist_roi = 10  # bins around max value
+        xvalues = np.array(histo[1])[index - hist_roi : index + hist_roi]
+        yvalues = np.array(histo[0])[index - hist_roi : index + hist_roi]
+        yvalues_sum = np.sum(yvalues)
+        yvalues = yvalues / yvalues_sum
+        xvalues = np.array(
+            [value + (xvalues[1] - xvalues[0]) / 2 for value in xvalues]
+        )  # shift each bin to center
+        prediction = [
+            yvalues[int(len(yvalues) / 2)],  # normalization
+            xvalues[int(len(xvalues) / 2)],  # center
+            xvalues[int(len(xvalues) / 2) + int(hist_roi / 2)]
+            - xvalues[int(len(xvalues) / 2)],  # sigma
+        ]
+        params, cov = curve_fit(
+            gauss,
+            xvalues,
+            yvalues,
+            prediction,
+        )
+        normalizing_S = (
+            params[1] + 4 * params[2]
+        )  # center of gaussian + 2sigma
+        # 3sigma -> P = 2.7e-3 outliers
+        # 4sigma -> P = 6.3e-5 outliers
+        # ----------------------------------------------
 
     # Debug
     if False:

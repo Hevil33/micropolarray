@@ -64,14 +64,16 @@ def nparr_from_binary(filename):
     return newarr
 
 
-def convert_set(filenames, new_filename):
-    """Sums a set of filenames and converts them to one fits file.
+def convert_set(filenames, new_filename, height, width):
+    """ANTARTICOR ONLY: Sums a set of filenames and converts them to one fits file.
+
 
     Args:
         filenames (list): list of file names to be summed before being converted
         new_filename (str): new .fits file name
     """
-    if new_filename.split(".")[-1] != "fits":
+    abs_new_filename = os.path.abspath(new_filename)
+    if abs_new_filename.split(".")[-1] != "fits":
         raise ValueError(
             "Trying to save a .fits file to .bin, check new filename"
         )
@@ -80,7 +82,7 @@ def convert_set(filenames, new_filename):
             filenames,
         ]
     images_n = len(filenames)
-    arr = np.zeros(shape=(1952, 1952))
+    arr = np.zeros(shape=(height, width))
     for filename in tqdm.tqdm(filenames):
         arr += nparr_from_binary(filename) / images_n
     hdu = fits.PrimaryHDU(data=arr)
@@ -91,7 +93,7 @@ def convert_set(filenames, new_filename):
         str(date_and_time),
         "Datetime conversion from bin to fits file (Dome C timezone).",
     )
-    hdu.writeto(new_filename, overwrite=True)
+    hdu.writeto(abs_new_filename, overwrite=True)
 
 
 def convert_rawfile_to_fits(
@@ -114,7 +116,10 @@ def convert_rawfile_to_fits(
         buffer = file.read()
     data = np.ndarray(shape=(height, width), dtype="<u2", buffer=buffer)
     HDU = fits.PrimaryHDU(data=data)
-    new_filename = "/".join(filename.split(".")[:-1]) + ".fits"
+    filename = os.path.abspath(
+        filename
+    )  # prevents bug when "../" is in filename
+    new_filename = os.path.pathsep.join(filename.split(".")[:-1]) + ".fits"
     HDU.writeto(new_filename, overwrite=True)
     info(f'Image successfully saved to "{new_filename}".')
 

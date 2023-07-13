@@ -44,7 +44,9 @@ class Image:
         for idx, filename in enumerate(filenames_list):
             with fits.open(filename) as hul:
                 if idx == 0:
-                    combined_data = hul[0].data
+                    combined_data = hul[0].data / (
+                        1 + int(averageimages) * (filenames_len - 1)
+                    )
                     self.header = hul[0].header
                 else:
                     if print_info_message:

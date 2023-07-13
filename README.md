@@ -48,3 +48,11 @@ demosaiced_image = image.demosaic()
 binned_image = image.rebin(binning=4)  # binned 4x4 image
 
 ```
+
+If demodulation matrices are available, it is easy to get demodulated images
+
+```
+
+demodulator = ml.Demodulator(demodulation_tensor_path)
+
+demo_image = image.demodulate(demodulator) # This image is now demodulated

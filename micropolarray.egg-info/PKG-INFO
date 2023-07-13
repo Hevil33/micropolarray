@@ -1,10 +1,96 @@
-Metadata-Version: 1.0
+Metadata-Version: 2.1
 Name: micropolarray
-Version: 1.0.beta
-Summary: Micro-Polarizer array and PolarCam images processing libraries
+Version: 1.0.0
+Summary: micropolarizer array data utilities
 Home-page: https://github.com/Hevil33/micropolarray_master
 Author: Hervé Haudemand
-Author-email: herveh96@hotmail.it
-License: UNKNOWN
-Description: UNKNOWN
-Platform: UNKNOWN
+Author-email: Herve Haudemand <herve.haudemand@inaf.it>
+License: BSD 3-Clause License
+        
+        Copyright (c) 2023, Hevil33
+        
+        Redistribution and use in source and binary forms, with or without
+        modification, are permitted provided that the following conditions are met:
+        
+        1. Redistributions of source code must retain the above copyright notice, this
+           list of conditions and the following disclaimer.
+        
+        2. Redistributions in binary form must reproduce the above copyright notice,
+           this list of conditions and the following disclaimer in the documentation
+           and/or other materials provided with the distribution.
+        
+        3. Neither the name of the copyright holder nor the names of its
+           contributors may be used to endorse or promote products derived from
+           this software without specific prior written permission.
+        
+        THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+        AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+        IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+        DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+        FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+        DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+        SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+        CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+        OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+        OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+        
+Project-URL: Homepage, https://github.com/Hevil33/micropolarray_master
+Keywords: micropolarizer,polarcam,polarization
+Classifier: License :: OSI Approved :: BSD License
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3
+Requires-Python: >=3.9
+Description-Content-Type: text/markdown
+Provides-Extra: dev
+License-File: LICENSE
+
+# micropolarray
+
+Python module for loading and using micropolarizer array and polarcam images.
+
+
+## Installation 
+
+Run the following command inside a terminal.
+If an error message about wheels appear, launch it again.
+
+```
+pip install git+https://github.com/Hevil33/micropolarray_master
+```
+
+You can run the `test.py` script to verify the correct installation of the micopolarray package.
+
+
+## Usage
+
+```
+import micropolarray
+import numpy as np
+
+
+# Can initialize images from np arrays or fitsfilenames.
+# If multiple filenames are used then the average is taken 
+
+
+micropolimage_from_file = micropolarray.MicroPolarizerArrayImage("test_data/image.fits.fits")
+
+micropolimage_from_nparray = micropolarray.MicroPolarizerArrayImage(np.ones(shape=(30,30)))
+
+image = micropolarray.MicroPolarizerArrayImage(image)
+
+```
+
+Multiple useful members can be used to get polarization parameters
+
+```
+angle_of_linear_polarization = image.AoLP.data  # Get the angle of linear polarization
+
+Stokes_I, Stokes_Q, Stokes_U = self.Stokes_vec  # Get the stokes vector components as np.ndarray
+
+pol_0_image = image.single_pol_subimages[image.angle_dic[0]]
+
+demosaiced_image = image.demosaic() 
+
+binned_image = image.rebin(binning=4)  # binned 4x4 image
+
+```
