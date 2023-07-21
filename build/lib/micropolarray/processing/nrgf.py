@@ -170,11 +170,10 @@ def find_occulter_position(
         threshold (float, optional): Threshold for the algo method. Defaults to 4.0.
 
     Raises:
-        ValueError: _description_
-        ValueError: _description_
+        UnboundLocalError: couldn't converge
 
     Returns:
-        _type_: _description_
+        list: occulter y, occulter x, occulter radius
     """
     # works if occulter is not entirely inside a single quadrant, fits
     # a sigmoid to find occulter bounds
@@ -187,7 +186,7 @@ def find_occulter_position(
 
     occulter_bounds = [0.0] * 4
 
-    show = False
+    show = True
     if show:
         fig, ax = plt.subplots(2, 2, constrained_layout=True)
         ax = ax.ravel()
@@ -214,10 +213,12 @@ def find_occulter_position(
             x = np.arange(0, int(len(half_array / 2)), 1)
 
             params = [
+                # np.mean(half_array[int(len(half_array) / 2) :]),
                 np.max(half_array),
+                # np.mean(half_array[: int(len(half_array) / 2)]),
                 np.min(half_array),
                 1.0,
-                -data.shape[0] / 4,
+                -len(half_array) / 2,
             ]
             params, pcov = curve_fit(sigmoid, x, half_array, params)
             occulter_bounds[idx] = params[3]
@@ -291,6 +292,18 @@ def find_occulter_position(
     )
 
     return [y_center, x_center, radius]
+
+
+def remove_outliers_simple(data):
+    """EXPERIMENTAL DO NOT USE, for improving fitting on occulter position"""
+    outliers = []
+    for i, element in enumerate(data[1:-1]):
+        mean = np.mean([data[i], data[i + 1]])
+        std = np.std([data[i], data[i + 1]])
+        if (element > (mean + 3 * std)) or (element < (mean - 3 * std)):
+            outliers.append(i + 1)
+    data = np.delete(data, outliers)
+    return data
 
 
 def sigmoid(x, max, min, slope, intercept):

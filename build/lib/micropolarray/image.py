@@ -161,7 +161,8 @@ class Image:
         """Shows image data with colorbar."""
         data_to_plot = self.data
         data_ratio = data_to_plot.shape[0] / data_to_plot.shape[1]
-        image_fig, imageax = plt.subplots(figsize=(9, 9))
+        # image_fig, imageax = plt.subplots(figsize=(9, 9))
+        image_fig, imageax = plt.subplots(dpi=200)
         if vmin is None:
             vmin = np.min(data_to_plot)
         if vmax is None:
@@ -181,7 +182,7 @@ class Image:
 
     def show_histogram(self, bins: int = 1000):
         """Shows a histogram of the image"""
-        fig, ax = plt.subplots(figsize=(9, 9))
+        fig, ax = plt.subplots(dpi=200, constrained_layout=True)
         histo = np.histogram(self.data, bins=bins)
         ax.stairs(*histo)
         ax.set_title("Image histogram", color="black")

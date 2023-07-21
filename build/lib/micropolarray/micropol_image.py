@@ -48,6 +48,11 @@ class PolParam:
     fix_data: bool
 
 
+def set_default_angles(camera):
+    MicroPolarizerArrayImage(np.zeros(shape=(2, 2)))
+    MicroPolarizerArrayImage.default_angle_dic = camera.angle_dic
+
+
 class MicroPolarizerArrayImage(Image):
     """Micro-polarizer array image class. Can be initialized from a 2d array, a list of 1 or more file names (use the boolean keyword averageimages to select if sum or average is taken) or another MicroPolarizerArrayImage. Dark and flat micropolarray images can also be provided to automatically correct the result."""
 
@@ -68,10 +73,10 @@ class MicroPolarizerArrayImage(Image):
         self._binning = 1
         self._flat_subtracted = False
         self._dark_subtracted = False
-        if angle_dic is None:
+        if angle_dic is None or not MicroPolarizerArrayImage.first_call:
             if MicroPolarizerArrayImage.first_call:
                 warning(
-                    f"No dictionary provided for micropolarizer orientations, defaulting to {MicroPolarizerArrayImage.default_angle_dic}\n"
+                    f"Default micropolarizer orientation dictionary defaults to {MicroPolarizerArrayImage.default_angle_dic}, set it via set_default_angles(camera)\n"
                 )
                 MicroPolarizerArrayImage.first_call = False
             angle_dic = MicroPolarizerArrayImage.default_angle_dic
@@ -423,9 +428,7 @@ class MicroPolarizerArrayImage(Image):
         - Polarized brightness
         """
         data_ratio = self.data.shape[0] / self.data.shape[1]
-        image_fig, imageax = plt.subplots(
-            figsize=(10, 9), constrained_layout=True
-        )
+        image_fig, imageax = plt.subplots(dpi=200, constrained_layout=True)
         mappable = imageax.imshow(
             self.data,
             cmap=cmap,
@@ -446,7 +449,6 @@ class MicroPolarizerArrayImage(Image):
         stokes_fig, stokesax = plt.subplots(
             2, 3, figsize=(14, 9), constrained_layout=True
         )
-        # stokes_fig.tight_layout()
 
         stokesax = stokesax.ravel()
         for i, stokes in enumerate(stokesax):
@@ -521,7 +523,7 @@ class MicroPolarizerArrayImage(Image):
 
     def show_pol_param(self, polparam: PolParam, cmap="Greys_r"):
         data_ratio = self.data.shape[0] / self.data.shape[1]
-        fig, ax = plt.subplots(figsize=(9, 9))
+        fig, ax = plt.subplots(dpi=200)
         mappable = ax.imshow(
             polparam.data,
             cmap=cmap,
@@ -880,5 +882,5 @@ class MicroPolarizerArrayImage(Image):
         if type(self) is type(second):
             newdata = np.where(second.data != 0, self.data / second.data, 4096)
         else:
-            newdata = np.where(second > 0, self.data / second, 4096)
+            newdata = np.where(second != 0, self.data / second, 4096)
         return MicroPolarizerArrayImage(newdata, angle_dic=self.angle_dic)
