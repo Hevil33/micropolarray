@@ -1,6 +1,8 @@
 import numpy as np
 from micropolarray.processing.nrgf import roi_from_polar
 
+# TODO: aggiungere tutti i bei dati qua, rendere le camere personalizzabili (caricare dark da cartelle e cose cosi)
+
 
 class Camera:
     def __init__(self):

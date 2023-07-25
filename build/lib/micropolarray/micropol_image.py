@@ -27,7 +27,7 @@ from micropolarray.processing.chen_wan_liang_calibration import (
 )
 from micropolarray.processing.nrgf import roi_from_polar
 from micropolarray.utils import mean_minus_std, mean_plus_std, timer
-from micropolarray.processing.shift import shift
+from micropolarray.processing.shift import shift, shift_micropol
 
 
 @dataclass
@@ -258,16 +258,7 @@ class MicroPolarizerArrayImage(Image):
         self._update_stokes_derived_internal_dataclasses()
 
     def _update_single_pol_subimages(self) -> None:
-        single_pol_subimages = np.array(
-            [self.data[j::2, i::2] for j in range(2) for i in range(2)],
-            # [
-            #    self.data[0::2, 0::2], # x= 0, y = 0
-            #    self.data[0::2, 1::2], # x= 1, y = 0
-            #    self.data[1::2, 0::2], # x= 0, y = 1
-            #    self.data[1::2, 1::2], # x= 1, y = 1
-            # ],
-            dtype=np.float,
-        )
+        single_pol_subimages = split_polarizations(self.data)
 
         self.single_pol_subimages = single_pol_subimages
         self.pol0 = PolParam(
@@ -849,6 +840,7 @@ class MicroPolarizerArrayImage(Image):
             MicroPolarizerArrayImage: shifted image copied from the original
         """
         newdata = shift(self.data, y, x)
+        # newdata = shift_micropol(self.data, y, x)
         newimage = MicroPolarizerArrayImage(self)
         newimage._set_data_and_Stokes(newdata)
 

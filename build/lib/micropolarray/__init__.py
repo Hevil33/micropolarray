@@ -17,6 +17,7 @@ from micropolarray.processing.nrgf import (
 from micropolarray.processing.convert import (
     convert_set,
     convert_rawfile_to_fits,
+    average_rawfiles_to_fits,
 )
 from micropolarray.processing.demosaic import demosaic
 from micropolarray.utils import (
