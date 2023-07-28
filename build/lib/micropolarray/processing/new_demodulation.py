@@ -157,10 +157,14 @@ def calculate_demodulation_tensor(
     # polarizations = array of polarizer orientations
     # filenames_list = list of filenames
     firstcall = True
-    if not np.all(np.isin([0, 45, 90, -45], polarizer_orientations)):
+    if (normalizing_S is None) and (
+        not np.all(np.isin([0, 45, 90, -45], polarizer_orientations))
+    ):
         raise ValueError(
             "Each one among (0, 45, 90, -45) polarizations must be included in the polarizer orientation array"
         )  # for calculating normalizing_S
+    else:
+        normalizing_S *= binning * binning
     # Have to be sorted
     polarizer_orientations, filenames_list = (
         list(t)
@@ -350,13 +354,13 @@ def calculate_demodulation_tensor(
         histo_0 = np.histogram(all_data_arr[index], bins=1000)
         fig, ax = plt.subplots(figsize=(9, 9))
         ax.stairs(histo_0[0], histo_0[1], label="sample image")
-        ax.stairs(histo[0], histo[1], label=f"S, max = {np.max(S_max)}")
+        # ax.stairs(histo[0], histo[1], label=f"S, max = {np.max(S_max)}")
         ax.axvline(normalizing_S, color="red", label="normalizing_S")
-        ax.plot(
-            xvalues,
-            gauss(xvalues, params[0] * yvalues_sum, params[1], params[2]),
-            label="Fitted curve for normalizing S",
-        )
+        # ax.plot(
+        #    xvalues,
+        #    gauss(xvalues, params[0] * yvalues_sum, params[1], params[2]),
+        #    label="Fitted curve for normalizing S",
+        # )
         ax.set_title(f"Prepol at {polarizer_orientations[index]} deg")
         ax.set_xlabel("S [DN]")
         ax.set_ylabel("Counts")
@@ -614,7 +618,7 @@ def compute_demodulation_by_chunk(
                             yerr=sigma_pix[:, i],
                             xerr=[1.0] * len(polarizations_rad),
                             label=f"points {i}",
-                            fmt="None",
+                            fmt="k-",
                             color=colors[i],
                         )
                         min = np.min(polarizations_rad)

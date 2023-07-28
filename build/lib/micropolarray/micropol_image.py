@@ -217,6 +217,8 @@ class MicroPolarizerArrayImage(Image):
         if data is None:
             data = self.data
         self.data = data
+        self.height = data.shape[0]
+        self.width = data.shape[1]
         if (data.shape[0] % 2) or (data.shape[1] % 2):
             warning(
                 "Odd number of pixels is incompatible"
@@ -677,8 +679,7 @@ class MicroPolarizerArrayImage(Image):
         rebinned_image = MicroPolarizerArrayImage(self)
         rebinned_data = micropolarray_jitrebin(
             np.array(rebinned_image.data, dtype=np.double),
-            rebinned_image.width,
-            rebinned_image.height,
+            *rebinned_image.data.shape,
             binning,
         )
         rebinned_image.set_data_only(rebinned_data)
@@ -830,7 +831,7 @@ class MicroPolarizerArrayImage(Image):
             )
 
     def shift(self, y: int, x: int) -> MicroPolarizerArrayImage:
-        """Shifts image by y, x pixels and fills with 0 the remaining space. Positive numbers for up/right shift and negative for down/left shift.
+        """Shifts image by y, x pixels and fills with 0 the remaining space. Positive numbers for up/right shift and negative for down/left shift. Image is split into polarizations, each one is shifted, then they are merged again.
 
         Args:
             y (int): vertical shift in pix
@@ -839,8 +840,8 @@ class MicroPolarizerArrayImage(Image):
         Returns:
             MicroPolarizerArrayImage: shifted image copied from the original
         """
-        newdata = shift(self.data, y, x)
-        # newdata = shift_micropol(self.data, y, x)
+        # newdata = shift(self.data, y, x)
+        newdata = shift_micropol(self.data, y, x)
         newimage = MicroPolarizerArrayImage(self)
         newimage._set_data_and_Stokes(newdata)
 

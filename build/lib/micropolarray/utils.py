@@ -73,6 +73,18 @@ def mean_plus_std(data: np.array, stds_n: int = 1) -> float:
     return np.mean(data) + stds_n * np.std(data)
 
 
+def median_minus_std(data: np.array, stds_n: int = 1) -> float:
+    median = np.median(data)
+    median_std = np.median(np.abs(data - median))
+    return median - stds_n * median_std
+
+
+def median_plus_std(data: np.array, stds_n: int = 1) -> float:
+    median = np.median(data)
+    median_std = np.median(np.abs(data - median))
+    return median + stds_n * median_std
+
+
 def normalize2pi(angles_list):
     if type(angles_list) is not list:
         angles_list = [

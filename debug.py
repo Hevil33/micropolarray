@@ -5,18 +5,22 @@ import matplotlib.pyplot as plt
 import micropolarray as ml
 import numpy as np
 from micropolarray.processing.nrgf import remove_outliers_simple
+from scipy.ndimage.filters import gaussian_filter
 
 
 def main():
-    data = np.full((12, 12), 3)
+    image = ml.MicroPolarizerArrayImage("./.fits")
 
-    data = ml.MicroPolarizerArrayImage(data)
+    image.show(
+        vmin=ml.median_minus_std(image.data),
+        vmax=ml.median_plus_std(image.data),
+    )
 
-    data.show()
-    shifted = data.shift(1, 1)
+    blurred = gaussian_filter(image.data, sigma=17)
 
-    shifted.show()
-    plt.show()
+    occulter_pos = ml.find_occulter_position(blurred)
+
+    print(occulter_pos)
 
 
 if __name__ == "__main__":

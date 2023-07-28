@@ -24,6 +24,8 @@ from micropolarray.utils import (
     sigma_DN,
     mean_minus_std,
     mean_plus_std,
+    median_minus_std,
+    median_plus_std,
     get_Bsun_units,
     get_malus_normalization,
 )

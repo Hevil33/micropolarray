@@ -17,6 +17,16 @@ def shift(data: np.ndarray, y: int, x: int):
 
 
 def shift_micropol(data: np.ndarray, y: int, x: int):
+    """Splits the image into single polarizations, shifts each of them by y,x and then merges them back.
+
+    Args:
+        data (np.ndarray): array to shift
+        y (int): vertical shift (positive inside the image)
+        x (int): horizontal shift (positive inside the image)
+
+    Returns:
+        np.ndarray: shifted array
+    """
     single_pol_subimages = split_polarizations(data)
     new_single_pol_subimages = np.zeros_like(single_pol_subimages)
 
