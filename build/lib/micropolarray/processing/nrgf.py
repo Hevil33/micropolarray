@@ -186,7 +186,7 @@ def find_occulter_position(
 
     occulter_bounds = [0.0] * 4
 
-    show = True
+    show = False
     if show:
         fig, ax = plt.subplots(2, 2, constrained_layout=True)
         ax = ax.ravel()
@@ -199,7 +199,7 @@ def find_occulter_position(
 
     if method == "sigmoid":
         for idx, half_array in enumerate(
-            [values_x_0, values_x_1, values_y_0, values_y_1]
+            [values_y_0, values_y_1, values_x_0, values_x_1]
         ):
             # Artificial plateau after maximum
             # max_half_array = np.max(half_array)
@@ -217,8 +217,8 @@ def find_occulter_position(
                 np.max(half_array),
                 # np.mean(half_array[: int(len(half_array) / 2)]),
                 np.min(half_array),
-                1.0,
-                -len(half_array) / 2,
+                0.5,
+                len(half_array) / 2,
             ]
             params, pcov = curve_fit(sigmoid, x, half_array, params)
             occulter_bounds[idx] = params[3]
@@ -232,10 +232,10 @@ def find_occulter_position(
                 axis.set_ylabel("DN")
 
         try:
-            occulter_bounds[0] = half_x + occulter_bounds[0]
-            occulter_bounds[1] = half_x - occulter_bounds[1]
-            occulter_bounds[2] = half_y + occulter_bounds[2]
-            occulter_bounds[3] = half_y - occulter_bounds[3]
+            occulter_bounds[0] = half_y - occulter_bounds[0]
+            occulter_bounds[1] = half_y + occulter_bounds[1]
+            occulter_bounds[2] = half_x - occulter_bounds[2]
+            occulter_bounds[3] = half_x + occulter_bounds[3]
         except UnboundLocalError:
             raise ValueError("Edges not found, try to change the threshold")
 
@@ -269,10 +269,10 @@ def find_occulter_position(
                     occulter_end_y = half_y + i
                     break
         try:
-            occulter_bounds[0] = occulter_start_x
-            occulter_bounds[1] = occulter_end_x
-            occulter_bounds[2] = occulter_start_y
-            occulter_bounds[3] = occulter_end_y
+            occulter_bounds[0] = occulter_start_y
+            occulter_bounds[1] = occulter_end_y
+            occulter_bounds[2] = occulter_start_x
+            occulter_bounds[3] = occulter_end_x
         except UnboundLocalError:
             raise ValueError(
                 "ERROR: occulter edges not found, try to change the threshold"
@@ -285,8 +285,8 @@ def find_occulter_position(
     radius = int(
         np.mean(
             [
-                (occulter_bounds[1] - occulter_bounds[0]) / 2,
-                (occulter_bounds[3] - occulter_bounds[2]) / 2,
+                np.abs(occulter_bounds[1] - occulter_bounds[0]) / 2,
+                np.abs(occulter_bounds[3] - occulter_bounds[2]) / 2,
             ]
         )
     )
@@ -335,5 +335,5 @@ def reject_outliers(data, m=2.0):
 
 
 def sigmoid(x, max, min, slope, intercept):
-    sigma = slope * (x + intercept)
+    sigma = slope * (x - intercept)
     return max * np.exp(sigma) / (1 + np.exp(sigma)) + min
