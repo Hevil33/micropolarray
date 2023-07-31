@@ -55,8 +55,8 @@ class Camera:
 
 class Kasi(Camera):
     def __init__(self):
-        self.angle_dic = {-45: 0, 0: 1, 90: 2, 45: 3}  # old
-        # self.angle_dic = {0: 0, 45: 1, -45: 2, 90: 3} # new
+        # self.angle_dic = {-45: 0, 0: 1, 90: 2, 45: 3}  # old
+        self.angle_dic = {0: 0, 45: 1, -45: 2, 90: 3}  # new
         self.linearity_range = [0.0, 2500.0]
         self.PTC = 2.64  # [e-/ADU]
         self.readout_noise = 10  # [e-]

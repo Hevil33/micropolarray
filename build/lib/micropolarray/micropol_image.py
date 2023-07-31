@@ -76,7 +76,7 @@ class MicroPolarizerArrayImage(Image):
         if angle_dic is None or not MicroPolarizerArrayImage.first_call:
             if MicroPolarizerArrayImage.first_call:
                 warning(
-                    f"Default micropolarizer orientation dictionary defaults to {MicroPolarizerArrayImage.default_angle_dic}, set it via set_default_angles(camera)\n"
+                    f"Micropolarizer orientation dictionary defaults to {MicroPolarizerArrayImage.default_angle_dic}, set it via set_default_angles(camera)\n"
                 )
                 MicroPolarizerArrayImage.first_call = False
             angle_dic = MicroPolarizerArrayImage.default_angle_dic
@@ -211,6 +211,7 @@ class MicroPolarizerArrayImage(Image):
         demodulated_image._update_stokes_derived_internal_dataclasses()
         demodulated_image._is_demodulated = True
 
+        info("Image correctly demodulated")
         return demodulated_image
 
     def set_data_only(self, data: np.array = None) -> None:

@@ -35,6 +35,7 @@ class Image:
         filenames_list = (
             [filenames] if type(filenames) is not list else filenames
         )
+
         filenames_len = len(filenames_list)
         if filenames_len == 0:
             raise NameError("Can't load files, empty filenames list.")
@@ -42,6 +43,10 @@ class Image:
 
         print_info_message = True
         for idx, filename in enumerate(filenames_list):
+            if ".raw" in filenames_list:
+                raise NameError(
+                    "Can't load a raw file, convert it to fits first."
+                )  # to fix
             with fits.open(filename) as hul:
                 if idx == 0:
                     combined_data = hul[0].data / (
