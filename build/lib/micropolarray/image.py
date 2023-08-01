@@ -158,6 +158,12 @@ class Image:
         hdu.writeto(filename, overwrite=True)
         info(f'Image successfully saved to "{filename}".')
 
+    def save_as_raw(self, filename: str):
+        print(self.data.shape)
+        if not ".raw" in filename:
+            raise ValueError("Filename must have .raw extension")
+        self.data.astype("int16").tofile(filename)
+
     # ----------------------------------------------------------------
     # ------------------------------ SHOW ----------------------------
     # ----------------------------------------------------------------

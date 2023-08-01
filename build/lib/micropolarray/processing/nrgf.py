@@ -240,7 +240,7 @@ def find_occulter_position(
             raise ValueError("Edges not found, try to change the threshold")
 
     elif method == "algo":
-        # OLD, ALGORITM INSTEAD OF FITTING
+        # OLD, ALGORITM INSTEAD OF FITTING - less stable
         min_points = 5
         threshold = threshold
 
