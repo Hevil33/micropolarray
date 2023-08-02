@@ -5,8 +5,19 @@ from logging import info
 
 @njit
 def print_trimming_info(height, width, new_height, new_width):
+    # print(
+    #    f"Data trimmed to fit rebinning: ({height}, {width}) -> ({new_height}, {new_width})"
+    # )
     print(
-        f"Data trimmed to fit rebinning: ({height}, {width}) -> ({new_height}, {new_width})"
+        "Data trimmed to fit rebinning: (",
+        height,
+        ",",
+        width,
+        ") -> (",
+        new_height,
+        ",",
+        new_width,
+        ")",
     )
 
 
