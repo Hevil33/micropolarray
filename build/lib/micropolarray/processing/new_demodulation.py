@@ -63,11 +63,13 @@ class Demodulator:
             dtype=float,
         )
 
+        matches = 0
         for filename in filenames_list:
             if (
                 re.search("[Mm][0-9]{2}", filename.split(os.path.sep)[-1])
                 is not None
             ):  # Exclude files not matching m/Mij
+                matches += 1
                 i, j = re.search(
                     "[Mm][0-9]{2}", filename.split(os.path.sep)[-1]
                 ).group()[
@@ -77,6 +79,10 @@ class Demodulator:
                 j = int(j)
                 with fits.open(filename) as hul:
                     Mij[i, j] = hul[0].data
+        if matches != 12:
+            raise ValueError(
+                "Some matrices were not found in the selected folder. Check correct folder name and files pattern M_ij.fits or mij.fits"
+            )
 
         return Mij
 
@@ -129,6 +135,7 @@ def calculate_demodulation_tensor(
     dark_filename=None,
     flat_filename=None,
     normalizing_S=None,
+    DEBUG=False,
 ):
     """Calculates the demodulation tensor images and saves them. Requires a set of images with different polarizations to fit a Malus curve model.
 
@@ -137,6 +144,7 @@ def calculate_demodulation_tensor(
         filenames_list (list[str]): List of input images filenames to read. Must include [0, 45, 90, -45].
         micropol_phases_previsions (list[float]): Previsions for the micropolarizer orientations required to initialize fit.
         gain (float): Detector [e-/DN], required to compute errors.
+        output_dir (str): output folder to save matrix to.
         binning (int, optional): Output matrices binning. Defaults to 1 (no binning). Be warned that binning matrices AFTER calculation is an incorrect operation.
         occulter (bool, optional): Whether to account for a central circle to exclude from calculation. Defaults to False.
         procs_grid ([int, int], optional): number of processors per side [Y, X], parallelization will be done in a Y x X grid. Defaults to [4,4] (16 procs in a 4x4 grid).
@@ -151,7 +159,6 @@ def calculate_demodulation_tensor(
         In the binning process the sum of values is considered, which is ok because data is normalized over the maximum S before being fitted.
     """
 
-    DEBUG = False
     correct_ifov = True
 
     # polarizations = array of polarizer orientations
@@ -163,8 +170,6 @@ def calculate_demodulation_tensor(
         raise ValueError(
             "Each one among (0, 45, 90, -45) polarizations must be included in the polarizer orientation array"
         )  # for calculating normalizing_S
-    else:
-        normalizing_S *= binning * binning
     # Have to be sorted
     polarizer_orientations, filenames_list = (
         list(t)
@@ -347,14 +352,16 @@ def calculate_demodulation_tensor(
         # 3sigma -> P = 2.7e-3 outliers
         # 4sigma -> P = 6.3e-5 outliers
         # ----------------------------------------------
+    else:
+        normalizing_S *= binning * binning  # account binning
 
     # Debug
     if False:
-        index = 5
+        index = 0
         histo_0 = np.histogram(all_data_arr[index], bins=1000)
         fig, ax = plt.subplots(figsize=(9, 9))
         ax.stairs(histo_0[0], histo_0[1], label="sample image")
-        # ax.stairs(histo[0], histo[1], label=f"S, max = {np.max(S_max)}")
+        ax.stairs(histo[0], histo[1], label=f"S, max = {np.max(S_max)}")
         ax.axvline(normalizing_S, color="red", label="normalizing_S")
         # ax.plot(
         #    xvalues,
@@ -541,6 +548,7 @@ def compute_demodulation_by_chunk(
 
     bounds = np.zeros(shape=(N_PIXELS_IN_SUPERPIX, 2, N_MALUS_PARAMS))
     bounds[:, 0, 0], bounds[:, 1, 0] = 0.1, 0.9999999  # Throughput bounds
+    # bounds[:, 0, 0], bounds[:, 1, 0] = (0.1,2.0)  # tk is multiplied by 0.5 so it can actually be > 1 and still physical
     bounds[:, 0, 1], bounds[:, 1, 1] = 0.1, 0.9999999  # Efficiency bounds
     bounds[:, 0, 2] = rad_micropol_phases_previsions - 15  # Lower angle bounds
     bounds[:, 1, 2] = rad_micropol_phases_previsions + 15  # Upper angle bounds
@@ -622,13 +630,15 @@ def compute_demodulation_by_chunk(
                             color=colors[i],
                         )
                         min = np.min(polarizations_rad)
+                        # min = 225
                         max = np.max(polarizations_rad)
+                        # max = 405
                         x = np.arange(min, max, (max - min) / 100)
-                        x = np.arange(-np.pi / 2, np.pi, np.pi / 100)
                         ax.plot(
                             np.rad2deg(x),
                             Malus(x, *superpix_params[i]),
                             label=f"t = {superpix_params[i,0]:2.2f}, e = {superpix_params[i, 1]:2.2f}, phi = {np.rad2deg(superpix_params[i, 2]):2.2f}",
+                            color=colors[i],
                         )
                         ax.set_title(
                             f"super_y = {super_y}, super_x = {super_x},"

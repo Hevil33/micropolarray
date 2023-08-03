@@ -15,7 +15,7 @@ from micropolarray.processing.rebin import (
     trim_to_match_2xbinning,
     standard_jitrebin,
 )
-from micropolarray.cameras import PolarCam
+from micropolarray.cameras import PolarCam, Camera
 from micropolarray.processing.new_demodulation import Demodulator
 from micropolarray.utils import make_abs_and_create_dir, fix_data
 from micropolarray.processing.congrid import congrid
@@ -48,9 +48,12 @@ class PolParam:
     fix_data: bool
 
 
-def set_default_angles(camera):
+def set_default_angles(init):
     MicroPolarizerArrayImage(np.zeros(shape=(2, 2)))
-    MicroPolarizerArrayImage.default_angle_dic = camera.angle_dic
+    if type(init) is Camera:
+        MicroPolarizerArrayImage.default_angle_dic = init.angle_dic
+    else:
+        MicroPolarizerArrayImage.default_angle_dic = init
 
 
 class MicroPolarizerArrayImage(Image):
@@ -63,7 +66,7 @@ class MicroPolarizerArrayImage(Image):
         self,
         initializer: str | np.ndarray | list | MicroPolarizerArrayImage,
         angle_dic: dict = None,
-        demosaic_mode: str = "mean",
+        demosaic_mode: str = "adjacent",
         dark: MicroPolarizerArrayImage = None,
         flat: MicroPolarizerArrayImage = None,
         averageimages: bool = True,

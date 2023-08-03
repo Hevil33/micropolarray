@@ -202,30 +202,30 @@ class Image:
 
         return fig, ax
 
-    def __add__(self, second):
+    def __add__(self, second) -> Image:
         if type(self) is type(second):
             newdata = self.data + second.data
         else:
             newdata = self.data + second
         return Image(newdata)
 
-    def __sub__(self, second):
+    def __sub__(self, second) -> Image:
         if type(self) is type(second):
             newdata = self.data - second.data
         else:
             newdata = self.data - second
         return Image(newdata)
 
-    def __mul__(self, second):
+    def __mul__(self, second) -> Image:
         if type(self) is type(second):
             newdata = self.data * second.data
         else:
             newdata = self.data * second
         return Image(newdata)
 
-    def __truediv__(self, second):
+    def __truediv__(self, second) -> Image:
         if type(self) is type(second):
-            newdata = self.data / second.data
+            newdata = np.where(second.data != 0, self.data / second.data, 4096)
         else:
-            newdata = self.data / second
+            newdata = np.where(second != 0, self.data / second, 4096)
         return Image(newdata)
