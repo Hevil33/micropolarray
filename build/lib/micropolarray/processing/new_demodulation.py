@@ -86,6 +86,31 @@ class Demodulator:
 
         return Mij
 
+    def show(self, vmin=-1, vmax=1, cmap="Greys"):
+        fig, ax = plt.subplots(
+            3,
+            4,
+            dpi=300,
+            figsize=(4, 3),
+            constrained_layout=True,
+            sharex="col",
+            sharey="row",
+        )
+        for i in range(3):
+            for j in range(4):
+                mappable = ax[i, j].imshow(
+                    self.mij[i, j], cmap=cmap, vmin=vmin, vmax=vmax
+                )
+                ax[i, j].set_title(rf"M$_{i}$$_{j}$")
+        for ax in fig.get_axes():
+            ax.label_outer()
+
+        fig.subplots_adjust(right=0.8)
+        cbar_ax = fig.add_axes([0.85, 0.15, 0.05, 0.7])
+        fig.colorbar(mappable, cax=cbar_ax)
+
+        return fig, ax
+
     def rebin(self, binning):  # TODO
         if (int(self.mij.shape[2] / binning) % 2) or (
             int(self.mij.shape[3] / binning) % 2
@@ -130,7 +155,7 @@ def calculate_demodulation_tensor(
     gain,  #  needed for errors
     output_dir,
     binning=1,
-    occulter=False,
+    occulter=None,
     procs_grid=[4, 4],
     dark_filename=None,
     flat_filename=None,
@@ -146,7 +171,7 @@ def calculate_demodulation_tensor(
         gain (float): Detector [e-/DN], required to compute errors.
         output_dir (str): output folder to save matrix to.
         binning (int, optional): Output matrices binning. Defaults to 1 (no binning). Be warned that binning matrices AFTER calculation is an incorrect operation.
-        occulter (bool, optional): Whether to account for a central circle to exclude from calculation. Defaults to False.
+        occulter (list, optional): occulter y, x center and radius to exclude from calculations. Defaults to None.
         procs_grid ([int, int], optional): number of processors per side [Y, X], parallelization will be done in a Y x X grid. Defaults to [4,4] (16 procs in a 4x4 grid).
         dark_filename (str, optional): Dark image filename to correct input images. Defaults to None.
         flat_filename (str, optional): Flat image filename to correct input images. Defaults to None.
@@ -189,13 +214,13 @@ def calculate_demodulation_tensor(
 
     occulter_flag = np.ones_like(data)  # 0 if not a occulted px, 1 otherwise
     if occulter:
-        info("Cleaning occulter...")
-        # Mean values from coronal observations 2022_12_03
-        # (campagna_2022/mean_occulter_pos.py)
-        occulter_y, occulter_x, occulter_r = PolarCam().occulter_pos_last
-        overoccult = 16
-        overoccult = 0
-        occulter_r = occulter_r + overoccult
+        # info("Cleaning occulter...")
+        ## Mean values from coronal observations 2022_12_03
+        ## (campagna_2022/mean_occulter_pos.py)
+        # occulter_y, occulter_x, occulter_r = PolarCam().occulter_pos_last
+        # overoccult = 16
+        # overoccult = 0
+        # occulter_r = occulter_r + overoccult
 
         # Match binning if needed
         occulter_y = int(occulter_y / binning)
@@ -556,8 +581,8 @@ def compute_demodulation_by_chunk(
     # Fit for each superpixel. Use theoretical demodulation matrix for
     # occulter if present.
     if DEBUG:
-        x_start, x_end = 8, 10
-        y_start, y_end = 8, 10
+        x_start, x_end = 100, 110
+        y_start, y_end = 100, 110
     else:
         y_start, y_end = 0, height
         x_start, x_end = 0, width

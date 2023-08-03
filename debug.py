@@ -41,7 +41,7 @@ def main():
     X = numpy.linalg.pinv(theo)
     X_1 = numpy.linalg.pinv(theo_1)
 
-    folder = "./test_data/dummy_16x16"
+    # folder = "./test_data/dummy_16x16"
     for i in range(3):
         for j in range(4):
             mij = np.full(shape=(16, 16), fill_value=X[i, j])
@@ -50,7 +50,7 @@ def main():
 
     demodulator = ml.Demodulator(folder)
 
-    data = np.zeros((16, 16))
+    data = np.zeros((32, 32))
     data[0::2, 0::2] = 1
     data[0::2, 1::2] = 0.5
     data[1::2, 0::2] = 0.5
@@ -62,7 +62,9 @@ def main():
     # image = ml.MicroPolarizerArrayImage(data)
     image.show_with_pol_params()
 
-    image = image.demodulate(demodulator)
+    image = image.rebin(4)
+    image = image / 16
+
     image.show_with_pol_params()
     plt.show()
 

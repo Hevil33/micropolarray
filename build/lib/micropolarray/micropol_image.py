@@ -256,12 +256,12 @@ class MicroPolarizerArrayImage(Image):
             self.Stokes_vec = self._get_theo_Stokes_vec_components(
                 self.single_pol_subimages
             )
+            self._update_stokes_derived_internal_dataclasses()
         else:
             self.demosaic()
             self.Stokes_vec = self._get_theo_Stokes_vec_components(
                 self.demosaiced_images
             )
-        self._update_stokes_derived_internal_dataclasses()
 
     def _update_single_pol_subimages(self) -> None:
         single_pol_subimages = split_polarizations(self.data)
