@@ -686,9 +686,11 @@ class MicroPolarizerArrayImage(Image):
             *rebinned_image.data.shape,
             binning,
         )
-        rebinned_image.set_data_only(rebinned_data)
 
-        # find a better way to do this
+        rebinned_image._set_data_and_Stokes(rebinned_data)
+
+        """
+        # WRONG FOR PARAMS THAT ARE NOT S
         rebinned_image.I.data = standard_jitrebin(
             self.I.data, *self.I.data.shape, binning=binning
         )
@@ -707,6 +709,7 @@ class MicroPolarizerArrayImage(Image):
         rebinned_image.DoLP.data = standard_jitrebin(
             self.DoLP.data, *self.DoLP.data.shape, binning=binning
         )
+        """
 
         return rebinned_image
 
@@ -857,27 +860,31 @@ class MicroPolarizerArrayImage(Image):
     def __add__(self, second) -> MicroPolarizerArrayImage:
         if type(self) is type(second):
             newdata = self.data + second.data
+            return MicroPolarizerArrayImage(self)._set_data_and_Stokes(newdata)
         else:
             newdata = self.data + second
-        return MicroPolarizerArrayImage(newdata, angle_dic=self.angle_dic)
+            return MicroPolarizerArrayImage(newdata, angle_dic=self.angle_dic)
 
     def __sub__(self, second) -> MicroPolarizerArrayImage:
         if type(self) is type(second):
             newdata = self.data - second.data
+            return MicroPolarizerArrayImage(self)._set_data_and_Stokes(newdata)
         else:
             newdata = self.data - second
-        return MicroPolarizerArrayImage(newdata, angle_dic=self.angle_dic)
+            return MicroPolarizerArrayImage(newdata, angle_dic=self.angle_dic)
 
     def __mul__(self, second) -> MicroPolarizerArrayImage:
         if type(self) is type(second):
             newdata = self.data * second.data
+            return MicroPolarizerArrayImage(self)._set_data_and_Stokes(newdata)
         else:
             newdata = self.data * second
-        return MicroPolarizerArrayImage(newdata, angle_dic=self.angle_dic)
+            return MicroPolarizerArrayImage(newdata, angle_dic=self.angle_dic)
 
     def __truediv__(self, second) -> MicroPolarizerArrayImage:
         if type(self) is type(second):
             newdata = np.where(second.data != 0, self.data / second.data, 4096)
+            return MicroPolarizerArrayImage(self)._set_data_and_Stokes(newdata)
         else:
             newdata = np.where(second != 0, self.data / second, 4096)
-        return MicroPolarizerArrayImage(newdata, angle_dic=self.angle_dic)
+            return MicroPolarizerArrayImage(newdata, angle_dic=self.angle_dic)
