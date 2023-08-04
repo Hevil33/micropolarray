@@ -15,6 +15,11 @@ import numpy as np
 def AoLP(Stokes_vec_components):
     """Angle of linear polarization in [rad]"""
     I, Q, U = Stokes_vec_components
+    angle = np.divide(
+        1.0 * U, 1.0 * Q, out=np.zeros_like(U), where=Q != 0
+    )  #  this avoids warning
+    angle = 0.5 * np.arctan(angle, dtype=float)
+    return angle
     angle = np.where(
         Q != 0,
         0.5 * np.arctan(1.0 * U / (1.0 * Q), dtype=float),
@@ -41,6 +46,14 @@ def pB(Stokes_vec_components):
 
 
 def normalize2pi(angles_list):
+    """Normalizes the input angle list in the -90,90 range
+
+    Args:
+        angles_list (_type_): list of input angles in degrees
+
+    Returns:
+        _type_: normalized angles
+    """
     if type(angles_list) is not list:
         angles_list = [
             angles_list,

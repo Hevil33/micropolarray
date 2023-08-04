@@ -287,6 +287,12 @@ def calculate_demodulation_tensor(
     if flat_filename:
         normalized_flat = np.where(occulter_flag, 1.0, flat / flat_max)
 
+    fig, ax = plt.subplots(2, dpi=200)
+    ax = ax.ravel()
+    ax[0].imshow(dark)
+    ax[1].imshow(np.where(dark != 0, 0, 1))
+    plt.show()
+
     # collect data
     all_data_arr = [0.0] * len(filenames_list)
     info("Collecting data from files...")
