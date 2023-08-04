@@ -626,7 +626,7 @@ class MicroPolarizerArrayImage(Image):
         """
         polslist = [self.pol0, self.pol45, self.pol90, self.pol_45]
         filepath = Path(make_abs_and_create_dir(filename))
-        if filepath.suffix is not ".fits":
+        if filepath.suffix != ".fits":
             raise ValueError("filename must be a valid file name, not folder.")
         group_filepath = filepath.joinpath(filepath.parent, filepath.stem)
         for single_pol in polslist:
@@ -667,7 +667,7 @@ class MicroPolarizerArrayImage(Image):
             ValueError: filename is not a valid .fits file
         """
         filepath = Path(make_abs_and_create_dir(filename))
-        if filepath.suffix is not ".fits":
+        if filepath.suffix != ".fits":
             raise ValueError("filename must be a valid file name, not folder.")
         hdr = self.header.copy()
         hdr["PARAM"] = (str(polparam.title), "Polarization parameter")
@@ -705,7 +705,7 @@ class MicroPolarizerArrayImage(Image):
             ValueError: filename is not a valid .fits file
         """
         filepath = Path(filename)
-        if filepath.suffix is not ".fits":
+        if filepath.suffix != ".fits":
             raise ValueError("filename must be a valid file name, not folder.")
         filepath = Path(make_abs_and_create_dir(filename))
         group_filename = str(filepath.joinpath(filepath.parent, filepath.stem))

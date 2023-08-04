@@ -147,7 +147,8 @@ class Image:
             ValueError: filename does not end with ".fits"
         """
         filepath = Path(filename)
-        if filepath.suffix is not ".fits":
+        if filepath.suffix != ".fits":
+            print(filepath.suffix)
             raise ValueError("filename must be a valid file name, not folder.")
         filepath = Path(make_abs_and_create_dir(filename))
         if fixto:

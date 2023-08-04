@@ -2,7 +2,7 @@ from distutils.core import setup
 
 setup(
     name="micropolarray",
-    version="1.0.0",
+    version="1.0.1",
     description="Micro-Polarizer array and PolarCam images processing libraries",
     url="https://github.com/Hevil33/micropolarray_master",
     author="Hervé Haudemand",

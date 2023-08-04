@@ -24,6 +24,7 @@ from logging import warning, info, error
 from micropolarray.processing.chen_wan_liang_calibration import (
     ifov_jitcorrect,
 )
+from micropolarray.utils import mean_plus_std
 
 # Shape of the demodulation matrix
 N_PIXELS_IN_SUPERPIX = 4
@@ -274,13 +275,15 @@ def calculate_demodulation_tensor(
         if correct_ifov:
             flat = ifov_jitcorrect(flat, *flat.shape)
         flat = micropolarray_jitrebin(flat, *flat.shape, binning)
-        flat_max = np.max(flat, axis=(0, 1))
+        # flat_max = np.max(flat, axis=(0, 1))
+        flat_max = mean_plus_std(flat, stds_n=1)
     if flat_filename and dark_filename:
         flat -= dark  # correct flat too
         flat = np.where(flat > 0, flat, 1.0)
         if occulter:
             flat = np.where(occulter_flag, 1.0, flat)
-        flat_max = np.max(flat, axis=(0, 1))
+        # flat_max = np.max(flat, axis=(0, 1))
+        flat_max = mean_plus_std(flat, stds_n=1)
     if flat_filename:
         normalized_flat = np.where(occulter_flag, 1.0, flat / flat_max)
 
@@ -569,12 +572,15 @@ def compute_demodulation_by_chunk(
     # Checked errors
     sigma_S2 = np.sqrt(0.5 * normalizing_S / gain)
     normalizing_S2 = normalizing_S * normalizing_S
-    pix_DN_sigma = np.sqrt(
-        splitted_dara_arr / (gain * normalizing_S2)
-        + sigma_S2
-        * (splitted_dara_arr * splitted_dara_arr)
-        / (normalizing_S2 * normalizing_S2)
-    )
+    # pix_DN_sigma = np.sqrt(
+    #    splitted_dara_arr / (gain * normalizing_S2)
+    #    + sigma_S2
+    #    * (splitted_dara_arr * splitted_dara_arr)
+    #    / (normalizing_S2 * normalizing_S2)
+    # )
+    pix_DN_sigma = (
+        np.sqrt(splitted_dara_arr / gain) / normalizing_S
+    )  # poisson error on the photoelectrons
 
     normalized_splitted_data = splitted_dara_arr / normalizing_S
     all_zeros = np.zeros(shape=(num_of_points))
@@ -594,6 +600,7 @@ def compute_demodulation_by_chunk(
 
     bounds = np.zeros(shape=(N_PIXELS_IN_SUPERPIX, 2, N_MALUS_PARAMS))
     bounds[:, 0, 0], bounds[:, 1, 0] = 0.1, 0.9999999  # Throughput bounds
+
     # bounds[:, 0, 0], bounds[:, 1, 0] = (
     #    0.1,
     #    2.0,
