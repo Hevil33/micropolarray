@@ -11,10 +11,7 @@ from micropolarray.processing.demosaic import (
     merge_polarizations,
 )
 from micropolarray.processing.rebin import (
-    micropolarray_jitrebin,
     micropolarray_rebin,
-    trim_to_match_2xbinning,
-    standard_jitrebin,
 )
 from micropolarray.cameras import PolarCam, Camera
 from micropolarray.processing.new_demodulation import Demodulator

@@ -15,10 +15,10 @@ import numpy as np
 def AoLP(Stokes_vec_components):
     """Angle of linear polarization in [rad]"""
     I, Q, U = Stokes_vec_components
-    angle = np.divide(
-        1.0 * U, 1.0 * Q, out=np.zeros_like(U), where=Q != 0
-    )  #  this avoids warning
-    angle = 0.5 * np.arctan(angle, dtype=float)
+    angle = 0.5 * np.arctan(
+        np.divide(1.0 * U, 1.0 * Q, out=np.zeros_like(U), where=Q != 0),
+        dtype=float,
+    )  # avoids warning when dividing by 0
     return angle
     angle = np.where(
         Q != 0,

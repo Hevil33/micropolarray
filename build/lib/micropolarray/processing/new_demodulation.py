@@ -1,6 +1,6 @@
 from micropolarray.processing.rebin import (
     standard_rebin,
-    micropolarray_jitrebin,
+    micropolarray_rebin,
     trim_to_match_binning,
 )
 from micropolarray.processing.nrgf import (
@@ -229,9 +229,10 @@ def calculate_demodulation_tensor(
     with fits.open(filenames_list[0]) as file:
         data = file[0].data  # get data dimension
 
+    print("qui")
     # Count binning before dimensions
     data = np.array(data, dtype=float)
-    data = micropolarray_jitrebin(data, *data.shape, binning=binning)
+    data = micropolarray_rebin(data, *data.shape, binning=binning)
     height, width = data.shape
 
     occulter_flag = np.ones_like(data)  # 0 if not a occulted px, 1 otherwise
@@ -267,14 +268,14 @@ def calculate_demodulation_tensor(
     if dark_filename:
         with fits.open(dark_filename) as file:
             dark = np.array(file[0].data, dtype=np.float)
-            dark = micropolarray_jitrebin(dark, *dark.shape, binning)
+            dark = micropolarray_rebin(dark, *dark.shape, binning)
     # Collect flat field, normalize it
     if flat_filename:
         with fits.open(flat_filename) as file:
             flat = np.array(file[0].data, dtype=np.float)
         if correct_ifov:
             flat = ifov_jitcorrect(flat, *flat.shape)
-        flat = micropolarray_jitrebin(flat, *flat.shape, binning)
+        flat = micropolarray_rebin(flat, *flat.shape, binning)
         # flat_max = np.max(flat, axis=(0, 1))
         flat_max = mean_plus_std(flat, stds_n=1)
     if flat_filename and dark_filename:
@@ -287,12 +288,6 @@ def calculate_demodulation_tensor(
     if flat_filename:
         normalized_flat = np.where(occulter_flag, 1.0, flat / flat_max)
 
-    fig, ax = plt.subplots(2, dpi=200)
-    ax = ax.ravel()
-    ax[0].imshow(dark)
-    ax[1].imshow(np.where(dark != 0, 0, 1))
-    plt.show()
-
     # collect data
     all_data_arr = [0.0] * len(filenames_list)
     info("Collecting data from files...")
@@ -303,7 +298,7 @@ def calculate_demodulation_tensor(
                 all_data_arr[idx] = ifov_jitcorrect(
                     all_data_arr[idx], *all_data_arr[idx].shape
                 )
-            all_data_arr[idx] = micropolarray_jitrebin(
+            all_data_arr[idx] = micropolarray_rebin(
                 all_data_arr[idx], *all_data_arr[idx].shape, binning
             )
             if dark_filename is not None:
