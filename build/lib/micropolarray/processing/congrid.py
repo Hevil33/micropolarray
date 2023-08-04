@@ -29,7 +29,7 @@ def interpolate(x, x_0, y_0, x_1, y_1):
 
 
 # Copied from IDL congrid, arbitrary reshape
-def congrid(a, newdims, kind="linear"):
+def congrid(a, newdims, kind="linear") -> np.ndarray:
     """Reshapes the data into any new lenght and width
 
     Args:
@@ -38,7 +38,7 @@ def congrid(a, newdims, kind="linear"):
         kind (str, optional): interpolation type. Defaults to "linear".
 
     Returns:
-        _type_: _description_
+        ndarray: numpy array of congridded image
     """
     if not a.dtype in [np.float64, np.float32]:
         a = np.cast[float](a)

@@ -1,0 +1,892 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>micropolarray.utils API documentation</title>
+<meta name="description" content="" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>micropolarray.utils</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">import os
+import numpy as np
+import pandas as pd
+from scipy import constants
+from pathlib import Path
+import time
+from micropolarray.cameras import PolarCam
+from scipy.optimize import curve_fit
+import matplotlib.pyplot as plt
+import sys
+from micropolarray.processing.demosaic import (
+    split_polarizations,
+    merge_polarizations,
+)
+
+
+def make_abs_and_create_dir_old(filenames: str):
+    cwd = os.getcwd()
+    turned_to_list = False
+    if type(filenames) is not list:
+        turned_to_list = True
+        filenames = [filenames]
+    # Make path absolute, create dirs if not existing
+    for idx, filename in enumerate(filenames):
+        if not os.path.isabs(filename):
+            filename = cwd + os.path.sep + filename
+            filenames[idx] = filename
+        parent_dir = os.path.sep.join(filename.split(os.path.sep)[:-1])
+        if not os.path.exists(parent_dir):
+            os.makedirs(parent_dir)
+    if turned_to_list:
+        return filenames[0]
+    else:
+        return filenames
+
+
+def make_abs_and_create_dir(filename: str):
+    path = Path(filename)
+    print(path)
+
+    if not path.is_absolute():  # suppose it is in cwd
+        path = path.joinpath(Path().cwd(), path)
+
+    if path.suffix:
+        if not path.parent.exists():
+            path.parent.mkdir(parents=True)
+    else:
+        if not path.exists():
+            path.mkdir()
+    return str(path)
+
+
+def sigma_DN(pix_DN):
+    gain = 6.93
+    sigma_DN = np.sqrt(gain * pix_DN) / gain
+    return sigma_DN
+
+
+def fix_data(data: np.array, min, max):
+    if not (min and max):
+        return data
+    fixed_data = data.copy()
+    fixed_data = np.where(fixed_data &gt; min, fixed_data, min)
+    fixed_data = np.where(fixed_data &lt; max, fixed_data, max)
+    return fixed_data
+
+
+def mean_minus_std(data: np.array, stds_n: int = 1) -&gt; float:
+    &#34;&#34;&#34;Returns the value at the mean - standard deviation for the input data
+
+    Args:
+        data (np.array): input data
+        stds_n (int, optional): number of standard deviations. Defaults to 1.
+
+    Returns:
+        float: mean value - n*stdevs
+    &#34;&#34;&#34;
+    return np.mean(data) - stds_n * np.std(data)
+
+
+def mean_plus_std(data: np.array, stds_n: int = 1) -&gt; float:
+    &#34;&#34;&#34;Returns the value at the mean + standard deviation for the input data
+
+    Args:
+        data (np.array): input data
+        stds_n (int, optional): number of standard deviations. Defaults to 1.
+
+    Returns:
+        float: mean value + n*stdevs
+    &#34;&#34;&#34;
+    return np.mean(data) + stds_n * np.std(data)
+
+
+def median_minus_std(data: np.array, stds_n: int = 1) -&gt; float:
+    &#34;&#34;&#34;Returns the value at the median - median deviation for the input data
+
+    Args:
+        data (np.array): input data
+        stds_n (int, optional): number of standard deviations. Defaults to 1.
+
+    Returns:
+        float: median value - n*mediandevs
+    &#34;&#34;&#34;
+    median = np.median(data)
+    median_std = np.median(np.abs(data - median))
+    return median - stds_n * median_std
+
+
+def median_plus_std(data: np.array, stds_n: int = 1) -&gt; float:
+    &#34;&#34;&#34;Returns the value at the median + median deviation for the input data
+
+    Args:
+        data (np.array): input data
+        stds_n (int, optional): number of standard deviations. Defaults to 1.
+
+    Returns:
+        float: median value + n*mediandevs
+    &#34;&#34;&#34;
+    median = np.median(data)
+    median_std = np.median(np.abs(data - median))
+    return median + stds_n * median_std
+
+
+def normalize2pi(angles_list):
+    if type(angles_list) is not list:
+        angles_list = [
+            angles_list,
+        ]
+    for i, angle in enumerate(angles_list):
+        while angle &gt; 90:
+            angle -= 180
+        while angle &lt;= -90:
+            angle += 180
+        angles_list[i] = angle
+
+    return angles_list
+
+
+# timer decorator
+def timer(func):
+    &#34;&#34;&#34;Use this to time function execution
+
+    Args:
+        func (function): function of which to measure execution time
+    &#34;&#34;&#34;
+
+    def wrapper(*args, **kwargs):
+        start = time.time()
+        result = func(*args, **kwargs)
+        end = time.time()
+        print(
+            f&#34;Function {func.__name__} took {round(end - start, 4)} ns to run&#34;
+        )
+        return result
+
+    return wrapper
+
+
+def align_keywords_and_data(header, data, sun_center, platescale, binning=1):
+    &#34;&#34;&#34;Fixes antarticor keywords and data to reflect each other.
+
+    Args:
+        header (dict): fits file header
+        data (ndarray): data as np array
+        platescale (float): plate scale in arcsec/pixel
+        binning (int, optional): binning applied to image. Defaults to 1 (no binning).
+
+    Returns:
+        header, data: new fixed header and data
+    &#34;&#34;&#34;
+
+    single_pol_images = split_polarizations(data)
+    # data = np.rot90(data, k=-1)
+    # data = np.flip(data, axis=0)
+    for i in range(4):
+        single_pol_images[i] = np.rot90(single_pol_images[i], k=-1)
+        single_pol_images[i] = np.flip(single_pol_images[i], axis=0)
+    data = merge_polarizations(single_pol_images)
+
+    header[&#34;NAXIS1&#34;] = data.shape[0]
+    header[&#34;NAXIS2&#34;] = data.shape[1]
+    height = header[&#34;NAXIS1&#34;]
+    width = header[&#34;NAXIS2&#34;]
+    rotation_angle = -9  # degrees
+    if binning &gt; 1:
+        platescale = platescale * binning
+
+    header[&#34;DATE-OBS&#34;] = header[&#34;DATE-OBS&#34;] + &#34;T&#34; + header[&#34;TIME-OBS&#34;]
+
+    header[&#34;WCSNAME&#34;] = &#34;helioprojective-cartesian&#34;
+    # header[&#34;DSUN_OBS&#34;] = 1.495978707e11
+    header[&#34;CTYPE1&#34;] = &#34;HPLN-TAN&#34;
+    header[&#34;CTYPE2&#34;] = &#34;HPLT-TAN&#34;
+    header[&#34;CDELT1&#34;] = platescale
+    header[&#34;CDELT2&#34;] = platescale
+    header[&#34;CUNIT1&#34;] = &#34;arcsec&#34;
+    header[&#34;CUNIT2&#34;] = &#34;arcsec&#34;
+    header[&#34;CRVAL1&#34;] = 0
+    header[&#34;CRVAL2&#34;] = 0
+    header[&#34;CROTA2&#34;] = rotation_angle
+
+    y, x = sun_center
+    # if year == 2021:
+    #    y, x, _ = PolarCam().occulter_pos_2021
+    # elif year == 2022:
+    #    y, x, _ = PolarCam().occulter_pos_last
+    relative_y = y / 1952
+    relative_x = x / 1952
+    sun_x = int(width * relative_x)
+    sun_y = int(height * relative_y)
+
+    # one changes because of rotation, the other because of jhelioviewer representation
+    header[&#34;CRPIX1&#34;] = height - sun_y  # y, checked
+    header[&#34;CRPIX2&#34;] = width - sun_x  # x, checked
+
+    return header, data
+
+
+def get_Bsun_units(
+    diffuser_I: float,
+    texp_image: float = 1.0,
+    texp_diffuser: float = 1.0,
+) -&gt; float:
+    &#34;&#34;&#34;Returns the conversion unit for expressing brightness in units of sun brightness. Usage is
+    data [units of B_sun] = data[DN] * get_Bsun_units(mean_Bsun_brightness, texp_image, texp_diffuser)
+
+    Args:
+        mean_sun_brightness (float): diffuser mean in DN.
+        texp_image (float, optional): image exposure time. Defaults to 1.0.
+        texp_diffuser (float, optional): diffuser exposure time. Defaults to 1.0.
+
+    Returns:
+        float: Bsun units conversion factor
+    &#34;&#34;&#34;
+    diffusion_solid_angle = 1.083 * 1.0e-5
+    diffuser_transmittancy = 0.28
+    Bsun_unit = (
+        diffusion_solid_angle
+        * diffuser_transmittancy
+        * texp_diffuser
+        / texp_image
+    )
+    Bsun_unit = (
+        (1.0 / texp_image)
+        * diffuser_transmittancy
+        * diffusion_solid_angle
+        / (diffuser_I / texp_diffuser)
+    )
+
+    return Bsun_unit
+
+
+def get_malus_normalization(four_peaks_images, show_hist=False):
+    S_max = np.zeros_like(
+        four_peaks_images[0]
+    )  # tk_sum = tk_0 + tk_45 + tk_90 + tk_45
+    S_max = 0.5 * np.sum(four_peaks_images, axis=0)
+    # Normalizing S, has a spike of which maximum is taken
+    bins = 1000
+    histo = np.histogram(S_max, bins=bins)
+    maxvalue = np.max(histo[0])
+    index = np.where(histo[0] == maxvalue)[0][0]
+    normalizing_S = (
+        histo[1][index] + histo[1][index + 1] + histo[1][index - 1]
+    ) / 3
+    # normalizing_S = np.max(S_max) # old
+
+    # ----------------------------------------------
+    # fit gaussian to S for normalization signal
+    def gauss(x, norm, x_0, sigma):
+        return norm * np.exp(-((x - x_0) ** 2) / (4 * sigma**2))
+
+    hist_roi = 10  # bins around max value
+    xvalues = np.array(histo[1])[index - hist_roi : index + hist_roi]
+    yvalues = np.array(histo[0])[index - hist_roi : index + hist_roi]
+    yvalues_sum = np.sum(yvalues)
+    yvalues = yvalues / yvalues_sum
+    xvalues = np.array(
+        [value + (xvalues[1] - xvalues[0]) / 2 for value in xvalues]
+    )  # shift each bin to center
+    prediction = [
+        yvalues[int(len(yvalues) / 2)],  # normalization
+        xvalues[int(len(xvalues) / 2)],  # center
+        xvalues[int(len(xvalues) / 2) + int(hist_roi / 2)]
+        - xvalues[int(len(xvalues) / 2)],  # sigma
+    ]
+    params, cov = curve_fit(
+        gauss,
+        xvalues,
+        yvalues,
+        prediction,
+    )
+    normalizing_S = params[1] + 4 * params[2]  # center of gaussian + 2sigma
+    # 3sigma -&gt; P = 2.7e-3 outliers
+    # 4sigma -&gt; P = 6.3e-5 outliers
+    # ----------------------------------------------
+    if show_hist:
+        index = 5
+        fig, ax = plt.subplots(figsize=(9, 9))
+        ax.stairs(histo[0], histo[1], label=f&#34;S, max = {np.max(S_max)}&#34;)
+        ax.axvline(normalizing_S, color=&#34;red&#34;, label=&#34;normalizing_S&#34;)
+        ax.plot(
+            xvalues,
+            gauss(xvalues, params[0] * yvalues_sum, params[1], params[2]),
+            label=&#34;Fitted curve for normalizing S&#34;,
+        )
+        ax.set_title(f&#34;Normalizing S (t_0 + t_45 + t_90 + t_135)&#34;)
+        ax.set_xlabel(&#34;S [DN]&#34;)
+        ax.set_ylabel(&#34;Counts&#34;)
+        ax.legend()
+        plt.show()
+        sys.exit()
+
+    return normalizing_S</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="micropolarray.utils.align_keywords_and_data"><code class="name flex">
+<span>def <span class="ident">align_keywords_and_data</span></span>(<span>header, data, sun_center, platescale, binning=1)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Fixes antarticor keywords and data to reflect each other.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>header</code></strong> :&ensp;<code>dict</code></dt>
+<dd>fits file header</dd>
+<dt><strong><code>data</code></strong> :&ensp;<code>ndarray</code></dt>
+<dd>data as np array</dd>
+<dt><strong><code>platescale</code></strong> :&ensp;<code>float</code></dt>
+<dd>plate scale in arcsec/pixel</dd>
+<dt><strong><code>binning</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>binning applied to image. Defaults to 1 (no binning).</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>header, data</code></dt>
+<dd>new fixed header and data</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def align_keywords_and_data(header, data, sun_center, platescale, binning=1):
+    &#34;&#34;&#34;Fixes antarticor keywords and data to reflect each other.
+
+    Args:
+        header (dict): fits file header
+        data (ndarray): data as np array
+        platescale (float): plate scale in arcsec/pixel
+        binning (int, optional): binning applied to image. Defaults to 1 (no binning).
+
+    Returns:
+        header, data: new fixed header and data
+    &#34;&#34;&#34;
+
+    single_pol_images = split_polarizations(data)
+    # data = np.rot90(data, k=-1)
+    # data = np.flip(data, axis=0)
+    for i in range(4):
+        single_pol_images[i] = np.rot90(single_pol_images[i], k=-1)
+        single_pol_images[i] = np.flip(single_pol_images[i], axis=0)
+    data = merge_polarizations(single_pol_images)
+
+    header[&#34;NAXIS1&#34;] = data.shape[0]
+    header[&#34;NAXIS2&#34;] = data.shape[1]
+    height = header[&#34;NAXIS1&#34;]
+    width = header[&#34;NAXIS2&#34;]
+    rotation_angle = -9  # degrees
+    if binning &gt; 1:
+        platescale = platescale * binning
+
+    header[&#34;DATE-OBS&#34;] = header[&#34;DATE-OBS&#34;] + &#34;T&#34; + header[&#34;TIME-OBS&#34;]
+
+    header[&#34;WCSNAME&#34;] = &#34;helioprojective-cartesian&#34;
+    # header[&#34;DSUN_OBS&#34;] = 1.495978707e11
+    header[&#34;CTYPE1&#34;] = &#34;HPLN-TAN&#34;
+    header[&#34;CTYPE2&#34;] = &#34;HPLT-TAN&#34;
+    header[&#34;CDELT1&#34;] = platescale
+    header[&#34;CDELT2&#34;] = platescale
+    header[&#34;CUNIT1&#34;] = &#34;arcsec&#34;
+    header[&#34;CUNIT2&#34;] = &#34;arcsec&#34;
+    header[&#34;CRVAL1&#34;] = 0
+    header[&#34;CRVAL2&#34;] = 0
+    header[&#34;CROTA2&#34;] = rotation_angle
+
+    y, x = sun_center
+    # if year == 2021:
+    #    y, x, _ = PolarCam().occulter_pos_2021
+    # elif year == 2022:
+    #    y, x, _ = PolarCam().occulter_pos_last
+    relative_y = y / 1952
+    relative_x = x / 1952
+    sun_x = int(width * relative_x)
+    sun_y = int(height * relative_y)
+
+    # one changes because of rotation, the other because of jhelioviewer representation
+    header[&#34;CRPIX1&#34;] = height - sun_y  # y, checked
+    header[&#34;CRPIX2&#34;] = width - sun_x  # x, checked
+
+    return header, data</code></pre>
+</details>
+</dd>
+<dt id="micropolarray.utils.fix_data"><code class="name flex">
+<span>def <span class="ident">fix_data</span></span>(<span>data: <built-in function array>, min, max)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def fix_data(data: np.array, min, max):
+    if not (min and max):
+        return data
+    fixed_data = data.copy()
+    fixed_data = np.where(fixed_data &gt; min, fixed_data, min)
+    fixed_data = np.where(fixed_data &lt; max, fixed_data, max)
+    return fixed_data</code></pre>
+</details>
+</dd>
+<dt id="micropolarray.utils.get_Bsun_units"><code class="name flex">
+<span>def <span class="ident">get_Bsun_units</span></span>(<span>diffuser_I: float, texp_image: float = 1.0, texp_diffuser: float = 1.0) ‑> float</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Returns the conversion unit for expressing brightness in units of sun brightness. Usage is
+data [units of B_sun] = data[DN] * get_Bsun_units(mean_Bsun_brightness, texp_image, texp_diffuser)</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>mean_sun_brightness</code></strong> :&ensp;<code>float</code></dt>
+<dd>diffuser mean in DN.</dd>
+<dt><strong><code>texp_image</code></strong> :&ensp;<code>float</code>, optional</dt>
+<dd>image exposure time. Defaults to 1.0.</dd>
+<dt><strong><code>texp_diffuser</code></strong> :&ensp;<code>float</code>, optional</dt>
+<dd>diffuser exposure time. Defaults to 1.0.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>float</code></dt>
+<dd>Bsun units conversion factor</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_Bsun_units(
+    diffuser_I: float,
+    texp_image: float = 1.0,
+    texp_diffuser: float = 1.0,
+) -&gt; float:
+    &#34;&#34;&#34;Returns the conversion unit for expressing brightness in units of sun brightness. Usage is
+    data [units of B_sun] = data[DN] * get_Bsun_units(mean_Bsun_brightness, texp_image, texp_diffuser)
+
+    Args:
+        mean_sun_brightness (float): diffuser mean in DN.
+        texp_image (float, optional): image exposure time. Defaults to 1.0.
+        texp_diffuser (float, optional): diffuser exposure time. Defaults to 1.0.
+
+    Returns:
+        float: Bsun units conversion factor
+    &#34;&#34;&#34;
+    diffusion_solid_angle = 1.083 * 1.0e-5
+    diffuser_transmittancy = 0.28
+    Bsun_unit = (
+        diffusion_solid_angle
+        * diffuser_transmittancy
+        * texp_diffuser
+        / texp_image
+    )
+    Bsun_unit = (
+        (1.0 / texp_image)
+        * diffuser_transmittancy
+        * diffusion_solid_angle
+        / (diffuser_I / texp_diffuser)
+    )
+
+    return Bsun_unit</code></pre>
+</details>
+</dd>
+<dt id="micropolarray.utils.get_malus_normalization"><code class="name flex">
+<span>def <span class="ident">get_malus_normalization</span></span>(<span>four_peaks_images, show_hist=False)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_malus_normalization(four_peaks_images, show_hist=False):
+    S_max = np.zeros_like(
+        four_peaks_images[0]
+    )  # tk_sum = tk_0 + tk_45 + tk_90 + tk_45
+    S_max = 0.5 * np.sum(four_peaks_images, axis=0)
+    # Normalizing S, has a spike of which maximum is taken
+    bins = 1000
+    histo = np.histogram(S_max, bins=bins)
+    maxvalue = np.max(histo[0])
+    index = np.where(histo[0] == maxvalue)[0][0]
+    normalizing_S = (
+        histo[1][index] + histo[1][index + 1] + histo[1][index - 1]
+    ) / 3
+    # normalizing_S = np.max(S_max) # old
+
+    # ----------------------------------------------
+    # fit gaussian to S for normalization signal
+    def gauss(x, norm, x_0, sigma):
+        return norm * np.exp(-((x - x_0) ** 2) / (4 * sigma**2))
+
+    hist_roi = 10  # bins around max value
+    xvalues = np.array(histo[1])[index - hist_roi : index + hist_roi]
+    yvalues = np.array(histo[0])[index - hist_roi : index + hist_roi]
+    yvalues_sum = np.sum(yvalues)
+    yvalues = yvalues / yvalues_sum
+    xvalues = np.array(
+        [value + (xvalues[1] - xvalues[0]) / 2 for value in xvalues]
+    )  # shift each bin to center
+    prediction = [
+        yvalues[int(len(yvalues) / 2)],  # normalization
+        xvalues[int(len(xvalues) / 2)],  # center
+        xvalues[int(len(xvalues) / 2) + int(hist_roi / 2)]
+        - xvalues[int(len(xvalues) / 2)],  # sigma
+    ]
+    params, cov = curve_fit(
+        gauss,
+        xvalues,
+        yvalues,
+        prediction,
+    )
+    normalizing_S = params[1] + 4 * params[2]  # center of gaussian + 2sigma
+    # 3sigma -&gt; P = 2.7e-3 outliers
+    # 4sigma -&gt; P = 6.3e-5 outliers
+    # ----------------------------------------------
+    if show_hist:
+        index = 5
+        fig, ax = plt.subplots(figsize=(9, 9))
+        ax.stairs(histo[0], histo[1], label=f&#34;S, max = {np.max(S_max)}&#34;)
+        ax.axvline(normalizing_S, color=&#34;red&#34;, label=&#34;normalizing_S&#34;)
+        ax.plot(
+            xvalues,
+            gauss(xvalues, params[0] * yvalues_sum, params[1], params[2]),
+            label=&#34;Fitted curve for normalizing S&#34;,
+        )
+        ax.set_title(f&#34;Normalizing S (t_0 + t_45 + t_90 + t_135)&#34;)
+        ax.set_xlabel(&#34;S [DN]&#34;)
+        ax.set_ylabel(&#34;Counts&#34;)
+        ax.legend()
+        plt.show()
+        sys.exit()
+
+    return normalizing_S</code></pre>
+</details>
+</dd>
+<dt id="micropolarray.utils.make_abs_and_create_dir"><code class="name flex">
+<span>def <span class="ident">make_abs_and_create_dir</span></span>(<span>filename: str)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def make_abs_and_create_dir(filename: str):
+    path = Path(filename)
+    print(path)
+
+    if not path.is_absolute():  # suppose it is in cwd
+        path = path.joinpath(Path().cwd(), path)
+
+    if path.suffix:
+        if not path.parent.exists():
+            path.parent.mkdir(parents=True)
+    else:
+        if not path.exists():
+            path.mkdir()
+    return str(path)</code></pre>
+</details>
+</dd>
+<dt id="micropolarray.utils.make_abs_and_create_dir_old"><code class="name flex">
+<span>def <span class="ident">make_abs_and_create_dir_old</span></span>(<span>filenames: str)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def make_abs_and_create_dir_old(filenames: str):
+    cwd = os.getcwd()
+    turned_to_list = False
+    if type(filenames) is not list:
+        turned_to_list = True
+        filenames = [filenames]
+    # Make path absolute, create dirs if not existing
+    for idx, filename in enumerate(filenames):
+        if not os.path.isabs(filename):
+            filename = cwd + os.path.sep + filename
+            filenames[idx] = filename
+        parent_dir = os.path.sep.join(filename.split(os.path.sep)[:-1])
+        if not os.path.exists(parent_dir):
+            os.makedirs(parent_dir)
+    if turned_to_list:
+        return filenames[0]
+    else:
+        return filenames</code></pre>
+</details>
+</dd>
+<dt id="micropolarray.utils.mean_minus_std"><code class="name flex">
+<span>def <span class="ident">mean_minus_std</span></span>(<span>data: <built-in function array>, stds_n: int = 1) ‑> float</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Returns the value at the mean - standard deviation for the input data</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>data</code></strong> :&ensp;<code>np.array</code></dt>
+<dd>input data</dd>
+<dt><strong><code>stds_n</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>number of standard deviations. Defaults to 1.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>float</code></dt>
+<dd>mean value - n*stdevs</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def mean_minus_std(data: np.array, stds_n: int = 1) -&gt; float:
+    &#34;&#34;&#34;Returns the value at the mean - standard deviation for the input data
+
+    Args:
+        data (np.array): input data
+        stds_n (int, optional): number of standard deviations. Defaults to 1.
+
+    Returns:
+        float: mean value - n*stdevs
+    &#34;&#34;&#34;
+    return np.mean(data) - stds_n * np.std(data)</code></pre>
+</details>
+</dd>
+<dt id="micropolarray.utils.mean_plus_std"><code class="name flex">
+<span>def <span class="ident">mean_plus_std</span></span>(<span>data: <built-in function array>, stds_n: int = 1) ‑> float</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Returns the value at the mean + standard deviation for the input data</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>data</code></strong> :&ensp;<code>np.array</code></dt>
+<dd>input data</dd>
+<dt><strong><code>stds_n</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>number of standard deviations. Defaults to 1.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>float</code></dt>
+<dd>mean value + n*stdevs</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def mean_plus_std(data: np.array, stds_n: int = 1) -&gt; float:
+    &#34;&#34;&#34;Returns the value at the mean + standard deviation for the input data
+
+    Args:
+        data (np.array): input data
+        stds_n (int, optional): number of standard deviations. Defaults to 1.
+
+    Returns:
+        float: mean value + n*stdevs
+    &#34;&#34;&#34;
+    return np.mean(data) + stds_n * np.std(data)</code></pre>
+</details>
+</dd>
+<dt id="micropolarray.utils.median_minus_std"><code class="name flex">
+<span>def <span class="ident">median_minus_std</span></span>(<span>data: <built-in function array>, stds_n: int = 1) ‑> float</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Returns the value at the median - median deviation for the input data</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>data</code></strong> :&ensp;<code>np.array</code></dt>
+<dd>input data</dd>
+<dt><strong><code>stds_n</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>number of standard deviations. Defaults to 1.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>float</code></dt>
+<dd>median value - n*mediandevs</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def median_minus_std(data: np.array, stds_n: int = 1) -&gt; float:
+    &#34;&#34;&#34;Returns the value at the median - median deviation for the input data
+
+    Args:
+        data (np.array): input data
+        stds_n (int, optional): number of standard deviations. Defaults to 1.
+
+    Returns:
+        float: median value - n*mediandevs
+    &#34;&#34;&#34;
+    median = np.median(data)
+    median_std = np.median(np.abs(data - median))
+    return median - stds_n * median_std</code></pre>
+</details>
+</dd>
+<dt id="micropolarray.utils.median_plus_std"><code class="name flex">
+<span>def <span class="ident">median_plus_std</span></span>(<span>data: <built-in function array>, stds_n: int = 1) ‑> float</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Returns the value at the median + median deviation for the input data</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>data</code></strong> :&ensp;<code>np.array</code></dt>
+<dd>input data</dd>
+<dt><strong><code>stds_n</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>number of standard deviations. Defaults to 1.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>float</code></dt>
+<dd>median value + n*mediandevs</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def median_plus_std(data: np.array, stds_n: int = 1) -&gt; float:
+    &#34;&#34;&#34;Returns the value at the median + median deviation for the input data
+
+    Args:
+        data (np.array): input data
+        stds_n (int, optional): number of standard deviations. Defaults to 1.
+
+    Returns:
+        float: median value + n*mediandevs
+    &#34;&#34;&#34;
+    median = np.median(data)
+    median_std = np.median(np.abs(data - median))
+    return median + stds_n * median_std</code></pre>
+</details>
+</dd>
+<dt id="micropolarray.utils.normalize2pi"><code class="name flex">
+<span>def <span class="ident">normalize2pi</span></span>(<span>angles_list)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def normalize2pi(angles_list):
+    if type(angles_list) is not list:
+        angles_list = [
+            angles_list,
+        ]
+    for i, angle in enumerate(angles_list):
+        while angle &gt; 90:
+            angle -= 180
+        while angle &lt;= -90:
+            angle += 180
+        angles_list[i] = angle
+
+    return angles_list</code></pre>
+</details>
+</dd>
+<dt id="micropolarray.utils.sigma_DN"><code class="name flex">
+<span>def <span class="ident">sigma_DN</span></span>(<span>pix_DN)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def sigma_DN(pix_DN):
+    gain = 6.93
+    sigma_DN = np.sqrt(gain * pix_DN) / gain
+    return sigma_DN</code></pre>
+</details>
+</dd>
+<dt id="micropolarray.utils.timer"><code class="name flex">
+<span>def <span class="ident">timer</span></span>(<span>func)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Use this to time function execution</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>func</code></strong> :&ensp;<code>function</code></dt>
+<dd>function of which to measure execution time</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def timer(func):
+    &#34;&#34;&#34;Use this to time function execution
+
+    Args:
+        func (function): function of which to measure execution time
+    &#34;&#34;&#34;
+
+    def wrapper(*args, **kwargs):
+        start = time.time()
+        result = func(*args, **kwargs)
+        end = time.time()
+        print(
+            f&#34;Function {func.__name__} took {round(end - start, 4)} ns to run&#34;
+        )
+        return result
+
+    return wrapper</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="micropolarray" href="index.html">micropolarray</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="micropolarray.utils.align_keywords_and_data" href="#micropolarray.utils.align_keywords_and_data">align_keywords_and_data</a></code></li>
+<li><code><a title="micropolarray.utils.fix_data" href="#micropolarray.utils.fix_data">fix_data</a></code></li>
+<li><code><a title="micropolarray.utils.get_Bsun_units" href="#micropolarray.utils.get_Bsun_units">get_Bsun_units</a></code></li>
+<li><code><a title="micropolarray.utils.get_malus_normalization" href="#micropolarray.utils.get_malus_normalization">get_malus_normalization</a></code></li>
+<li><code><a title="micropolarray.utils.make_abs_and_create_dir" href="#micropolarray.utils.make_abs_and_create_dir">make_abs_and_create_dir</a></code></li>
+<li><code><a title="micropolarray.utils.make_abs_and_create_dir_old" href="#micropolarray.utils.make_abs_and_create_dir_old">make_abs_and_create_dir_old</a></code></li>
+<li><code><a title="micropolarray.utils.mean_minus_std" href="#micropolarray.utils.mean_minus_std">mean_minus_std</a></code></li>
+<li><code><a title="micropolarray.utils.mean_plus_std" href="#micropolarray.utils.mean_plus_std">mean_plus_std</a></code></li>
+<li><code><a title="micropolarray.utils.median_minus_std" href="#micropolarray.utils.median_minus_std">median_minus_std</a></code></li>
+<li><code><a title="micropolarray.utils.median_plus_std" href="#micropolarray.utils.median_plus_std">median_plus_std</a></code></li>
+<li><code><a title="micropolarray.utils.normalize2pi" href="#micropolarray.utils.normalize2pi">normalize2pi</a></code></li>
+<li><code><a title="micropolarray.utils.sigma_DN" href="#micropolarray.utils.sigma_DN">sigma_DN</a></code></li>
+<li><code><a title="micropolarray.utils.timer" href="#micropolarray.utils.timer">timer</a></code></li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>

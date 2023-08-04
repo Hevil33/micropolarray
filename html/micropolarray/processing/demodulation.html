@@ -1,0 +1,1423 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>micropolarray.processing.demodulation API documentation</title>
+<meta name="description" content="" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>micropolarray.processing.demodulation</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">from micropolarray.processing.rebin import (
+    standard_jitrebin,
+    micropolarray_jitrebin,
+    trim_to_match_binning,
+)
+from micropolarray.processing.nrgf import (
+    find_occulter_position,
+    roi_from_polar,
+)
+
+from scipy.optimize import curve_fit
+import glob
+import os
+from astropy.io import fits
+import re
+import numpy as np
+import sys
+import matplotlib.pyplot as plt
+from tqdm import tqdm
+import multiprocessing as mp
+from itertools import product
+import time
+from logging import warning, info, error
+
+
+class Demodulator:
+    &#34;&#34;&#34;Demodulation class needed for MicroPolarizerArrayImage
+    demodulation.&#34;&#34;&#34;
+
+    def __init__(self, demo_matrices_path: str, binning: bool = False):
+        self.demo_matrices_path = demo_matrices_path
+        self.binning = binning  # needed for a correct image binning
+        self.mij = self._get_demodulation_tensor(demo_matrices_path)
+
+    def rebin(self, binning: int):
+        warning(&#34;USE OF BINNED DEMODULATION MATRIX IS INCORRECT&#34;)
+        binned_demodulator = Demodulator(self.demo_matrices_path)
+        end_y, end_x = self.mij[0, 0].shape
+        end_y, end_x = trim_to_match_binning(end_y, end_x, binning)
+        new_mij = np.zeros(
+            shape=(
+                self.mij.shape[0],
+                self.mij.shape[1],
+                int(self.mij.shape[2] / binning),
+                int(self.mij.shape[3] / binning),
+            )
+        )
+        for i in range(3):
+            for j in range(4):
+                single_mij = self.mij[i, j, :end_y, :end_x]
+                new_mij[i, j] = standard_jitrebin(
+                    single_mij,
+                    single_mij.shape[0],
+                    single_mij.shape[1],
+                    binning=binning,
+                ) / (binning * binning)
+                # new_mij[i, j] = micropolarray_jitrebin(
+                #    single_mij,
+                #    single_mij.shape[0],
+                #    single_mij.shape[1],
+                #    binning=binning,
+                # )
+        binned_demodulator.mij = new_mij
+        return binned_demodulator
+
+    def _get_demodulation_tensor(self, binning: bool = False) -&gt; np.ndarray:
+        if not os.path.exists(self.demo_matrices_path):
+            raise FileNotFoundError(&#34;self.demo_matrices_path not found.&#34;)
+        mij_filenames_list = glob.glob(
+            self.demo_matrices_path + os.path.sep + &#34;*.fits&#34;
+        )
+
+        with fits.open(mij_filenames_list[0]) as firsthul:
+            sample_data = np.array(firsthul[0].data)
+        Mij = np.zeros(
+            shape=(3, 4, sample_data.shape[0], sample_data.shape[1]),
+            dtype=float,
+        )
+        for mij in mij_filenames_list:
+            searchresult = re.search(&#34;[Mm][0-9]{2}&#34;, mij.split(&#34;/&#34;)[-1])
+            if searchresult is not None:  # Exclude files not matching m/Mij
+                i, j = re.search(&#34;[Mm][0-9]{2}&#34;, mij.split(&#34;/&#34;)[-1]).group()[
+                    -2:
+                ]  # Searches for pattern M/m + ij as last string before .fits
+            else:
+                continue
+            i = int(i)
+            j = int(j)
+            with fits.open(mij) as hul:
+                Mij[i, j] = hul[0].data
+
+        return Mij
+
+
+def calculate_demodulation_tensor(
+    polarizer_orientations,
+    filenames_list,
+    micropol_phases_previsions,
+    gain,  #  needed for errors
+    output_dir,
+    occulter=True,
+    parallelize=True,
+    dark_filename=None,
+    flat_filename=None,
+):
+    # polarizations = array of polarizer orientations
+    # filenames_list = list of filenames
+    firstcall = True
+    if not np.all(np.isin([0, 45, 90, -45], polarizer_orientations)):
+        raise ValueError(
+            &#34;All (0, 45, 90, -45) pols must be included in the polarizer orientation array&#34;
+        )
+    # Have to be sorted
+    polarizer_orientations, filenames_list = (
+        list(t)
+        for t in zip(*sorted(zip(polarizer_orientations, filenames_list)))
+    )
+    micropol_phases_previsions = np.array(micropol_phases_previsions)
+    rad_micropol_phases_previsions = np.deg2rad(micropol_phases_previsions)
+
+    # Flag occulter position to not be fitted, expand to superpixel.
+    with fits.open(filenames_list[0]) as file:
+        data = file[0].data  # get data dimension
+    occulter_flag = np.ones_like(data)  # 0 if not a occulted px, 1 otherwise
+    if occulter:
+        # Mean values from coronal observations 2022_12_03
+        # (campagna_2022/mean_occulter_pos.py)
+        occulter_y = 917
+        occulter_x = 948
+        occulter_r = 524 + 10  # Better to overoccult
+
+        occulter_flag = roi_from_polar(
+            occulter_flag, [occulter_y, occulter_x], [0, occulter_r]
+        )
+        for super_y in range(0, occulter_flag.shape[0], 2):
+            for super_x in range(0, occulter_flag.shape[1], 2):
+                if np.any(
+                    occulter_flag[super_y : super_y + 2, super_x : super_x + 2]
+                ):
+                    occulter_flag[
+                        super_y : super_y + 2, super_x : super_x + 2
+                    ] = 1
+                    continue
+    else:
+        occulter_flag *= 0
+
+    # Collect dark
+    if dark_filename:
+        with fits.open(dark_filename) as file:
+            dark = np.array(file[0].data, dtype=np.float)
+    # Collect flat field, normalize it
+    if flat_filename:
+        with fits.open(flat_filename) as file:
+            flat = np.array(file[0].data, dtype=np.float)
+    if flat_filename and dark_filename:
+        flat -= dark  # correct flat too
+        flat = np.where(flat &gt; 0, flat, 1.0)
+        if occulter:
+            flat = np.where(occulter_flag, 1.0, flat)
+
+    flat_max = np.max(flat, axis=(0, 1))
+    normalized_flat = np.where(occulter_flag, 1.0, flat / flat_max)
+
+    # collect data
+    all_data_arr = [0.0] * len(filenames_list)
+    for idx, filename in enumerate(filenames_list):
+        with fits.open(filename) as file:
+            all_data_arr[idx] = np.array(file[0].data, dtype=float)
+            if dark_filename is not None:
+                all_data_arr[idx] -= dark
+                all_data_arr[idx] = np.where(
+                    all_data_arr[idx] &gt;= 0, all_data_arr[idx], 0.0
+                )
+            if flat_filename is not None:
+                all_data_arr[idx] = np.where(
+                    normalized_flat != 0,
+                    all_data_arr[idx] / normalized_flat,
+                    all_data_arr[idx],
+                )
+
+    all_data_arr = np.array(all_data_arr)
+    _, height, width = all_data_arr.shape
+
+    DEBUG = False
+    if DEBUG:
+        height = int(height / 2)
+        width = int(width / 2)
+        all_data_arr = all_data_arr[:, 0:height, 0:width]
+        parallelize = False
+
+    # parallelize
+    chunks_n = 4  # Will be divided into chunks_n*chunks_n squares
+    chunk_size_x = int(width / chunks_n)
+    chunk_size_y = int(height / chunks_n)
+    splitted_data = np.zeros(
+        shape=(
+            chunks_n * chunks_n,
+            len(polarizer_orientations),
+            chunk_size_y,
+            chunk_size_x,
+        )
+    )
+    splitted_occulter = np.zeros(
+        shape=(chunks_n * chunks_n, chunk_size_y, chunk_size_x)
+    )
+    for i in range(chunks_n):
+        for j in range(chunks_n):
+            splitted_data[i + chunks_n * j] = np.array(
+                all_data_arr[
+                    :,
+                    i * (chunk_size_x) : (i + 1) * chunk_size_x,
+                    j * (chunk_size_y) : (j + 1) * chunk_size_y,
+                ]
+            )  # shape = (chunks_n*chunks_n, len(filenames_list), chunk_size_y, chunk_size_x)
+            splitted_occulter[i + j * chunks_n] = np.array(
+                occulter_flag[
+                    i * (chunk_size_x) : (i + 1) * chunk_size_x,
+                    j * (chunk_size_y) : (j + 1) * chunk_size_y,
+                ]
+            )  # shape = (chunks_n*chunks_n, chunk_size_y, chunk_size_x)
+
+    # Normalizing S, has a spike of which maximum is taken
+    S_max = np.zeros(
+        shape=(height, width)
+    )  # tk_sum = tk_0 + tk_45 + tk_90 + tk_45
+    for pol, image in zip(polarizer_orientations, all_data_arr):
+        if pol in [0, 90, 45, -45]:
+            S_max += 0.5 * image
+    bins = 1000
+    histo = np.histogram(S_max, bins=bins)
+    index = np.where(histo[0] == np.max(histo[0]))[0][0]
+    normalizing_S = 0.5 * (histo[1][index] + histo[1][index + 1])
+
+    if False:
+        histo_0 = np.histogram(all_data_arr[5], bins=1000)
+        fig, ax = plt.subplots()
+        ax.stairs(histo_0[0], histo_0[1])
+        ax.stairs(histo[0], histo[1])
+        ax.vlines(normalizing_S, ymin=0, ymax=100000, colors=&#34;red&#34;)
+        plt.show()
+        sys.exit()
+
+    args = (
+        [
+            splitted_data[i],
+            normalizing_S,
+            splitted_occulter[i],
+            polarizer_orientations,
+            rad_micropol_phases_previsions,
+            gain,
+        ]
+        for i in range(chunks_n * chunks_n)
+    )
+
+    starting_time = time.perf_counter()
+    loc_time = time.strftime(&#34;%H:%M:%S  (%Y/%m/%d)&#34;, time.localtime())
+    info(f&#34;Starting parallel calculation&#34;)
+
+    if parallelize:
+        try:
+            with mp.Pool(processes=chunks_n * chunks_n) as p:
+                result = p.starmap(
+                    compute_demodulation_by_chunk,
+                    args,
+                )
+        except:
+            error(&#34;Fit not found&#34;)
+            ending_time = time.perf_counter()
+
+            info(f&#34;Elapsed : {(ending_time - starting_time)/60:3.2f} mins&#34;)
+            sys.exit()
+    else:
+        arglist = [arg for arg in args]
+        result = [[0.0, 0.0]] * chunks_n * chunks_n
+
+        for i in range(chunks_n * chunks_n):
+            result[i] = compute_demodulation_by_chunk(*arglist[i])
+
+    loc_time = time.strftime(&#34;%H:%M:%S (%Y/%m/%d)&#34;, time.localtime())
+    info(f&#34;Ending parallel calculation&#34;)
+
+    ending_time = time.perf_counter()
+    info(f&#34;Elapsed : {(ending_time - starting_time)/60:3.2f} mins&#34;)
+
+    result = np.array(result)
+    m_ij = np.zeros(shape=(3, 4, height, width))
+    tks = np.zeros(shape=(height, width))
+    efficiences = np.zeros(shape=(height, width))
+    phases = np.zeros(shape=(height, width))
+
+    for i in range(chunks_n):
+        for j in range(chunks_n):
+            m_ij[
+                :,
+                :,
+                i * (chunk_size_x) : (i + 1) * chunk_size_x,
+                j * (chunk_size_y) : (j + 1) * chunk_size_y,
+            ] = result[i + chunks_n * j, 0].reshape(
+                3, 4, chunk_size_y, chunk_size_x
+            )
+            tks[
+                i * (chunk_size_x) : (i + 1) * chunk_size_x,
+                j * (chunk_size_y) : (j + 1) * chunk_size_y,
+            ] = result[i + chunks_n * j, 1].reshape(chunk_size_y, chunk_size_x)
+            efficiences[
+                i * (chunk_size_x) : (i + 1) * chunk_size_x,
+                j * (chunk_size_y) : (j + 1) * chunk_size_y,
+            ] = result[i + chunks_n * j, 2].reshape(chunk_size_y, chunk_size_x)
+            phases[
+                i * (chunk_size_x) : (i + 1) * chunk_size_x,
+                j * (chunk_size_y) : (j + 1) * chunk_size_y,
+            ] = result[i + chunks_n * j, 3].reshape(chunk_size_y, chunk_size_x)
+
+    phases = np.deg2rad(phases)
+
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+    for i in range(3):
+        for j in range(4):
+            hdu = fits.PrimaryHDU(data=m_ij[i, j])
+            hdu.writeto(output_dir + f&#34;M{i}{j}.fits&#34;, overwrite=True)
+    hdu = fits.PrimaryHDU(data=tks)
+    hdu.writeto(output_dir + &#34;transmittancies.fits&#34;, overwrite=True)
+    hdu = fits.PrimaryHDU(data=efficiences)
+    hdu.writeto(output_dir + &#34;efficiences.fits&#34;, overwrite=True)
+    hdu = fits.PrimaryHDU(data=phases)
+    hdu.writeto(output_dir + &#34;phases.fits&#34;, overwrite=True)
+
+    info(&#34;Demodulation matrices and fit data successfully saved!&#34;)
+
+    return
+
+
+&#34;&#34;&#34;
+    else:
+
+        # Preemptly compute the theoretical demo matrix to save time
+        theo_modulation_matrix = np.array(
+            [
+                [0.5, 0.5, 0.5, 0.5],
+                [
+                    0.5 * np.cos(2.0 * rad_micropol_phases_previsions[i])
+                    for i in range(4)
+                ],
+                [
+                    0.5 * np.sin(2.0 * rad_micropol_phases_previsions[i])
+                    for i in range(4)
+                ],
+            ]
+        )
+        theo_demodulation_matrix = np.linalg.pinv(theo_modulation_matrix)
+
+        # Save sum of throughputs for later loop
+        S_max = np.zeros(
+            shape=(height, width)
+        )  # tk_sum = tk_0 + tk_45 + tk_90 + tk_45
+        for pol, image in zip(polarizer_orientations, all_data_arr):
+            if pol in [0, 90, 45, -45]:
+                S_max += 0.5 * image
+        max_S_all_pixls = np.max(S_max)
+
+        m_ij = np.zeros(shape=(4, 3, height, width))
+        modulation_matrix = np.zeros(shape=(3, 4))
+        superpix_params = np.zeros(shape=(4, 3))
+
+        predictions = np.zeros(shape=(4, 3))
+        predictions[:, 1] = 0.85  # Efficiency prediction
+        predictions[:, 2] = rad_micropol_phases_previsions  # Angle prediction
+
+        bounds = np.zeros(shape=(4, 2, 3))
+        bounds[:, 0, 1], bounds[:, 1, 1] = 0.1, 1.0  # Efficiency bounds
+        bounds[:, 0, 2] = (
+            rad_micropol_phases_previsions - 15
+        )  # Lower angle bounds
+        bounds[:, 1, 2] = (
+            rad_micropol_phases_previsions + 15
+        )  # Upper angle bounds
+
+        starting_time = time.perf_counter()
+        # fit for each superpixel
+        for super_y in tqdm(range(0, height, 2)):
+            for super_x in range(0, width, 2):
+                # for super_y in range(0, 4, 2):
+                #    for super_x in range(0, 4, 2):
+                if not (
+                    np.any(
+                        occulter_flag[
+                            super_y : super_y + 2, super_x : super_x + 2
+                        ]
+                    )
+                ):
+                    S_superpix_arr = S_max[
+                        super_y : super_y + 2, super_x : super_x + 2
+                    ].reshape(4)
+                    superpix_arr = all_data_arr[
+                        :, super_y : super_y + 2, super_x : super_x + 2
+                    ].reshape(len(filenames_list), 4)
+                    # dn to el
+                    # sqrt
+                    # convert to dn
+                    sigma = (np.sqrt(superpix_arr[:])) / S_superpix_arr
+
+                    # max_S = S_superpix_arr  # 4 max S of superpixel
+                    max_S = max_S_all_pixls  # Maximmum S over all image
+                    # max_S = np.max(superpix_arr, axis=1)  # Maximum over a superpixel
+
+                    if False:  # Debug
+                        print(f&#34;{max_S.shape = }&#34;)
+
+                        tk = np.max(superpix_arr, axis=1) / max_S
+                        print(f&#34;{tk.shape = }&#34;)
+
+                        print(f&#34;{all_data_arr.shape = }&#34;)
+                        print(f&#34;{all_data_arr[0:3,0:2,0:2] = }&#34;)
+                        print(f&#34;{superpix_arr = }&#34;)
+                        print(f&#34;{superpix_arr = }&#34;)
+                        print(f&#34;{max_S = }&#34;)
+                    superpix_arr /= max_S
+                    # print(f&#34;{all_data_arr.shape[1:3] = }&#34;)
+
+                    if False:  # Liberatore method, lock throughput
+                        predictions[:, 0] = tk
+                        bounds[:, 0, 0] = tk - 1.0e-10
+                        bounds[:, 1, 0] = tk + 1.0e-10
+                    else:  # Fit throughput too
+                        predictions[:, 0] = [0.85] * 4
+                        bounds[:, 0, 0] = 0.1
+                        bounds[:, 1, 0] = 1.0
+
+                    for pixel_num in range(4):
+                        try:
+                            (
+                                superpix_params[pixel_num],
+                                superpix_pcov,
+                            ) = curve_fit(
+                                Malus,
+                                polarizations_rad,
+                                superpix_arr[:, pixel_num],
+                                predictions[pixel_num],
+                                sigma=sigma[:, pixel_num],
+                                bounds=bounds[pixel_num],
+                            )
+                        except RuntimeError:
+                            print(&#34;Fit not found&#34;)
+                            ending_time = time.perf_counter()
+                            print(f&#34;{pixel_num = }&#34;)
+                            print(f&#34;{super_x = }&#34;)
+                            print(f&#34;{super_y = }&#34;)
+
+                            print(
+                                f&#34;Elapsed : {(ending_time - starting_time)/60:3.2f} mins&#34;
+                            )
+                            sys.exit()
+
+                    # Compute modulation matrix and its inverse
+                    t = superpix_params[:, 0]
+                    eff = superpix_params[:, 1]
+                    phi = superpix_params[:, 2]
+                    modulation_matrix = np.array(
+                        [
+                            0.5 * t,
+                            0.5 * t * eff * np.cos(2.0 * phi),
+                            0.5 * t * eff * np.sin(2.0 * phi),
+                        ]
+                    )
+                    demodulation_matrix = np.linalg.pinv(modulation_matrix)
+
+                    for i in range(2):
+                        for j in range(2):
+                            m_ij[
+                                :, :, super_y + i, super_x + j
+                            ] = demodulation_matrix
+
+                    if False:  # Debug
+                        fig, ax = plt.subplots(figsize=(9, 9))
+                        for i in range(4):
+                            ax.scatter(
+                                np.rad2deg(polarizations_rad),
+                                superpix_arr[:, i],
+                                # yerr=sigma[:, i],
+                                label=f&#34;points {i}&#34;,
+                            )
+                            min = np.min(polarizations_rad)
+                            max = np.max(polarizations_rad)
+                            x = np.arange(min, max, (max - min) / 100)
+                            x = np.arange(-np.pi / 2, np.pi, np.pi / 100)
+                            ax.plot(
+                                np.rad2deg(x),
+                                Malus(x, *superpix_params[i]),
+                                label=f&#34;t = {superpix_params[i,0]:2.2f}, e = {superpix_params[i, 1]:2.2f}, phi = {np.rad2deg(superpix_params[i, 2]):2.2f}&#34;,
+                            )
+                        plt.legend()
+                        plt.show()
+
+                        # print(m_ij)
+                        print(f&#34;{t = }&#34;)
+                        print(f&#34;{eff = }&#34;)
+                        print(f&#34;phi = {np.rad2deg(phi)}&#34;)
+                        print(f&#34;{modulation_matrix = }&#34;)
+                        print(f&#34;{demodulation_matrix = }&#34;)
+                        sys.exit()
+                else:
+                    for i in range(2):
+                        for j in range(2):
+                            m_ij[
+                                :, :, super_y + i, super_x + j
+                            ] = theo_demodulation_matrix
+
+        m_ij = m_ij.swapaxes(0, 1)
+        for i in range(3):
+            for j in range(4):
+                hdu = fits.PrimaryHDU(data=m_ij[i, j])
+                hdu.writeto(output_dir + f&#34;M{i}{j}.fits&#34;, overwrite=True)
+
+        return
+&#34;&#34;&#34;
+
+
+def compute_demodulation_by_chunk(
+    splitted_dara_arr,
+    normalizing_S,
+    splitted_occulter_flag,
+    polarizer_orientations,
+    rad_micropol_phases_previsions,
+    gain,
+):
+    # Preemptly compute the theoretical demo matrix to save time
+    theo_modulation_matrix = np.array(
+        [
+            [0.5, 0.5, 0.5, 0.5],
+            [
+                0.5 * np.cos(2.0 * rad_micropol_phases_previsions[i])
+                for i in range(4)
+            ],
+            [
+                0.5 * np.sin(2.0 * rad_micropol_phases_previsions[i])
+                for i in range(4)
+            ],
+        ]
+    )
+    theo_demodulation_matrix = np.linalg.pinv(theo_modulation_matrix)
+
+    num_of_points, height, width = splitted_dara_arr.shape
+    rad_micropol_phases_previsions = np.array(rad_micropol_phases_previsions)
+    polarizations_rad = np.deg2rad(polarizer_orientations)
+    tk_prediction = 0.5
+    efficiency_prediction = 0.8
+
+    # Checked
+    sigma_S2 = np.sqrt(0.5 * normalizing_S / gain)
+    normalizing_S2 = normalizing_S * normalizing_S
+    pix_DN_sigma = np.sqrt(
+        splitted_dara_arr / (gain * normalizing_S2)
+        + sigma_S2
+        * (splitted_dara_arr * splitted_dara_arr)
+        / (normalizing_S2 * normalizing_S2)
+    )
+    normalized_splitted_data = splitted_dara_arr / normalizing_S
+    all_zeros = np.zeros(shape=(num_of_points))
+
+    m_ij = np.zeros(shape=(4, 3, height, width))
+    tk_data = np.ones(shape=(height, width)) * tk_prediction
+    eff_data = np.ones(shape=(height, width)) * efficiency_prediction
+    phase_data = np.zeros(shape=(height, width))
+    modulation_matrix = np.zeros(shape=(3, 4))
+    superpix_params = np.zeros(shape=(4, 3))
+
+    predictions = np.zeros(shape=(4, 3))
+    predictions[:, 1] = efficiency_prediction  # Efficiency prediction
+    predictions[:, 2] = rad_micropol_phases_previsions  # Angle prediction
+
+    bounds = np.zeros(shape=(4, 2, 3))
+    bounds[:, 0, 1], bounds[:, 1, 1] = 0.1, 1.0  # Efficiency bounds
+    bounds[:, 0, 2] = rad_micropol_phases_previsions - 15  # Lower angle bounds
+    bounds[:, 1, 2] = rad_micropol_phases_previsions + 15  # Upper angle bounds
+
+    # Fit throughput too
+    predictions[:, 0] = [tk_prediction] * 4
+    bounds[:, 0, 0] = 0.1
+    bounds[:, 1, 0] = 1.0
+
+    # Fit for each superpixel. Use theoretical demodulation matrix for
+    # occulter if present.
+    DEBUG = False
+    if DEBUG:
+        x_start, x_end = 4, 8
+        y_start, y_end = 4, 8
+    else:
+        y_start, y_end = 0, height
+        x_start, x_end = 0, width
+    for super_y in range(y_start, y_end, 2):
+        for super_x in range(x_start, x_end, 2):
+            if not (
+                np.any(
+                    splitted_occulter_flag[
+                        super_y : super_y + 2, super_x : super_x + 2
+                    ]
+                )
+            ):
+                normalized_superpix_arr = normalized_splitted_data[
+                    :, super_y : super_y + 2, super_x : super_x + 2
+                ].reshape(num_of_points, 4)
+
+                # sigma_pix = np.sqrt(
+                #    superpix_arr[:] / normalizing_S2
+                #    + sigma_S2
+                #    * (superpix_arr[:] * superpix_arr[:])
+                #    / (normalizing_S2 * normalizing_S2)
+                # )
+                sigma_pix = pix_DN_sigma[
+                    :, super_y : super_y + 2, super_x : super_x + 2
+                ].reshape(num_of_points, 4)
+                sigma_pix = np.where(sigma_pix != 0.0, sigma_pix, 1.0e-5)
+
+                if False:  # Liberatore method, lock throughput
+                    tk = np.max(superpix_arr, axis=0) / normalizing_S
+                    predictions[:, 0] = tk
+                    bounds[:, 0, 0] = tk - 1.0e-10
+                    bounds[:, 1, 0] = tk + 1.0e-10
+
+                for pixel_num in range(4):
+                    if np.array_equal(
+                        normalized_superpix_arr[:, pixel_num], all_zeros
+                    ):  # catch bad pixels
+                        fit_success = False
+                        break
+                    try:
+                        (
+                            superpix_params[pixel_num],
+                            superpix_pcov,
+                        ) = curve_fit(
+                            Malus,
+                            polarizations_rad,
+                            normalized_superpix_arr[:, pixel_num],
+                            predictions[pixel_num],
+                            sigma=sigma_pix[:, pixel_num],
+                            bounds=bounds[pixel_num],
+                        )
+                        fit_success = True
+                    except RuntimeError:
+                        fit_success = False
+                        break
+
+                if False:  # Debug
+                    colors = [&#34;blue&#34;, &#34;orange&#34;, &#34;green&#34;, &#34;red&#34;]
+                    fig, ax = plt.subplots(figsize=(9, 9))
+                    for i in range(4):
+                        ax.errorbar(
+                            np.rad2deg(polarizations_rad),
+                            normalized_superpix_arr[:, i],
+                            yerr=sigma_pix[:, i],
+                            xerr=[1.0] * len(polarizations_rad),
+                            label=f&#34;points {i}&#34;,
+                            fmt=&#34;None&#34;,
+                            color=colors[i],
+                        )
+                        min = np.min(polarizations_rad)
+                        max = np.max(polarizations_rad)
+                        x = np.arange(min, max, (max - min) / 100)
+                        x = np.arange(-np.pi / 2, np.pi, np.pi / 100)
+                        ax.plot(
+                            np.rad2deg(x),
+                            Malus(x, *superpix_params[i]),
+                            label=f&#34;t = {superpix_params[i,0]:2.2f}, e = {superpix_params[i, 1]:2.2f}, phi = {np.rad2deg(superpix_params[i, 2]):2.2f}&#34;,
+                        )
+
+                    plt.legend()
+                    plt.show()
+
+                if not fit_success:
+                    for i in range(2):
+                        for j in range(2):
+                            m_ij[
+                                :, :, super_y + i, super_x + j
+                            ] = theo_demodulation_matrix
+                    continue
+
+                # Compute modulation matrix and its inverse
+                t = superpix_params[:, 0]
+                eff = superpix_params[:, 1]
+                phi = superpix_params[:, 2]
+                modulation_matrix = np.array(
+                    [
+                        0.5 * t,
+                        0.5 * t * eff * np.cos(2.0 * phi),
+                        0.5 * t * eff * np.sin(2.0 * phi),
+                    ]
+                )
+
+                demodulation_matrix = np.linalg.pinv(modulation_matrix)
+
+                for i in range(2):
+                    for j in range(2):
+                        m_ij[
+                            :, :, super_y + i, super_x + j
+                        ] = demodulation_matrix
+
+                tk_data[
+                    super_y : super_y + 2, super_x : super_x + 2
+                ] = np.array(t).reshape(2, 2)
+                eff_data[
+                    super_y : super_y + 2, super_x : super_x + 2
+                ] = np.array(eff).reshape(2, 2)
+                phase_data[
+                    super_y : super_y + 2, super_x : super_x + 2
+                ] = np.array(phi).reshape(2, 2)
+
+            else:
+                for i in range(2):
+                    for j in range(2):
+                        m_ij[
+                            :, :, super_y + i, super_x + j
+                        ] = theo_demodulation_matrix
+                phase_data[
+                    super_y : super_y + 2, super_x : super_x + 2
+                ] = rad_micropol_phases_previsions.reshape(2, 2)
+                tk_data[
+                    super_y : super_y + 2, super_x : super_x + 2
+                ] = np.array([[1.0, 1.0], [1.0, 1.0]])
+                eff_data[
+                    super_y : super_y + 2, super_x : super_x + 2
+                ] = np.array([[1.0, 1.0], [1.0, 1.0]])
+
+    m_ij_chunk = m_ij.swapaxes(0, 1)
+
+    return m_ij_chunk, tk_data, eff_data, phase_data
+
+
+def Malus(angle, throughput, efficiency, phase):
+    modulated_efficiency = efficiency * (
+        np.cos(2.0 * phase) * np.cos(2.0 * angle)
+        + np.sin(2.0 * phase) * np.sin(2.0 * angle)
+    )
+    return 0.5 * throughput * (1.0 + modulated_efficiency)</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="micropolarray.processing.demodulation.Malus"><code class="name flex">
+<span>def <span class="ident">Malus</span></span>(<span>angle, throughput, efficiency, phase)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def Malus(angle, throughput, efficiency, phase):
+    modulated_efficiency = efficiency * (
+        np.cos(2.0 * phase) * np.cos(2.0 * angle)
+        + np.sin(2.0 * phase) * np.sin(2.0 * angle)
+    )
+    return 0.5 * throughput * (1.0 + modulated_efficiency)</code></pre>
+</details>
+</dd>
+<dt id="micropolarray.processing.demodulation.calculate_demodulation_tensor"><code class="name flex">
+<span>def <span class="ident">calculate_demodulation_tensor</span></span>(<span>polarizer_orientations, filenames_list, micropol_phases_previsions, gain, output_dir, occulter=True, parallelize=True, dark_filename=None, flat_filename=None)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def calculate_demodulation_tensor(
+    polarizer_orientations,
+    filenames_list,
+    micropol_phases_previsions,
+    gain,  #  needed for errors
+    output_dir,
+    occulter=True,
+    parallelize=True,
+    dark_filename=None,
+    flat_filename=None,
+):
+    # polarizations = array of polarizer orientations
+    # filenames_list = list of filenames
+    firstcall = True
+    if not np.all(np.isin([0, 45, 90, -45], polarizer_orientations)):
+        raise ValueError(
+            &#34;All (0, 45, 90, -45) pols must be included in the polarizer orientation array&#34;
+        )
+    # Have to be sorted
+    polarizer_orientations, filenames_list = (
+        list(t)
+        for t in zip(*sorted(zip(polarizer_orientations, filenames_list)))
+    )
+    micropol_phases_previsions = np.array(micropol_phases_previsions)
+    rad_micropol_phases_previsions = np.deg2rad(micropol_phases_previsions)
+
+    # Flag occulter position to not be fitted, expand to superpixel.
+    with fits.open(filenames_list[0]) as file:
+        data = file[0].data  # get data dimension
+    occulter_flag = np.ones_like(data)  # 0 if not a occulted px, 1 otherwise
+    if occulter:
+        # Mean values from coronal observations 2022_12_03
+        # (campagna_2022/mean_occulter_pos.py)
+        occulter_y = 917
+        occulter_x = 948
+        occulter_r = 524 + 10  # Better to overoccult
+
+        occulter_flag = roi_from_polar(
+            occulter_flag, [occulter_y, occulter_x], [0, occulter_r]
+        )
+        for super_y in range(0, occulter_flag.shape[0], 2):
+            for super_x in range(0, occulter_flag.shape[1], 2):
+                if np.any(
+                    occulter_flag[super_y : super_y + 2, super_x : super_x + 2]
+                ):
+                    occulter_flag[
+                        super_y : super_y + 2, super_x : super_x + 2
+                    ] = 1
+                    continue
+    else:
+        occulter_flag *= 0
+
+    # Collect dark
+    if dark_filename:
+        with fits.open(dark_filename) as file:
+            dark = np.array(file[0].data, dtype=np.float)
+    # Collect flat field, normalize it
+    if flat_filename:
+        with fits.open(flat_filename) as file:
+            flat = np.array(file[0].data, dtype=np.float)
+    if flat_filename and dark_filename:
+        flat -= dark  # correct flat too
+        flat = np.where(flat &gt; 0, flat, 1.0)
+        if occulter:
+            flat = np.where(occulter_flag, 1.0, flat)
+
+    flat_max = np.max(flat, axis=(0, 1))
+    normalized_flat = np.where(occulter_flag, 1.0, flat / flat_max)
+
+    # collect data
+    all_data_arr = [0.0] * len(filenames_list)
+    for idx, filename in enumerate(filenames_list):
+        with fits.open(filename) as file:
+            all_data_arr[idx] = np.array(file[0].data, dtype=float)
+            if dark_filename is not None:
+                all_data_arr[idx] -= dark
+                all_data_arr[idx] = np.where(
+                    all_data_arr[idx] &gt;= 0, all_data_arr[idx], 0.0
+                )
+            if flat_filename is not None:
+                all_data_arr[idx] = np.where(
+                    normalized_flat != 0,
+                    all_data_arr[idx] / normalized_flat,
+                    all_data_arr[idx],
+                )
+
+    all_data_arr = np.array(all_data_arr)
+    _, height, width = all_data_arr.shape
+
+    DEBUG = False
+    if DEBUG:
+        height = int(height / 2)
+        width = int(width / 2)
+        all_data_arr = all_data_arr[:, 0:height, 0:width]
+        parallelize = False
+
+    # parallelize
+    chunks_n = 4  # Will be divided into chunks_n*chunks_n squares
+    chunk_size_x = int(width / chunks_n)
+    chunk_size_y = int(height / chunks_n)
+    splitted_data = np.zeros(
+        shape=(
+            chunks_n * chunks_n,
+            len(polarizer_orientations),
+            chunk_size_y,
+            chunk_size_x,
+        )
+    )
+    splitted_occulter = np.zeros(
+        shape=(chunks_n * chunks_n, chunk_size_y, chunk_size_x)
+    )
+    for i in range(chunks_n):
+        for j in range(chunks_n):
+            splitted_data[i + chunks_n * j] = np.array(
+                all_data_arr[
+                    :,
+                    i * (chunk_size_x) : (i + 1) * chunk_size_x,
+                    j * (chunk_size_y) : (j + 1) * chunk_size_y,
+                ]
+            )  # shape = (chunks_n*chunks_n, len(filenames_list), chunk_size_y, chunk_size_x)
+            splitted_occulter[i + j * chunks_n] = np.array(
+                occulter_flag[
+                    i * (chunk_size_x) : (i + 1) * chunk_size_x,
+                    j * (chunk_size_y) : (j + 1) * chunk_size_y,
+                ]
+            )  # shape = (chunks_n*chunks_n, chunk_size_y, chunk_size_x)
+
+    # Normalizing S, has a spike of which maximum is taken
+    S_max = np.zeros(
+        shape=(height, width)
+    )  # tk_sum = tk_0 + tk_45 + tk_90 + tk_45
+    for pol, image in zip(polarizer_orientations, all_data_arr):
+        if pol in [0, 90, 45, -45]:
+            S_max += 0.5 * image
+    bins = 1000
+    histo = np.histogram(S_max, bins=bins)
+    index = np.where(histo[0] == np.max(histo[0]))[0][0]
+    normalizing_S = 0.5 * (histo[1][index] + histo[1][index + 1])
+
+    if False:
+        histo_0 = np.histogram(all_data_arr[5], bins=1000)
+        fig, ax = plt.subplots()
+        ax.stairs(histo_0[0], histo_0[1])
+        ax.stairs(histo[0], histo[1])
+        ax.vlines(normalizing_S, ymin=0, ymax=100000, colors=&#34;red&#34;)
+        plt.show()
+        sys.exit()
+
+    args = (
+        [
+            splitted_data[i],
+            normalizing_S,
+            splitted_occulter[i],
+            polarizer_orientations,
+            rad_micropol_phases_previsions,
+            gain,
+        ]
+        for i in range(chunks_n * chunks_n)
+    )
+
+    starting_time = time.perf_counter()
+    loc_time = time.strftime(&#34;%H:%M:%S  (%Y/%m/%d)&#34;, time.localtime())
+    info(f&#34;Starting parallel calculation&#34;)
+
+    if parallelize:
+        try:
+            with mp.Pool(processes=chunks_n * chunks_n) as p:
+                result = p.starmap(
+                    compute_demodulation_by_chunk,
+                    args,
+                )
+        except:
+            error(&#34;Fit not found&#34;)
+            ending_time = time.perf_counter()
+
+            info(f&#34;Elapsed : {(ending_time - starting_time)/60:3.2f} mins&#34;)
+            sys.exit()
+    else:
+        arglist = [arg for arg in args]
+        result = [[0.0, 0.0]] * chunks_n * chunks_n
+
+        for i in range(chunks_n * chunks_n):
+            result[i] = compute_demodulation_by_chunk(*arglist[i])
+
+    loc_time = time.strftime(&#34;%H:%M:%S (%Y/%m/%d)&#34;, time.localtime())
+    info(f&#34;Ending parallel calculation&#34;)
+
+    ending_time = time.perf_counter()
+    info(f&#34;Elapsed : {(ending_time - starting_time)/60:3.2f} mins&#34;)
+
+    result = np.array(result)
+    m_ij = np.zeros(shape=(3, 4, height, width))
+    tks = np.zeros(shape=(height, width))
+    efficiences = np.zeros(shape=(height, width))
+    phases = np.zeros(shape=(height, width))
+
+    for i in range(chunks_n):
+        for j in range(chunks_n):
+            m_ij[
+                :,
+                :,
+                i * (chunk_size_x) : (i + 1) * chunk_size_x,
+                j * (chunk_size_y) : (j + 1) * chunk_size_y,
+            ] = result[i + chunks_n * j, 0].reshape(
+                3, 4, chunk_size_y, chunk_size_x
+            )
+            tks[
+                i * (chunk_size_x) : (i + 1) * chunk_size_x,
+                j * (chunk_size_y) : (j + 1) * chunk_size_y,
+            ] = result[i + chunks_n * j, 1].reshape(chunk_size_y, chunk_size_x)
+            efficiences[
+                i * (chunk_size_x) : (i + 1) * chunk_size_x,
+                j * (chunk_size_y) : (j + 1) * chunk_size_y,
+            ] = result[i + chunks_n * j, 2].reshape(chunk_size_y, chunk_size_x)
+            phases[
+                i * (chunk_size_x) : (i + 1) * chunk_size_x,
+                j * (chunk_size_y) : (j + 1) * chunk_size_y,
+            ] = result[i + chunks_n * j, 3].reshape(chunk_size_y, chunk_size_x)
+
+    phases = np.deg2rad(phases)
+
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+    for i in range(3):
+        for j in range(4):
+            hdu = fits.PrimaryHDU(data=m_ij[i, j])
+            hdu.writeto(output_dir + f&#34;M{i}{j}.fits&#34;, overwrite=True)
+    hdu = fits.PrimaryHDU(data=tks)
+    hdu.writeto(output_dir + &#34;transmittancies.fits&#34;, overwrite=True)
+    hdu = fits.PrimaryHDU(data=efficiences)
+    hdu.writeto(output_dir + &#34;efficiences.fits&#34;, overwrite=True)
+    hdu = fits.PrimaryHDU(data=phases)
+    hdu.writeto(output_dir + &#34;phases.fits&#34;, overwrite=True)
+
+    info(&#34;Demodulation matrices and fit data successfully saved!&#34;)
+
+    return</code></pre>
+</details>
+</dd>
+<dt id="micropolarray.processing.demodulation.compute_demodulation_by_chunk"><code class="name flex">
+<span>def <span class="ident">compute_demodulation_by_chunk</span></span>(<span>splitted_dara_arr, normalizing_S, splitted_occulter_flag, polarizer_orientations, rad_micropol_phases_previsions, gain)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def compute_demodulation_by_chunk(
+    splitted_dara_arr,
+    normalizing_S,
+    splitted_occulter_flag,
+    polarizer_orientations,
+    rad_micropol_phases_previsions,
+    gain,
+):
+    # Preemptly compute the theoretical demo matrix to save time
+    theo_modulation_matrix = np.array(
+        [
+            [0.5, 0.5, 0.5, 0.5],
+            [
+                0.5 * np.cos(2.0 * rad_micropol_phases_previsions[i])
+                for i in range(4)
+            ],
+            [
+                0.5 * np.sin(2.0 * rad_micropol_phases_previsions[i])
+                for i in range(4)
+            ],
+        ]
+    )
+    theo_demodulation_matrix = np.linalg.pinv(theo_modulation_matrix)
+
+    num_of_points, height, width = splitted_dara_arr.shape
+    rad_micropol_phases_previsions = np.array(rad_micropol_phases_previsions)
+    polarizations_rad = np.deg2rad(polarizer_orientations)
+    tk_prediction = 0.5
+    efficiency_prediction = 0.8
+
+    # Checked
+    sigma_S2 = np.sqrt(0.5 * normalizing_S / gain)
+    normalizing_S2 = normalizing_S * normalizing_S
+    pix_DN_sigma = np.sqrt(
+        splitted_dara_arr / (gain * normalizing_S2)
+        + sigma_S2
+        * (splitted_dara_arr * splitted_dara_arr)
+        / (normalizing_S2 * normalizing_S2)
+    )
+    normalized_splitted_data = splitted_dara_arr / normalizing_S
+    all_zeros = np.zeros(shape=(num_of_points))
+
+    m_ij = np.zeros(shape=(4, 3, height, width))
+    tk_data = np.ones(shape=(height, width)) * tk_prediction
+    eff_data = np.ones(shape=(height, width)) * efficiency_prediction
+    phase_data = np.zeros(shape=(height, width))
+    modulation_matrix = np.zeros(shape=(3, 4))
+    superpix_params = np.zeros(shape=(4, 3))
+
+    predictions = np.zeros(shape=(4, 3))
+    predictions[:, 1] = efficiency_prediction  # Efficiency prediction
+    predictions[:, 2] = rad_micropol_phases_previsions  # Angle prediction
+
+    bounds = np.zeros(shape=(4, 2, 3))
+    bounds[:, 0, 1], bounds[:, 1, 1] = 0.1, 1.0  # Efficiency bounds
+    bounds[:, 0, 2] = rad_micropol_phases_previsions - 15  # Lower angle bounds
+    bounds[:, 1, 2] = rad_micropol_phases_previsions + 15  # Upper angle bounds
+
+    # Fit throughput too
+    predictions[:, 0] = [tk_prediction] * 4
+    bounds[:, 0, 0] = 0.1
+    bounds[:, 1, 0] = 1.0
+
+    # Fit for each superpixel. Use theoretical demodulation matrix for
+    # occulter if present.
+    DEBUG = False
+    if DEBUG:
+        x_start, x_end = 4, 8
+        y_start, y_end = 4, 8
+    else:
+        y_start, y_end = 0, height
+        x_start, x_end = 0, width
+    for super_y in range(y_start, y_end, 2):
+        for super_x in range(x_start, x_end, 2):
+            if not (
+                np.any(
+                    splitted_occulter_flag[
+                        super_y : super_y + 2, super_x : super_x + 2
+                    ]
+                )
+            ):
+                normalized_superpix_arr = normalized_splitted_data[
+                    :, super_y : super_y + 2, super_x : super_x + 2
+                ].reshape(num_of_points, 4)
+
+                # sigma_pix = np.sqrt(
+                #    superpix_arr[:] / normalizing_S2
+                #    + sigma_S2
+                #    * (superpix_arr[:] * superpix_arr[:])
+                #    / (normalizing_S2 * normalizing_S2)
+                # )
+                sigma_pix = pix_DN_sigma[
+                    :, super_y : super_y + 2, super_x : super_x + 2
+                ].reshape(num_of_points, 4)
+                sigma_pix = np.where(sigma_pix != 0.0, sigma_pix, 1.0e-5)
+
+                if False:  # Liberatore method, lock throughput
+                    tk = np.max(superpix_arr, axis=0) / normalizing_S
+                    predictions[:, 0] = tk
+                    bounds[:, 0, 0] = tk - 1.0e-10
+                    bounds[:, 1, 0] = tk + 1.0e-10
+
+                for pixel_num in range(4):
+                    if np.array_equal(
+                        normalized_superpix_arr[:, pixel_num], all_zeros
+                    ):  # catch bad pixels
+                        fit_success = False
+                        break
+                    try:
+                        (
+                            superpix_params[pixel_num],
+                            superpix_pcov,
+                        ) = curve_fit(
+                            Malus,
+                            polarizations_rad,
+                            normalized_superpix_arr[:, pixel_num],
+                            predictions[pixel_num],
+                            sigma=sigma_pix[:, pixel_num],
+                            bounds=bounds[pixel_num],
+                        )
+                        fit_success = True
+                    except RuntimeError:
+                        fit_success = False
+                        break
+
+                if False:  # Debug
+                    colors = [&#34;blue&#34;, &#34;orange&#34;, &#34;green&#34;, &#34;red&#34;]
+                    fig, ax = plt.subplots(figsize=(9, 9))
+                    for i in range(4):
+                        ax.errorbar(
+                            np.rad2deg(polarizations_rad),
+                            normalized_superpix_arr[:, i],
+                            yerr=sigma_pix[:, i],
+                            xerr=[1.0] * len(polarizations_rad),
+                            label=f&#34;points {i}&#34;,
+                            fmt=&#34;None&#34;,
+                            color=colors[i],
+                        )
+                        min = np.min(polarizations_rad)
+                        max = np.max(polarizations_rad)
+                        x = np.arange(min, max, (max - min) / 100)
+                        x = np.arange(-np.pi / 2, np.pi, np.pi / 100)
+                        ax.plot(
+                            np.rad2deg(x),
+                            Malus(x, *superpix_params[i]),
+                            label=f&#34;t = {superpix_params[i,0]:2.2f}, e = {superpix_params[i, 1]:2.2f}, phi = {np.rad2deg(superpix_params[i, 2]):2.2f}&#34;,
+                        )
+
+                    plt.legend()
+                    plt.show()
+
+                if not fit_success:
+                    for i in range(2):
+                        for j in range(2):
+                            m_ij[
+                                :, :, super_y + i, super_x + j
+                            ] = theo_demodulation_matrix
+                    continue
+
+                # Compute modulation matrix and its inverse
+                t = superpix_params[:, 0]
+                eff = superpix_params[:, 1]
+                phi = superpix_params[:, 2]
+                modulation_matrix = np.array(
+                    [
+                        0.5 * t,
+                        0.5 * t * eff * np.cos(2.0 * phi),
+                        0.5 * t * eff * np.sin(2.0 * phi),
+                    ]
+                )
+
+                demodulation_matrix = np.linalg.pinv(modulation_matrix)
+
+                for i in range(2):
+                    for j in range(2):
+                        m_ij[
+                            :, :, super_y + i, super_x + j
+                        ] = demodulation_matrix
+
+                tk_data[
+                    super_y : super_y + 2, super_x : super_x + 2
+                ] = np.array(t).reshape(2, 2)
+                eff_data[
+                    super_y : super_y + 2, super_x : super_x + 2
+                ] = np.array(eff).reshape(2, 2)
+                phase_data[
+                    super_y : super_y + 2, super_x : super_x + 2
+                ] = np.array(phi).reshape(2, 2)
+
+            else:
+                for i in range(2):
+                    for j in range(2):
+                        m_ij[
+                            :, :, super_y + i, super_x + j
+                        ] = theo_demodulation_matrix
+                phase_data[
+                    super_y : super_y + 2, super_x : super_x + 2
+                ] = rad_micropol_phases_previsions.reshape(2, 2)
+                tk_data[
+                    super_y : super_y + 2, super_x : super_x + 2
+                ] = np.array([[1.0, 1.0], [1.0, 1.0]])
+                eff_data[
+                    super_y : super_y + 2, super_x : super_x + 2
+                ] = np.array([[1.0, 1.0], [1.0, 1.0]])
+
+    m_ij_chunk = m_ij.swapaxes(0, 1)
+
+    return m_ij_chunk, tk_data, eff_data, phase_data</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="micropolarray.processing.demodulation.Demodulator"><code class="flex name class">
+<span>class <span class="ident">Demodulator</span></span>
+<span>(</span><span>demo_matrices_path: str, binning: bool = False)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Demodulation class needed for MicroPolarizerArrayImage
+demodulation.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Demodulator:
+    &#34;&#34;&#34;Demodulation class needed for MicroPolarizerArrayImage
+    demodulation.&#34;&#34;&#34;
+
+    def __init__(self, demo_matrices_path: str, binning: bool = False):
+        self.demo_matrices_path = demo_matrices_path
+        self.binning = binning  # needed for a correct image binning
+        self.mij = self._get_demodulation_tensor(demo_matrices_path)
+
+    def rebin(self, binning: int):
+        warning(&#34;USE OF BINNED DEMODULATION MATRIX IS INCORRECT&#34;)
+        binned_demodulator = Demodulator(self.demo_matrices_path)
+        end_y, end_x = self.mij[0, 0].shape
+        end_y, end_x = trim_to_match_binning(end_y, end_x, binning)
+        new_mij = np.zeros(
+            shape=(
+                self.mij.shape[0],
+                self.mij.shape[1],
+                int(self.mij.shape[2] / binning),
+                int(self.mij.shape[3] / binning),
+            )
+        )
+        for i in range(3):
+            for j in range(4):
+                single_mij = self.mij[i, j, :end_y, :end_x]
+                new_mij[i, j] = standard_jitrebin(
+                    single_mij,
+                    single_mij.shape[0],
+                    single_mij.shape[1],
+                    binning=binning,
+                ) / (binning * binning)
+                # new_mij[i, j] = micropolarray_jitrebin(
+                #    single_mij,
+                #    single_mij.shape[0],
+                #    single_mij.shape[1],
+                #    binning=binning,
+                # )
+        binned_demodulator.mij = new_mij
+        return binned_demodulator
+
+    def _get_demodulation_tensor(self, binning: bool = False) -&gt; np.ndarray:
+        if not os.path.exists(self.demo_matrices_path):
+            raise FileNotFoundError(&#34;self.demo_matrices_path not found.&#34;)
+        mij_filenames_list = glob.glob(
+            self.demo_matrices_path + os.path.sep + &#34;*.fits&#34;
+        )
+
+        with fits.open(mij_filenames_list[0]) as firsthul:
+            sample_data = np.array(firsthul[0].data)
+        Mij = np.zeros(
+            shape=(3, 4, sample_data.shape[0], sample_data.shape[1]),
+            dtype=float,
+        )
+        for mij in mij_filenames_list:
+            searchresult = re.search(&#34;[Mm][0-9]{2}&#34;, mij.split(&#34;/&#34;)[-1])
+            if searchresult is not None:  # Exclude files not matching m/Mij
+                i, j = re.search(&#34;[Mm][0-9]{2}&#34;, mij.split(&#34;/&#34;)[-1]).group()[
+                    -2:
+                ]  # Searches for pattern M/m + ij as last string before .fits
+            else:
+                continue
+            i = int(i)
+            j = int(j)
+            with fits.open(mij) as hul:
+                Mij[i, j] = hul[0].data
+
+        return Mij</code></pre>
+</details>
+<h3>Methods</h3>
+<dl>
+<dt id="micropolarray.processing.demodulation.Demodulator.rebin"><code class="name flex">
+<span>def <span class="ident">rebin</span></span>(<span>self, binning: int)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def rebin(self, binning: int):
+    warning(&#34;USE OF BINNED DEMODULATION MATRIX IS INCORRECT&#34;)
+    binned_demodulator = Demodulator(self.demo_matrices_path)
+    end_y, end_x = self.mij[0, 0].shape
+    end_y, end_x = trim_to_match_binning(end_y, end_x, binning)
+    new_mij = np.zeros(
+        shape=(
+            self.mij.shape[0],
+            self.mij.shape[1],
+            int(self.mij.shape[2] / binning),
+            int(self.mij.shape[3] / binning),
+        )
+    )
+    for i in range(3):
+        for j in range(4):
+            single_mij = self.mij[i, j, :end_y, :end_x]
+            new_mij[i, j] = standard_jitrebin(
+                single_mij,
+                single_mij.shape[0],
+                single_mij.shape[1],
+                binning=binning,
+            ) / (binning * binning)
+            # new_mij[i, j] = micropolarray_jitrebin(
+            #    single_mij,
+            #    single_mij.shape[0],
+            #    single_mij.shape[1],
+            #    binning=binning,
+            # )
+    binned_demodulator.mij = new_mij
+    return binned_demodulator</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="micropolarray.processing" href="index.html">micropolarray.processing</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="micropolarray.processing.demodulation.Malus" href="#micropolarray.processing.demodulation.Malus">Malus</a></code></li>
+<li><code><a title="micropolarray.processing.demodulation.calculate_demodulation_tensor" href="#micropolarray.processing.demodulation.calculate_demodulation_tensor">calculate_demodulation_tensor</a></code></li>
+<li><code><a title="micropolarray.processing.demodulation.compute_demodulation_by_chunk" href="#micropolarray.processing.demodulation.compute_demodulation_by_chunk">compute_demodulation_by_chunk</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="micropolarray.processing.demodulation.Demodulator" href="#micropolarray.processing.demodulation.Demodulator">Demodulator</a></code></h4>
+<ul class="">
+<li><code><a title="micropolarray.processing.demodulation.Demodulator.rebin" href="#micropolarray.processing.demodulation.Demodulator.rebin">rebin</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>

@@ -39,11 +39,21 @@ class Demodulator:
         self.n_malus_params = N_MALUS_PARAMS
         self.demo_matrices_path = demo_matrices_path
 
-        self.mij = self.get_demodulation_tensor()
+        self.mij = self._get_demodulation_tensor()
 
-    def get_demodulation_tensor(self):
+    def _get_demodulation_tensor(self):
         """Reads files "MIJ.fits" from path folder and returns a (3,4,y,x)
-        numpy array representing the demodulation tensor."""
+        numpy array representing the demodulation tensor.
+
+        Args:
+            binning (bool, optional): _description_. Defaults to False.
+
+        Raises:
+            FileNotFoundError: couldn't find the matrices in the specified path
+
+        Returns:
+            ndarray: (3, 4, *data.shape) array containing the demodulation tensor
+        """
 
         if not os.path.exists(self.demo_matrices_path):
             raise FileNotFoundError("self.demo_matrices_path not found.")
@@ -86,7 +96,17 @@ class Demodulator:
 
         return Mij
 
-    def show(self, vmin=-1, vmax=1, cmap="Greys"):
+    def show(self, vmin=-1, vmax=1, cmap="Greys") -> tuple:
+        """Shows the demodulation tensor
+
+        Args:
+            vmin (int, optional): Minimum shown value. Defaults to -1.
+            vmax (int, optional): Maximum shown value. Defaults to 1.
+            cmap (str, optional): Colormap of the plot. Defaults to "Greys".
+
+        Returns:
+            tuple: fig, ax tuple as returned by matplotlib.pyplot.subplots
+        """
         fig, ax = plt.subplots(
             3,
             4,
@@ -112,6 +132,7 @@ class Demodulator:
         return fig, ax
 
     def rebin(self, binning):  # TODO
+        """DO NOT USE THIS, calculate the tensor from the binned images"""
         if (int(self.mij.shape[2] / binning) % 2) or (
             int(self.mij.shape[3] / binning) % 2
         ):

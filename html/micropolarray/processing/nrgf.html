@@ -1,0 +1,877 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>micropolarray.processing.nrgf API documentation</title>
+<meta name="description" content="" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>micropolarray.processing.nrgf</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">import numpy as np
+import sys
+from scipy.optimize import curve_fit
+from logging import info
+import matplotlib.pyplot as plt
+from functools import lru_cache
+from numpy.lib.stride_tricks import as_strided
+
+
+def roi_from_polar(
+    data: np.array,
+    center: list = None,
+    rho: list = None,
+    theta=[0, 360],
+    fill: float = 0.0,
+    return_boolean=False,
+) -&gt; np.array:
+    &#34;&#34;&#34;Returns the input array in a circular selection, otherwise an arbitrary number. If a pixel is not in the selection the ENTIRE superpixel is considered out of selection. If return_boolean is True then a boolean array is returned instead (useful for mean/stdev operations).
+
+    Args:
+        data (np.array): input data
+        center (list, optional): pixel coordinates of the circle center. Defaults to None (image center).
+        rho (list, optional): radius to exclude. Defaults to None (center to image border).
+        theta (list, optional): polar selection angle, 0 is horizonta, anti-clockwise direction. Defaults to [0, 360].
+        fill (float, optional): number to fill the outer selection. Defaults to 0.0.
+        return_boolean (bool, optional): if set to true, function returns a boolean array of the roi. Defaults to False.
+
+    Returns:
+        np.array: array containing the input data inside the selection, and fill otherwise
+    &#34;&#34;&#34;
+    height, width = data.shape
+    theta_min, theta_max = theta
+    rho_min, rho_max = rho
+    if center is None:
+        center = [int(height / 2), int(width / 2)]
+    if rho is None:
+        rho_max = np.min([height - center[0], width - center[1]])
+        rho = [0.0, rho_max]
+
+    # make a map that is HALF THE SIZE, do condition, then resize to make all the superpixel outside selection
+    rho_coords, phi_coords = map_polar_coordinates(
+        int(height / 2),
+        int(width / 2),
+        tuple([int(center[0] / 2), int(center[1] / 2)]),
+    )  # cast it to a tuple (which is hashable)
+
+    theta_condition = np.logical_and(
+        phi_coords &gt;= theta_min, phi_coords &lt; theta_max
+    )
+    rho_condition = np.logical_and(
+        rho_coords &gt; rho_min / 2, rho_coords &lt;= rho_max / 2
+    )  # half the radius because half the map
+    condition = np.logical_and(rho_condition, theta_condition)
+
+    # resize condition to correct shape
+    condition = condition.repeat(2, axis=0).repeat(2, axis=1)
+
+    if return_boolean:
+        return np.where(condition, True, False)
+
+    return np.where(condition, data, fill)
+
+
+def tile_double(a):
+    height, width = a.shape
+    hs, ws = a.strides
+    tiles = as_strided(a, (height, 2, width, 2), (hs, 0, ws, 0))
+    return tiles.reshape(2 * height, 2 * width)
+
+
+@lru_cache
+def map_polar_coordinates(height, width, center):
+    y_center, x_center = center
+
+    i_list, j_list = np.arange(width), np.arange(height)
+    x_coords, y_coords = np.meshgrid(i_list, j_list)
+    # Map polar coordinates, 0 = horizontal dx, anti-clockwise angles
+    rho_coords = np.sqrt(
+        (x_coords - x_center) ** 2 + (y_coords - y_center) ** 2
+    )
+    phi_coords = (
+        (np.arctan2(y_coords - y_center, x_coords - x_center) * 180 / np.pi)
+        + 360
+    ) % 360
+
+    return rho_coords, phi_coords
+
+
+def nrgf(
+    data: np.array,
+    y_center: int = None,
+    x_center: int = None,
+    rho_min: int = None,
+    step: int = 1,
+    phi_to_mean=[0.0, 360],
+    output_phi=[0.0, 360],
+) -&gt; np.array:
+    &#34;&#34;&#34;
+    Performs nrgf filtering on the image, starting from center and radius. Mean is performed between phi_to_mean, 0 is horizontal right, anti-clockwise.
+
+
+    Args:
+        data (np.array): input array
+        y_center (int, optional): pixel y coordinate of the nrgf center. Defaults to None (image y center).
+        x_center (int, optional): pixel x coordinate of the nrgf center. Defaults to (image x center).
+        rho_min (int, optional): minimun radius in pixels to perform nrgf to. Defaults to None (radius 0).
+        step (int, optional): step to which apply the nrgf from center, in pixels. Defaults to 1 pixel.
+        phi_to_mean (list[float, float], optional): polar angle to calculate the mean value from. Defaults to [0, 360].
+        output_phi (list[float, float], optional): polar angle to include in output data. Defaults to [0, 360].
+
+    Returns:
+        np.array: nrgf-filtered input data
+    &#34;&#34;&#34;
+    height, width = data.shape
+
+    if (y_center is None) or (x_center is None) or (rho_min is None):
+        info(&#34;Calculating occulter position...&#34;)
+        y_center, x_center, rho_min = find_occulter_position(data)
+    center = [int(y_center), int(x_center)]
+
+    newdata = np.zeros(shape=data.shape, dtype=float)
+    i_list, j_list = np.arange(width), np.arange(height)
+    x_coords, y_coords = np.meshgrid(i_list, j_list)
+    # Map polar coordinates
+    rho_coords, phi_coords = map_polar_coordinates(
+        height, width, tuple(center)
+    )  # cast it to a tuple (which is hashable)
+
+    mean_phi_condition = np.logical_and(
+        phi_coords &gt;= phi_to_mean[0], phi_coords &lt; phi_to_mean[1]
+    )  # Exclude angle from mean
+
+    out_phi_condition = np.logical_and(
+        phi_coords &gt;= output_phi[0], phi_coords &lt; output_phi[1]
+    )  # Exclude angle from filter
+
+    rho_max = int(np.max(rho_coords))
+    rho_step = step
+
+    print(&#34;Applying nrgf filter...&#34;)
+    for r in range(rho_min, rho_max, rho_step):
+        rho_condition = np.logical_and(
+            rho_coords &gt; r, rho_coords &lt;= r + rho_step
+        )
+        condition = np.logical_and(rho_condition, out_phi_condition)
+        # condition = np.logical_and(rho_condition, mean_phi_condition)
+        mean_condition = np.logical_and(rho_condition, mean_phi_condition)
+        mean_over_ROI = np.mean(data, where=mean_condition)
+        std_over_ROI = np.std(data, where=mean_condition)
+        if std_over_ROI &gt; 0:
+            newdata = np.where(
+                condition,
+                (data - mean_over_ROI) / std_over_ROI,
+                newdata,
+            )
+        else:
+            newdata = np.where(condition, 0, newdata)
+
+    return newdata
+
+
+def find_occulter_position(
+    data: np.array, method: str = &#34;sigmoid&#34;, threshold: float = 4.0
+):
+    &#34;&#34;&#34;Finds the occulter position of an image.
+
+    Args:
+        data (np.array): input data
+        method (str, optional): Method to find occulter edges. If &#34;sigmoid&#34; it will try to fit four sigmoids at the image edges centers, inferring the occulter edges from the parameters. If &#34;algo&#34; it will start from the image edge center and infer the occulter position when DN[i] &gt; threshold*mean(DN[:i]) Defaults to &#34;sigmoid&#34;.
+        threshold (float, optional): Threshold for the algo method. Defaults to 4.0.
+
+    Raises:
+        UnboundLocalError: couldn&#39;t converge
+
+    Returns:
+        list: occulter y, occulter x, occulter radius
+    &#34;&#34;&#34;
+    # works if occulter is not entirely inside a single quadrant, fits
+    # a sigmoid to find occulter bounds
+    half_y = int(data.shape[0] / 2)
+    half_x = int(data.shape[1] / 2)
+    values_x_0 = np.flip(data[half_y, :half_x])
+    values_x_1 = data[half_y, half_x:]
+    values_y_0 = np.flip(data[:half_y, half_x])
+    values_y_1 = data[half_y:, half_x]
+
+    occulter_bounds = [0.0] * 4
+
+    show = False
+    if show:
+        fig, ax = plt.subplots(2, 2, constrained_layout=True)
+        ax = ax.ravel()
+        titles = [
+            &#34;Lower vertical&#34;,
+            &#34;Upper vertical&#34;,
+            &#34;Right horizontal&#34;,
+            &#34;Left horizontal&#34;,
+        ]
+
+    if method == &#34;sigmoid&#34;:
+        for idx, half_array in enumerate(
+            [values_y_0, values_y_1, values_x_0, values_x_1]
+        ):
+            # Artificial plateau after maximum
+            # max_half_array = np.max(half_array)
+            # for i, element in enumerate(half_array):
+            #    if element == max_half_array:
+            #        max_i = i
+            #        break
+            # half_array[max_i:] = max_half_array
+
+            # x = np.arange(0, half_y, 1)
+            x = np.arange(0, int(len(half_array / 2)), 1)
+
+            params = [
+                # np.mean(half_array[int(len(half_array) / 2) :]),
+                np.max(half_array),
+                # np.mean(half_array[: int(len(half_array) / 2)]),
+                np.min(half_array),
+                0.5,
+                len(half_array) / 2,
+            ]
+            params, pcov = curve_fit(sigmoid, x, half_array, params)
+            occulter_bounds[idx] = params[3]
+
+            if show:
+                axis = ax[idx]
+                axis.scatter(x, half_array, c=&#34;grey&#34;)
+                axis.plot(x, sigmoid(x, *params), c=&#34;black&#34;)
+                axis.set_title(titles[idx])
+                axis.set_xlabel(&#34;Pixels from center&#34;)
+                axis.set_ylabel(&#34;DN&#34;)
+
+        try:
+            occulter_bounds[0] = half_y - occulter_bounds[0]
+            occulter_bounds[1] = half_y + occulter_bounds[1]
+            occulter_bounds[2] = half_x - occulter_bounds[2]
+            occulter_bounds[3] = half_x + occulter_bounds[3]
+        except UnboundLocalError:
+            raise ValueError(&#34;Edges not found, try to change the threshold&#34;)
+
+    elif method == &#34;algo&#34;:
+        # OLD, ALGORITM INSTEAD OF FITTING - less stable
+        min_points = 5
+        threshold = threshold
+
+        for i, val in enumerate(values_x_0):
+            if i &gt; min_points:
+                mean = np.mean(values_x_0[:i])
+                if val &gt; (threshold * mean):
+                    occulter_start_x = half_x - i
+                    break
+        for i, val in enumerate(values_x_1):
+            if i &gt; min_points:
+                mean = np.mean(values_x_1[:i])
+                if val &gt; (threshold * mean):
+                    occulter_end_x = half_x + i
+                    break
+        for i, val in enumerate(values_y_0):
+            if i &gt; min_points:
+                mean = np.mean(values_y_0[:i])
+                if val &gt; (threshold * mean):
+                    occulter_start_y = half_y - i
+                    break
+        for i, val in enumerate(values_y_1):
+            if i &gt; min_points:
+                mean = np.mean(values_y_1[:i])
+                if val &gt; (threshold * mean):
+                    occulter_end_y = half_y + i
+                    break
+        try:
+            occulter_bounds[0] = occulter_start_y
+            occulter_bounds[1] = occulter_end_y
+            occulter_bounds[2] = occulter_start_x
+            occulter_bounds[3] = occulter_end_x
+        except UnboundLocalError:
+            raise ValueError(
+                &#34;ERROR: occulter edges not found, try to change the threshold&#34;
+            )
+    if show:
+        plt.show()
+
+    x_center = int(np.mean([occulter_bounds[:2]]))
+    y_center = int(np.mean([occulter_bounds[2:]]))
+    radius = int(
+        np.mean(
+            [
+                np.abs(occulter_bounds[1] - occulter_bounds[0]) / 2,
+                np.abs(occulter_bounds[3] - occulter_bounds[2]) / 2,
+            ]
+        )
+    )
+
+    return [y_center, x_center, radius]
+
+
+def remove_outliers_simple(original, neighbours=2):
+    &#34;&#34;&#34;EXPERIMENTAL DO NOT USE, for improving fitting on occulter position&#34;&#34;&#34;
+    data = original.copy()
+    for i, element in enumerate(data[neighbours:-neighbours]):
+        median = np.median(data[i - neighbours : i + neighbours])
+        std = np.median(np.abs(data[i - neighbours : i + neighbours] - median))
+        if (element &lt; median - 3 * std) or (element &gt; median + 3 * std):
+            print()
+            print(element)
+            print(data[neighbours:-neighbours])
+            data[i] = median
+            print(data[neighbours:-neighbours])
+    return data
+
+    median = np.median(data)
+
+    median_deviation = np.abs(data - np.median(data))
+    condition = (data &lt; (median + 3 * median_deviation)) | (
+        data &gt; (median - 3 * median_deviation)
+    )
+    data = np.where(condition, data, median)
+    return data
+    extreme = 2
+    outliers = []
+    for i, element in enumerate(data[extreme:-extreme]):
+        mean = np.mean([data[i], data[i + 1]])
+        std = np.std([data[i], data[i + 1]])
+        if (element &gt; (mean + 3 * std)) or (element &lt; (mean - 3 * std)):
+            outliers.append(i + 1)
+    data = np.delete(data, outliers)
+    return data
+
+
+def reject_outliers(data, m=2.0):
+    d = np.abs(data - np.median(data))
+    mdev = np.median(d)
+    s = d / mdev if mdev else np.zeros(len(d))
+    return data[s &lt; m]
+
+
+def sigmoid(x, max, min, slope, intercept):
+    sigma = slope * (x - intercept)
+    return max * np.exp(sigma) / (1 + np.exp(sigma)) + min</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="micropolarray.processing.nrgf.find_occulter_position"><code class="name flex">
+<span>def <span class="ident">find_occulter_position</span></span>(<span>data: <built-in function array>, method: str = 'sigmoid', threshold: float = 4.0)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Finds the occulter position of an image.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>data</code></strong> :&ensp;<code>np.array</code></dt>
+<dd>input data</dd>
+<dt><strong><code>method</code></strong> :&ensp;<code>str</code>, optional</dt>
+<dd>Method to find occulter edges. If "sigmoid" it will try to fit four sigmoids at the image edges centers, inferring the occulter edges from the parameters. If "algo" it will start from the image edge center and infer the occulter position when DN[i] &gt; threshold*mean(DN[:i]) Defaults to "sigmoid".</dd>
+<dt><strong><code>threshold</code></strong> :&ensp;<code>float</code>, optional</dt>
+<dd>Threshold for the algo method. Defaults to 4.0.</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>UnboundLocalError</code></dt>
+<dd>couldn't converge</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>list</code></dt>
+<dd>occulter y, occulter x, occulter radius</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def find_occulter_position(
+    data: np.array, method: str = &#34;sigmoid&#34;, threshold: float = 4.0
+):
+    &#34;&#34;&#34;Finds the occulter position of an image.
+
+    Args:
+        data (np.array): input data
+        method (str, optional): Method to find occulter edges. If &#34;sigmoid&#34; it will try to fit four sigmoids at the image edges centers, inferring the occulter edges from the parameters. If &#34;algo&#34; it will start from the image edge center and infer the occulter position when DN[i] &gt; threshold*mean(DN[:i]) Defaults to &#34;sigmoid&#34;.
+        threshold (float, optional): Threshold for the algo method. Defaults to 4.0.
+
+    Raises:
+        UnboundLocalError: couldn&#39;t converge
+
+    Returns:
+        list: occulter y, occulter x, occulter radius
+    &#34;&#34;&#34;
+    # works if occulter is not entirely inside a single quadrant, fits
+    # a sigmoid to find occulter bounds
+    half_y = int(data.shape[0] / 2)
+    half_x = int(data.shape[1] / 2)
+    values_x_0 = np.flip(data[half_y, :half_x])
+    values_x_1 = data[half_y, half_x:]
+    values_y_0 = np.flip(data[:half_y, half_x])
+    values_y_1 = data[half_y:, half_x]
+
+    occulter_bounds = [0.0] * 4
+
+    show = False
+    if show:
+        fig, ax = plt.subplots(2, 2, constrained_layout=True)
+        ax = ax.ravel()
+        titles = [
+            &#34;Lower vertical&#34;,
+            &#34;Upper vertical&#34;,
+            &#34;Right horizontal&#34;,
+            &#34;Left horizontal&#34;,
+        ]
+
+    if method == &#34;sigmoid&#34;:
+        for idx, half_array in enumerate(
+            [values_y_0, values_y_1, values_x_0, values_x_1]
+        ):
+            # Artificial plateau after maximum
+            # max_half_array = np.max(half_array)
+            # for i, element in enumerate(half_array):
+            #    if element == max_half_array:
+            #        max_i = i
+            #        break
+            # half_array[max_i:] = max_half_array
+
+            # x = np.arange(0, half_y, 1)
+            x = np.arange(0, int(len(half_array / 2)), 1)
+
+            params = [
+                # np.mean(half_array[int(len(half_array) / 2) :]),
+                np.max(half_array),
+                # np.mean(half_array[: int(len(half_array) / 2)]),
+                np.min(half_array),
+                0.5,
+                len(half_array) / 2,
+            ]
+            params, pcov = curve_fit(sigmoid, x, half_array, params)
+            occulter_bounds[idx] = params[3]
+
+            if show:
+                axis = ax[idx]
+                axis.scatter(x, half_array, c=&#34;grey&#34;)
+                axis.plot(x, sigmoid(x, *params), c=&#34;black&#34;)
+                axis.set_title(titles[idx])
+                axis.set_xlabel(&#34;Pixels from center&#34;)
+                axis.set_ylabel(&#34;DN&#34;)
+
+        try:
+            occulter_bounds[0] = half_y - occulter_bounds[0]
+            occulter_bounds[1] = half_y + occulter_bounds[1]
+            occulter_bounds[2] = half_x - occulter_bounds[2]
+            occulter_bounds[3] = half_x + occulter_bounds[3]
+        except UnboundLocalError:
+            raise ValueError(&#34;Edges not found, try to change the threshold&#34;)
+
+    elif method == &#34;algo&#34;:
+        # OLD, ALGORITM INSTEAD OF FITTING - less stable
+        min_points = 5
+        threshold = threshold
+
+        for i, val in enumerate(values_x_0):
+            if i &gt; min_points:
+                mean = np.mean(values_x_0[:i])
+                if val &gt; (threshold * mean):
+                    occulter_start_x = half_x - i
+                    break
+        for i, val in enumerate(values_x_1):
+            if i &gt; min_points:
+                mean = np.mean(values_x_1[:i])
+                if val &gt; (threshold * mean):
+                    occulter_end_x = half_x + i
+                    break
+        for i, val in enumerate(values_y_0):
+            if i &gt; min_points:
+                mean = np.mean(values_y_0[:i])
+                if val &gt; (threshold * mean):
+                    occulter_start_y = half_y - i
+                    break
+        for i, val in enumerate(values_y_1):
+            if i &gt; min_points:
+                mean = np.mean(values_y_1[:i])
+                if val &gt; (threshold * mean):
+                    occulter_end_y = half_y + i
+                    break
+        try:
+            occulter_bounds[0] = occulter_start_y
+            occulter_bounds[1] = occulter_end_y
+            occulter_bounds[2] = occulter_start_x
+            occulter_bounds[3] = occulter_end_x
+        except UnboundLocalError:
+            raise ValueError(
+                &#34;ERROR: occulter edges not found, try to change the threshold&#34;
+            )
+    if show:
+        plt.show()
+
+    x_center = int(np.mean([occulter_bounds[:2]]))
+    y_center = int(np.mean([occulter_bounds[2:]]))
+    radius = int(
+        np.mean(
+            [
+                np.abs(occulter_bounds[1] - occulter_bounds[0]) / 2,
+                np.abs(occulter_bounds[3] - occulter_bounds[2]) / 2,
+            ]
+        )
+    )
+
+    return [y_center, x_center, radius]</code></pre>
+</details>
+</dd>
+<dt id="micropolarray.processing.nrgf.map_polar_coordinates"><code class="name flex">
+<span>def <span class="ident">map_polar_coordinates</span></span>(<span>height, width, center)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@lru_cache
+def map_polar_coordinates(height, width, center):
+    y_center, x_center = center
+
+    i_list, j_list = np.arange(width), np.arange(height)
+    x_coords, y_coords = np.meshgrid(i_list, j_list)
+    # Map polar coordinates, 0 = horizontal dx, anti-clockwise angles
+    rho_coords = np.sqrt(
+        (x_coords - x_center) ** 2 + (y_coords - y_center) ** 2
+    )
+    phi_coords = (
+        (np.arctan2(y_coords - y_center, x_coords - x_center) * 180 / np.pi)
+        + 360
+    ) % 360
+
+    return rho_coords, phi_coords</code></pre>
+</details>
+</dd>
+<dt id="micropolarray.processing.nrgf.nrgf"><code class="name flex">
+<span>def <span class="ident">nrgf</span></span>(<span>data: <built-in function array>, y_center: int = None, x_center: int = None, rho_min: int = None, step: int = 1, phi_to_mean=[0.0, 360], output_phi=[0.0, 360]) ‑> <built-in function array></span>
+</code></dt>
+<dd>
+<div class="desc"><p>Performs nrgf filtering on the image, starting from center and radius. Mean is performed between phi_to_mean, 0 is horizontal right, anti-clockwise.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>data</code></strong> :&ensp;<code>np.array</code></dt>
+<dd>input array</dd>
+<dt><strong><code>y_center</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>pixel y coordinate of the nrgf center. Defaults to None (image y center).</dd>
+<dt><strong><code>x_center</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>pixel x coordinate of the nrgf center. Defaults to (image x center).</dd>
+<dt><strong><code>rho_min</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>minimun radius in pixels to perform nrgf to. Defaults to None (radius 0).</dd>
+<dt><strong><code>step</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>step to which apply the nrgf from center, in pixels. Defaults to 1 pixel.</dd>
+<dt><strong><code>phi_to_mean</code></strong> :&ensp;<code>list[float, float]</code>, optional</dt>
+<dd>polar angle to calculate the mean value from. Defaults to [0, 360].</dd>
+<dt><strong><code>output_phi</code></strong> :&ensp;<code>list[float, float]</code>, optional</dt>
+<dd>polar angle to include in output data. Defaults to [0, 360].</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>np.array</code></dt>
+<dd>nrgf-filtered input data</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def nrgf(
+    data: np.array,
+    y_center: int = None,
+    x_center: int = None,
+    rho_min: int = None,
+    step: int = 1,
+    phi_to_mean=[0.0, 360],
+    output_phi=[0.0, 360],
+) -&gt; np.array:
+    &#34;&#34;&#34;
+    Performs nrgf filtering on the image, starting from center and radius. Mean is performed between phi_to_mean, 0 is horizontal right, anti-clockwise.
+
+
+    Args:
+        data (np.array): input array
+        y_center (int, optional): pixel y coordinate of the nrgf center. Defaults to None (image y center).
+        x_center (int, optional): pixel x coordinate of the nrgf center. Defaults to (image x center).
+        rho_min (int, optional): minimun radius in pixels to perform nrgf to. Defaults to None (radius 0).
+        step (int, optional): step to which apply the nrgf from center, in pixels. Defaults to 1 pixel.
+        phi_to_mean (list[float, float], optional): polar angle to calculate the mean value from. Defaults to [0, 360].
+        output_phi (list[float, float], optional): polar angle to include in output data. Defaults to [0, 360].
+
+    Returns:
+        np.array: nrgf-filtered input data
+    &#34;&#34;&#34;
+    height, width = data.shape
+
+    if (y_center is None) or (x_center is None) or (rho_min is None):
+        info(&#34;Calculating occulter position...&#34;)
+        y_center, x_center, rho_min = find_occulter_position(data)
+    center = [int(y_center), int(x_center)]
+
+    newdata = np.zeros(shape=data.shape, dtype=float)
+    i_list, j_list = np.arange(width), np.arange(height)
+    x_coords, y_coords = np.meshgrid(i_list, j_list)
+    # Map polar coordinates
+    rho_coords, phi_coords = map_polar_coordinates(
+        height, width, tuple(center)
+    )  # cast it to a tuple (which is hashable)
+
+    mean_phi_condition = np.logical_and(
+        phi_coords &gt;= phi_to_mean[0], phi_coords &lt; phi_to_mean[1]
+    )  # Exclude angle from mean
+
+    out_phi_condition = np.logical_and(
+        phi_coords &gt;= output_phi[0], phi_coords &lt; output_phi[1]
+    )  # Exclude angle from filter
+
+    rho_max = int(np.max(rho_coords))
+    rho_step = step
+
+    print(&#34;Applying nrgf filter...&#34;)
+    for r in range(rho_min, rho_max, rho_step):
+        rho_condition = np.logical_and(
+            rho_coords &gt; r, rho_coords &lt;= r + rho_step
+        )
+        condition = np.logical_and(rho_condition, out_phi_condition)
+        # condition = np.logical_and(rho_condition, mean_phi_condition)
+        mean_condition = np.logical_and(rho_condition, mean_phi_condition)
+        mean_over_ROI = np.mean(data, where=mean_condition)
+        std_over_ROI = np.std(data, where=mean_condition)
+        if std_over_ROI &gt; 0:
+            newdata = np.where(
+                condition,
+                (data - mean_over_ROI) / std_over_ROI,
+                newdata,
+            )
+        else:
+            newdata = np.where(condition, 0, newdata)
+
+    return newdata</code></pre>
+</details>
+</dd>
+<dt id="micropolarray.processing.nrgf.reject_outliers"><code class="name flex">
+<span>def <span class="ident">reject_outliers</span></span>(<span>data, m=2.0)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def reject_outliers(data, m=2.0):
+    d = np.abs(data - np.median(data))
+    mdev = np.median(d)
+    s = d / mdev if mdev else np.zeros(len(d))
+    return data[s &lt; m]</code></pre>
+</details>
+</dd>
+<dt id="micropolarray.processing.nrgf.remove_outliers_simple"><code class="name flex">
+<span>def <span class="ident">remove_outliers_simple</span></span>(<span>original, neighbours=2)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>EXPERIMENTAL DO NOT USE, for improving fitting on occulter position</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def remove_outliers_simple(original, neighbours=2):
+    &#34;&#34;&#34;EXPERIMENTAL DO NOT USE, for improving fitting on occulter position&#34;&#34;&#34;
+    data = original.copy()
+    for i, element in enumerate(data[neighbours:-neighbours]):
+        median = np.median(data[i - neighbours : i + neighbours])
+        std = np.median(np.abs(data[i - neighbours : i + neighbours] - median))
+        if (element &lt; median - 3 * std) or (element &gt; median + 3 * std):
+            print()
+            print(element)
+            print(data[neighbours:-neighbours])
+            data[i] = median
+            print(data[neighbours:-neighbours])
+    return data
+
+    median = np.median(data)
+
+    median_deviation = np.abs(data - np.median(data))
+    condition = (data &lt; (median + 3 * median_deviation)) | (
+        data &gt; (median - 3 * median_deviation)
+    )
+    data = np.where(condition, data, median)
+    return data
+    extreme = 2
+    outliers = []
+    for i, element in enumerate(data[extreme:-extreme]):
+        mean = np.mean([data[i], data[i + 1]])
+        std = np.std([data[i], data[i + 1]])
+        if (element &gt; (mean + 3 * std)) or (element &lt; (mean - 3 * std)):
+            outliers.append(i + 1)
+    data = np.delete(data, outliers)
+    return data</code></pre>
+</details>
+</dd>
+<dt id="micropolarray.processing.nrgf.roi_from_polar"><code class="name flex">
+<span>def <span class="ident">roi_from_polar</span></span>(<span>data: <built-in function array>, center: list = None, rho: list = None, theta=[0, 360], fill: float = 0.0, return_boolean=False) ‑> <built-in function array></span>
+</code></dt>
+<dd>
+<div class="desc"><p>Returns the input array in a circular selection, otherwise an arbitrary number. If a pixel is not in the selection the ENTIRE superpixel is considered out of selection. If return_boolean is True then a boolean array is returned instead (useful for mean/stdev operations).</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>data</code></strong> :&ensp;<code>np.array</code></dt>
+<dd>input data</dd>
+<dt><strong><code>center</code></strong> :&ensp;<code>list</code>, optional</dt>
+<dd>pixel coordinates of the circle center. Defaults to None (image center).</dd>
+<dt><strong><code>rho</code></strong> :&ensp;<code>list</code>, optional</dt>
+<dd>radius to exclude. Defaults to None (center to image border).</dd>
+<dt><strong><code>theta</code></strong> :&ensp;<code>list</code>, optional</dt>
+<dd>polar selection angle, 0 is horizonta, anti-clockwise direction. Defaults to [0, 360].</dd>
+<dt><strong><code>fill</code></strong> :&ensp;<code>float</code>, optional</dt>
+<dd>number to fill the outer selection. Defaults to 0.0.</dd>
+<dt><strong><code>return_boolean</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>if set to true, function returns a boolean array of the roi. Defaults to False.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>np.array</code></dt>
+<dd>array containing the input data inside the selection, and fill otherwise</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def roi_from_polar(
+    data: np.array,
+    center: list = None,
+    rho: list = None,
+    theta=[0, 360],
+    fill: float = 0.0,
+    return_boolean=False,
+) -&gt; np.array:
+    &#34;&#34;&#34;Returns the input array in a circular selection, otherwise an arbitrary number. If a pixel is not in the selection the ENTIRE superpixel is considered out of selection. If return_boolean is True then a boolean array is returned instead (useful for mean/stdev operations).
+
+    Args:
+        data (np.array): input data
+        center (list, optional): pixel coordinates of the circle center. Defaults to None (image center).
+        rho (list, optional): radius to exclude. Defaults to None (center to image border).
+        theta (list, optional): polar selection angle, 0 is horizonta, anti-clockwise direction. Defaults to [0, 360].
+        fill (float, optional): number to fill the outer selection. Defaults to 0.0.
+        return_boolean (bool, optional): if set to true, function returns a boolean array of the roi. Defaults to False.
+
+    Returns:
+        np.array: array containing the input data inside the selection, and fill otherwise
+    &#34;&#34;&#34;
+    height, width = data.shape
+    theta_min, theta_max = theta
+    rho_min, rho_max = rho
+    if center is None:
+        center = [int(height / 2), int(width / 2)]
+    if rho is None:
+        rho_max = np.min([height - center[0], width - center[1]])
+        rho = [0.0, rho_max]
+
+    # make a map that is HALF THE SIZE, do condition, then resize to make all the superpixel outside selection
+    rho_coords, phi_coords = map_polar_coordinates(
+        int(height / 2),
+        int(width / 2),
+        tuple([int(center[0] / 2), int(center[1] / 2)]),
+    )  # cast it to a tuple (which is hashable)
+
+    theta_condition = np.logical_and(
+        phi_coords &gt;= theta_min, phi_coords &lt; theta_max
+    )
+    rho_condition = np.logical_and(
+        rho_coords &gt; rho_min / 2, rho_coords &lt;= rho_max / 2
+    )  # half the radius because half the map
+    condition = np.logical_and(rho_condition, theta_condition)
+
+    # resize condition to correct shape
+    condition = condition.repeat(2, axis=0).repeat(2, axis=1)
+
+    if return_boolean:
+        return np.where(condition, True, False)
+
+    return np.where(condition, data, fill)</code></pre>
+</details>
+</dd>
+<dt id="micropolarray.processing.nrgf.sigmoid"><code class="name flex">
+<span>def <span class="ident">sigmoid</span></span>(<span>x, max, min, slope, intercept)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def sigmoid(x, max, min, slope, intercept):
+    sigma = slope * (x - intercept)
+    return max * np.exp(sigma) / (1 + np.exp(sigma)) + min</code></pre>
+</details>
+</dd>
+<dt id="micropolarray.processing.nrgf.tile_double"><code class="name flex">
+<span>def <span class="ident">tile_double</span></span>(<span>a)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def tile_double(a):
+    height, width = a.shape
+    hs, ws = a.strides
+    tiles = as_strided(a, (height, 2, width, 2), (hs, 0, ws, 0))
+    return tiles.reshape(2 * height, 2 * width)</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="micropolarray.processing" href="index.html">micropolarray.processing</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="micropolarray.processing.nrgf.find_occulter_position" href="#micropolarray.processing.nrgf.find_occulter_position">find_occulter_position</a></code></li>
+<li><code><a title="micropolarray.processing.nrgf.map_polar_coordinates" href="#micropolarray.processing.nrgf.map_polar_coordinates">map_polar_coordinates</a></code></li>
+<li><code><a title="micropolarray.processing.nrgf.nrgf" href="#micropolarray.processing.nrgf.nrgf">nrgf</a></code></li>
+<li><code><a title="micropolarray.processing.nrgf.reject_outliers" href="#micropolarray.processing.nrgf.reject_outliers">reject_outliers</a></code></li>
+<li><code><a title="micropolarray.processing.nrgf.remove_outliers_simple" href="#micropolarray.processing.nrgf.remove_outliers_simple">remove_outliers_simple</a></code></li>
+<li><code><a title="micropolarray.processing.nrgf.roi_from_polar" href="#micropolarray.processing.nrgf.roi_from_polar">roi_from_polar</a></code></li>
+<li><code><a title="micropolarray.processing.nrgf.sigmoid" href="#micropolarray.processing.nrgf.sigmoid">sigmoid</a></code></li>
+<li><code><a title="micropolarray.processing.nrgf.tile_double" href="#micropolarray.processing.nrgf.tile_double">tile_double</a></code></li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>

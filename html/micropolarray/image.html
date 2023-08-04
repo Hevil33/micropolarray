@@ -1,0 +1,786 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>micropolarray.image API documentation</title>
+<meta name="description" content="" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>micropolarray.image</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">from __future__ import annotations
+from astropy.io import fits
+import numpy as np
+import matplotlib.pyplot as plt
+import sys
+import os
+from micropolarray.utils import make_abs_and_create_dir
+from logging import warning, info
+from micropolarray.utils import make_abs_and_create_dir, fix_data
+import datetime
+from pathlib import Path
+
+
+class Image:
+    &#34;&#34;&#34;Basic image class. Can be initialized from a filename, a filenames list, a numpy array or another Image instance. If multiple filenames are provided, will perform the mean of them unless averageimages is False.&#34;&#34;&#34;
+
+    def __init__(
+        self,
+        initializer: str | np.ndarray | Image,
+        averageimages: bool = True,
+    ):
+        self.header = None
+        if type(initializer) is str or type(initializer) is list:
+            self._init_image_from_file(initializer, averageimages)
+        elif type(initializer) is np.ndarray:
+            self._init_image_from_data(initializer)
+        elif type(initializer) is Image:
+            self._init_image_from_image(initializer)
+
+    def _init_image_from_data(self, data: np.array) -&gt; None:
+        self._set_data(np.array(data))
+        self.filename = &#34;image.fits&#34;
+
+    def _init_image_from_file(self, filenames, averageimages) -&gt; None:
+        filenames_list = (
+            [filenames] if type(filenames) is not list else filenames
+        )
+
+        filenames_len = len(filenames_list)
+        if filenames_len == 0:
+            raise NameError(&#34;Can&#39;t load files, empty filenames list.&#34;)
+        datetimes = [0] * filenames_len
+
+        print_info_message = True
+        for idx, filename in enumerate(filenames_list):
+            if &#34;.raw&#34; in filenames_list:
+                raise NameError(
+                    &#34;Can&#39;t load a raw file, convert it to fits first.&#34;
+                )  # to fix
+            with fits.open(filename) as hul:
+                if idx == 0:
+                    combined_data = hul[0].data / (
+                        1 + int(averageimages) * (filenames_len - 1)
+                    )
+                    self.header = hul[0].header
+                else:
+                    if print_info_message:
+                        if averageimages:
+                            info(f&#34;Averaging {filenames_len} images...&#34;)
+                        else:
+                            info(f&#34;Summing {filenames_len} images...&#34;)
+                        print_info_message = False
+                    combined_data = combined_data + (
+                        hul[0].data
+                        / (1 + int(averageimages) * (filenames_len - 1))
+                    )  # divide by 1 if summing, either n if averaging
+
+                hul.verify(&#34;fix&#34;)
+
+                try:  # standard format
+                    datetimes[idx] = datetime.datetime.strptime(
+                        hul[0].header[&#34;DATE-OBS&#34;],
+                        &#34;%Y-%m-%dT%H:%M:%S&#34;,
+                    )
+                except ValueError:  # antarticor format
+                    datetimes[idx] = datetime.datetime.strptime(
+                        hul[0].header[&#34;DATE-OBS&#34;]
+                        + &#34;-&#34;
+                        + hul[0].header[&#34;TIME-OBS&#34;],
+                        &#34;%Y-%m-%d-%H:%M:%S&#34;,
+                    )
+                except KeyError:
+                    pass
+
+        datetimes = [datetime for datetime in datetimes if datetime != 0]
+        if len(datetimes) == 0:
+            datetimes = [0]
+        self._set_data(np.array(combined_data))
+
+        if filenames_len &gt; 1:
+            self.header[&#34;SUMOF&#34;] = (
+                filenames_len,
+                &#34;Number of files the images is the sum of.&#34;,
+            )
+            datetimes = sorted(datetimes)
+            if not datetimes[0] == 0:
+                self.header[&#34;STRT-OBS&#34;] = (
+                    str(datetimes[0]),
+                    &#34;Date and time of first image.&#34;,
+                )
+                self.header[&#34;END-OBS&#34;] = (
+                    str(datetimes[-1]),
+                    &#34;Date and time of last image.&#34;,
+                )
+            tempfilename = filenames[0].split(os.path.sep)
+            tempfilename[-1] = &#34;SUM_&#34; + tempfilename[-1]
+            self.filename = os.path.sep.join(tempfilename)
+        else:
+            self.filename = filenames[0]
+
+    def _init_image_from_image(self, image: Image):
+        self._set_data(image.data.copy())
+        self.filename = image.filename
+
+    def _set_data(self, data: np.array):
+        &#34;&#34;&#34;Set image data and derived polarization informations, and
+        consequently change header.&#34;&#34;&#34;
+        self.data = data
+        self.height, self.width = data.shape
+        if self.header is None:
+            self.header = self._set_default_header(data)
+        else:
+            self._update_dims_in_header(self.data)
+
+    def _set_default_header(self, data: np.array):
+        &#34;&#34;&#34;Set a default header when initializing image with data instead of
+        .fits filename.&#34;&#34;&#34;
+        header = fits.PrimaryHDU(data=data).header
+        return header
+
+    def _update_dims_in_header(self, data: np.array):
+        self.header[&#34;NAXIS1&#34;] = data.shape[1]
+        self.header[&#34;NAXIS2&#34;] = data.shape[0]
+
+    # ----------------------------------------------------------------
+    # -------------------------- SAVING ------------------------------
+    # ----------------------------------------------------------------
+
+    def save_as_fits(self, filename: str, fixto: str[float, float] = None):
+        &#34;&#34;&#34;Saves image as fits with current header
+
+        Args:
+            filename (str): output filename
+            fixto (str[float, float], optional): Set a maximum and minimum range for the data. Defaults to None.
+
+        Raises:
+            ValueError: filename does not end with &#34;.fits&#34;
+        &#34;&#34;&#34;
+        filepath = Path(filename)
+        if filepath.suffix is not &#34;.fits&#34;:
+            raise ValueError(&#34;filename must be a valid file name, not folder.&#34;)
+        filepath = Path(make_abs_and_create_dir(filename))
+        if fixto:
+            data = fix_data(self.data, *fixto)
+        else:
+            data = self.data
+        hdu = fits.PrimaryHDU(
+            data=data,
+            header=self.header,
+            do_not_scale_image_data=True,
+            uint=False,
+        )
+        filename = str(
+            filepath.joinpath(filepath.parent, filepath.stem + &#34;.fits&#34;)
+        )
+        hdu.writeto(filename, overwrite=True)
+        info(f&#39;Image successfully saved to &#34;{filename}&#34;.&#39;)
+
+    def save_as_raw(self, filename: str):
+        &#34;&#34;&#34;Saves the image as a raw binary file
+
+        Args:
+            filename (str): output filename
+
+        Raises:
+            ValueError: filename does not end with &#34;.raw&#34;
+        &#34;&#34;&#34;
+        print(self.data.shape)
+        if Path(filename).suffix is not &#34;.raw&#34;:
+            raise ValueError(&#34;Filename must have .raw extension&#34;)
+        self.data.astype(&#34;int16&#34;).tofile(filename)
+
+    # ----------------------------------------------------------------
+    # ------------------------------ SHOW ----------------------------
+    # ----------------------------------------------------------------
+
+    def show(self, cmap=&#34;Greys_r&#34;, vmin=None, vmax=None) -&gt; tuple:
+        &#34;&#34;&#34;Shows the image data
+
+        Args:
+            cmap (str, optional): figure colorbar. Defaults to &#34;Greys_r&#34;.
+            vmin (_type_, optional): Minimum value to plot. Defaults to None.
+            vmax (_type_, optional): Maximum value to plot. Defaults to None.
+
+        Returns:
+            tuple: fig, ax tuple as returned by matplotlib.pyplot.subplots
+        &#34;&#34;&#34;
+        data_to_plot = self.data
+        data_ratio = data_to_plot.shape[0] / data_to_plot.shape[1]
+        # image_fig, imageax = plt.subplots(figsize=(9, 9))
+        image_fig, imageax = plt.subplots(dpi=200)
+        if vmin is None:
+            vmin = np.min(data_to_plot)
+        if vmax is None:
+            vmax = np.max(data_to_plot)
+        pos = imageax.imshow(data_to_plot, cmap=cmap, vmin=vmin, vmax=vmax)
+        imageax.set_title(
+            f&#34;Image data (avrg {np.mean(data_to_plot, where=np.where(data_to_plot&gt;0, True, False)):3.2f}+-{np.std(data_to_plot, where=np.where(data_to_plot&gt;0, True, False)):3.2f})&#34;,
+            color=&#34;black&#34;,
+        )
+        imageax.set_xlabel(&#34;x&#34;)
+        imageax.set_ylabel(&#34;y&#34;)
+        image_fig.colorbar(
+            pos, ax=imageax, label=&#34;DN&#34;, fraction=data_ratio * 0.05
+        )
+
+        return image_fig, imageax
+
+    def show_histogram(self, bins: int = 1000) -&gt; tuple:
+        &#34;&#34;&#34;Print the histogram of the flattened image data
+
+        Args:
+            bins (int, optional): Numbers of bin to compute the histogram from. Defaults to 1000.
+
+        Returns:
+            tuple: fig, ax tuple as returned by matplotlib.pyplot.subplots
+        &#34;&#34;&#34;
+        fig, ax = plt.subplots(dpi=200, constrained_layout=True)
+        histo = np.histogram(self.data, bins=bins)
+        ax.stairs(*histo)
+        ax.set_title(&#34;Image histogram&#34;, color=&#34;black&#34;)
+        ax.set_xlabel(&#34;Signal [DN]&#34;)
+        ax.set_ylabel(&#34;Number of pixels&#34;)
+
+        return fig, ax
+
+    def __add__(self, second) -&gt; Image:
+        if type(self) is type(second):
+            newdata = self.data + second.data
+        else:
+            newdata = self.data + second
+        return Image(newdata)
+
+    def __sub__(self, second) -&gt; Image:
+        if type(self) is type(second):
+            newdata = self.data - second.data
+        else:
+            newdata = self.data - second
+        return Image(newdata)
+
+    def __mul__(self, second) -&gt; Image:
+        if type(self) is type(second):
+            newdata = self.data * second.data
+        else:
+            newdata = self.data * second
+        return Image(newdata)
+
+    def __truediv__(self, second) -&gt; Image:
+        if type(self) is type(second):
+            newdata = np.where(second.data != 0, self.data / second.data, 4096)
+        else:
+            newdata = np.where(second != 0, self.data / second, 4096)
+        return Image(newdata)</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="micropolarray.image.Image"><code class="flex name class">
+<span>class <span class="ident">Image</span></span>
+<span>(</span><span>initializer: str | np.ndarray | <a title="micropolarray.image.Image" href="#micropolarray.image.Image">Image</a>, averageimages: bool = True)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Basic image class. Can be initialized from a filename, a filenames list, a numpy array or another Image instance. If multiple filenames are provided, will perform the mean of them unless averageimages is False.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Image:
+    &#34;&#34;&#34;Basic image class. Can be initialized from a filename, a filenames list, a numpy array or another Image instance. If multiple filenames are provided, will perform the mean of them unless averageimages is False.&#34;&#34;&#34;
+
+    def __init__(
+        self,
+        initializer: str | np.ndarray | Image,
+        averageimages: bool = True,
+    ):
+        self.header = None
+        if type(initializer) is str or type(initializer) is list:
+            self._init_image_from_file(initializer, averageimages)
+        elif type(initializer) is np.ndarray:
+            self._init_image_from_data(initializer)
+        elif type(initializer) is Image:
+            self._init_image_from_image(initializer)
+
+    def _init_image_from_data(self, data: np.array) -&gt; None:
+        self._set_data(np.array(data))
+        self.filename = &#34;image.fits&#34;
+
+    def _init_image_from_file(self, filenames, averageimages) -&gt; None:
+        filenames_list = (
+            [filenames] if type(filenames) is not list else filenames
+        )
+
+        filenames_len = len(filenames_list)
+        if filenames_len == 0:
+            raise NameError(&#34;Can&#39;t load files, empty filenames list.&#34;)
+        datetimes = [0] * filenames_len
+
+        print_info_message = True
+        for idx, filename in enumerate(filenames_list):
+            if &#34;.raw&#34; in filenames_list:
+                raise NameError(
+                    &#34;Can&#39;t load a raw file, convert it to fits first.&#34;
+                )  # to fix
+            with fits.open(filename) as hul:
+                if idx == 0:
+                    combined_data = hul[0].data / (
+                        1 + int(averageimages) * (filenames_len - 1)
+                    )
+                    self.header = hul[0].header
+                else:
+                    if print_info_message:
+                        if averageimages:
+                            info(f&#34;Averaging {filenames_len} images...&#34;)
+                        else:
+                            info(f&#34;Summing {filenames_len} images...&#34;)
+                        print_info_message = False
+                    combined_data = combined_data + (
+                        hul[0].data
+                        / (1 + int(averageimages) * (filenames_len - 1))
+                    )  # divide by 1 if summing, either n if averaging
+
+                hul.verify(&#34;fix&#34;)
+
+                try:  # standard format
+                    datetimes[idx] = datetime.datetime.strptime(
+                        hul[0].header[&#34;DATE-OBS&#34;],
+                        &#34;%Y-%m-%dT%H:%M:%S&#34;,
+                    )
+                except ValueError:  # antarticor format
+                    datetimes[idx] = datetime.datetime.strptime(
+                        hul[0].header[&#34;DATE-OBS&#34;]
+                        + &#34;-&#34;
+                        + hul[0].header[&#34;TIME-OBS&#34;],
+                        &#34;%Y-%m-%d-%H:%M:%S&#34;,
+                    )
+                except KeyError:
+                    pass
+
+        datetimes = [datetime for datetime in datetimes if datetime != 0]
+        if len(datetimes) == 0:
+            datetimes = [0]
+        self._set_data(np.array(combined_data))
+
+        if filenames_len &gt; 1:
+            self.header[&#34;SUMOF&#34;] = (
+                filenames_len,
+                &#34;Number of files the images is the sum of.&#34;,
+            )
+            datetimes = sorted(datetimes)
+            if not datetimes[0] == 0:
+                self.header[&#34;STRT-OBS&#34;] = (
+                    str(datetimes[0]),
+                    &#34;Date and time of first image.&#34;,
+                )
+                self.header[&#34;END-OBS&#34;] = (
+                    str(datetimes[-1]),
+                    &#34;Date and time of last image.&#34;,
+                )
+            tempfilename = filenames[0].split(os.path.sep)
+            tempfilename[-1] = &#34;SUM_&#34; + tempfilename[-1]
+            self.filename = os.path.sep.join(tempfilename)
+        else:
+            self.filename = filenames[0]
+
+    def _init_image_from_image(self, image: Image):
+        self._set_data(image.data.copy())
+        self.filename = image.filename
+
+    def _set_data(self, data: np.array):
+        &#34;&#34;&#34;Set image data and derived polarization informations, and
+        consequently change header.&#34;&#34;&#34;
+        self.data = data
+        self.height, self.width = data.shape
+        if self.header is None:
+            self.header = self._set_default_header(data)
+        else:
+            self._update_dims_in_header(self.data)
+
+    def _set_default_header(self, data: np.array):
+        &#34;&#34;&#34;Set a default header when initializing image with data instead of
+        .fits filename.&#34;&#34;&#34;
+        header = fits.PrimaryHDU(data=data).header
+        return header
+
+    def _update_dims_in_header(self, data: np.array):
+        self.header[&#34;NAXIS1&#34;] = data.shape[1]
+        self.header[&#34;NAXIS2&#34;] = data.shape[0]
+
+    # ----------------------------------------------------------------
+    # -------------------------- SAVING ------------------------------
+    # ----------------------------------------------------------------
+
+    def save_as_fits(self, filename: str, fixto: str[float, float] = None):
+        &#34;&#34;&#34;Saves image as fits with current header
+
+        Args:
+            filename (str): output filename
+            fixto (str[float, float], optional): Set a maximum and minimum range for the data. Defaults to None.
+
+        Raises:
+            ValueError: filename does not end with &#34;.fits&#34;
+        &#34;&#34;&#34;
+        filepath = Path(filename)
+        if filepath.suffix is not &#34;.fits&#34;:
+            raise ValueError(&#34;filename must be a valid file name, not folder.&#34;)
+        filepath = Path(make_abs_and_create_dir(filename))
+        if fixto:
+            data = fix_data(self.data, *fixto)
+        else:
+            data = self.data
+        hdu = fits.PrimaryHDU(
+            data=data,
+            header=self.header,
+            do_not_scale_image_data=True,
+            uint=False,
+        )
+        filename = str(
+            filepath.joinpath(filepath.parent, filepath.stem + &#34;.fits&#34;)
+        )
+        hdu.writeto(filename, overwrite=True)
+        info(f&#39;Image successfully saved to &#34;{filename}&#34;.&#39;)
+
+    def save_as_raw(self, filename: str):
+        &#34;&#34;&#34;Saves the image as a raw binary file
+
+        Args:
+            filename (str): output filename
+
+        Raises:
+            ValueError: filename does not end with &#34;.raw&#34;
+        &#34;&#34;&#34;
+        print(self.data.shape)
+        if Path(filename).suffix is not &#34;.raw&#34;:
+            raise ValueError(&#34;Filename must have .raw extension&#34;)
+        self.data.astype(&#34;int16&#34;).tofile(filename)
+
+    # ----------------------------------------------------------------
+    # ------------------------------ SHOW ----------------------------
+    # ----------------------------------------------------------------
+
+    def show(self, cmap=&#34;Greys_r&#34;, vmin=None, vmax=None) -&gt; tuple:
+        &#34;&#34;&#34;Shows the image data
+
+        Args:
+            cmap (str, optional): figure colorbar. Defaults to &#34;Greys_r&#34;.
+            vmin (_type_, optional): Minimum value to plot. Defaults to None.
+            vmax (_type_, optional): Maximum value to plot. Defaults to None.
+
+        Returns:
+            tuple: fig, ax tuple as returned by matplotlib.pyplot.subplots
+        &#34;&#34;&#34;
+        data_to_plot = self.data
+        data_ratio = data_to_plot.shape[0] / data_to_plot.shape[1]
+        # image_fig, imageax = plt.subplots(figsize=(9, 9))
+        image_fig, imageax = plt.subplots(dpi=200)
+        if vmin is None:
+            vmin = np.min(data_to_plot)
+        if vmax is None:
+            vmax = np.max(data_to_plot)
+        pos = imageax.imshow(data_to_plot, cmap=cmap, vmin=vmin, vmax=vmax)
+        imageax.set_title(
+            f&#34;Image data (avrg {np.mean(data_to_plot, where=np.where(data_to_plot&gt;0, True, False)):3.2f}+-{np.std(data_to_plot, where=np.where(data_to_plot&gt;0, True, False)):3.2f})&#34;,
+            color=&#34;black&#34;,
+        )
+        imageax.set_xlabel(&#34;x&#34;)
+        imageax.set_ylabel(&#34;y&#34;)
+        image_fig.colorbar(
+            pos, ax=imageax, label=&#34;DN&#34;, fraction=data_ratio * 0.05
+        )
+
+        return image_fig, imageax
+
+    def show_histogram(self, bins: int = 1000) -&gt; tuple:
+        &#34;&#34;&#34;Print the histogram of the flattened image data
+
+        Args:
+            bins (int, optional): Numbers of bin to compute the histogram from. Defaults to 1000.
+
+        Returns:
+            tuple: fig, ax tuple as returned by matplotlib.pyplot.subplots
+        &#34;&#34;&#34;
+        fig, ax = plt.subplots(dpi=200, constrained_layout=True)
+        histo = np.histogram(self.data, bins=bins)
+        ax.stairs(*histo)
+        ax.set_title(&#34;Image histogram&#34;, color=&#34;black&#34;)
+        ax.set_xlabel(&#34;Signal [DN]&#34;)
+        ax.set_ylabel(&#34;Number of pixels&#34;)
+
+        return fig, ax
+
+    def __add__(self, second) -&gt; Image:
+        if type(self) is type(second):
+            newdata = self.data + second.data
+        else:
+            newdata = self.data + second
+        return Image(newdata)
+
+    def __sub__(self, second) -&gt; Image:
+        if type(self) is type(second):
+            newdata = self.data - second.data
+        else:
+            newdata = self.data - second
+        return Image(newdata)
+
+    def __mul__(self, second) -&gt; Image:
+        if type(self) is type(second):
+            newdata = self.data * second.data
+        else:
+            newdata = self.data * second
+        return Image(newdata)
+
+    def __truediv__(self, second) -&gt; Image:
+        if type(self) is type(second):
+            newdata = np.where(second.data != 0, self.data / second.data, 4096)
+        else:
+            newdata = np.where(second != 0, self.data / second, 4096)
+        return Image(newdata)</code></pre>
+</details>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li><a title="micropolarray.micropol_image.MicroPolarizerArrayImage" href="micropol_image.html#micropolarray.micropol_image.MicroPolarizerArrayImage">MicroPolarizerArrayImage</a></li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="micropolarray.image.Image.save_as_fits"><code class="name flex">
+<span>def <span class="ident">save_as_fits</span></span>(<span>self, filename: str, fixto: str[float, float] = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Saves image as fits with current header</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>filename</code></strong> :&ensp;<code>str</code></dt>
+<dd>output filename</dd>
+<dt><strong><code>fixto</code></strong> :&ensp;<code>str[float, float]</code>, optional</dt>
+<dd>Set a maximum and minimum range for the data. Defaults to None.</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ValueError</code></dt>
+<dd>filename does not end with ".fits"</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def save_as_fits(self, filename: str, fixto: str[float, float] = None):
+    &#34;&#34;&#34;Saves image as fits with current header
+
+    Args:
+        filename (str): output filename
+        fixto (str[float, float], optional): Set a maximum and minimum range for the data. Defaults to None.
+
+    Raises:
+        ValueError: filename does not end with &#34;.fits&#34;
+    &#34;&#34;&#34;
+    filepath = Path(filename)
+    if filepath.suffix is not &#34;.fits&#34;:
+        raise ValueError(&#34;filename must be a valid file name, not folder.&#34;)
+    filepath = Path(make_abs_and_create_dir(filename))
+    if fixto:
+        data = fix_data(self.data, *fixto)
+    else:
+        data = self.data
+    hdu = fits.PrimaryHDU(
+        data=data,
+        header=self.header,
+        do_not_scale_image_data=True,
+        uint=False,
+    )
+    filename = str(
+        filepath.joinpath(filepath.parent, filepath.stem + &#34;.fits&#34;)
+    )
+    hdu.writeto(filename, overwrite=True)
+    info(f&#39;Image successfully saved to &#34;{filename}&#34;.&#39;)</code></pre>
+</details>
+</dd>
+<dt id="micropolarray.image.Image.save_as_raw"><code class="name flex">
+<span>def <span class="ident">save_as_raw</span></span>(<span>self, filename: str)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Saves the image as a raw binary file</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>filename</code></strong> :&ensp;<code>str</code></dt>
+<dd>output filename</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ValueError</code></dt>
+<dd>filename does not end with ".raw"</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def save_as_raw(self, filename: str):
+    &#34;&#34;&#34;Saves the image as a raw binary file
+
+    Args:
+        filename (str): output filename
+
+    Raises:
+        ValueError: filename does not end with &#34;.raw&#34;
+    &#34;&#34;&#34;
+    print(self.data.shape)
+    if Path(filename).suffix is not &#34;.raw&#34;:
+        raise ValueError(&#34;Filename must have .raw extension&#34;)
+    self.data.astype(&#34;int16&#34;).tofile(filename)</code></pre>
+</details>
+</dd>
+<dt id="micropolarray.image.Image.show"><code class="name flex">
+<span>def <span class="ident">show</span></span>(<span>self, cmap='Greys_r', vmin=None, vmax=None) ‑> tuple</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Shows the image data</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>cmap</code></strong> :&ensp;<code>str</code>, optional</dt>
+<dd>figure colorbar. Defaults to "Greys_r".</dd>
+<dt><strong><code>vmin</code></strong> :&ensp;<code>_type_</code>, optional</dt>
+<dd>Minimum value to plot. Defaults to None.</dd>
+<dt><strong><code>vmax</code></strong> :&ensp;<code>_type_</code>, optional</dt>
+<dd>Maximum value to plot. Defaults to None.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>tuple</code></dt>
+<dd>fig, ax tuple as returned by matplotlib.pyplot.subplots</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def show(self, cmap=&#34;Greys_r&#34;, vmin=None, vmax=None) -&gt; tuple:
+    &#34;&#34;&#34;Shows the image data
+
+    Args:
+        cmap (str, optional): figure colorbar. Defaults to &#34;Greys_r&#34;.
+        vmin (_type_, optional): Minimum value to plot. Defaults to None.
+        vmax (_type_, optional): Maximum value to plot. Defaults to None.
+
+    Returns:
+        tuple: fig, ax tuple as returned by matplotlib.pyplot.subplots
+    &#34;&#34;&#34;
+    data_to_plot = self.data
+    data_ratio = data_to_plot.shape[0] / data_to_plot.shape[1]
+    # image_fig, imageax = plt.subplots(figsize=(9, 9))
+    image_fig, imageax = plt.subplots(dpi=200)
+    if vmin is None:
+        vmin = np.min(data_to_plot)
+    if vmax is None:
+        vmax = np.max(data_to_plot)
+    pos = imageax.imshow(data_to_plot, cmap=cmap, vmin=vmin, vmax=vmax)
+    imageax.set_title(
+        f&#34;Image data (avrg {np.mean(data_to_plot, where=np.where(data_to_plot&gt;0, True, False)):3.2f}+-{np.std(data_to_plot, where=np.where(data_to_plot&gt;0, True, False)):3.2f})&#34;,
+        color=&#34;black&#34;,
+    )
+    imageax.set_xlabel(&#34;x&#34;)
+    imageax.set_ylabel(&#34;y&#34;)
+    image_fig.colorbar(
+        pos, ax=imageax, label=&#34;DN&#34;, fraction=data_ratio * 0.05
+    )
+
+    return image_fig, imageax</code></pre>
+</details>
+</dd>
+<dt id="micropolarray.image.Image.show_histogram"><code class="name flex">
+<span>def <span class="ident">show_histogram</span></span>(<span>self, bins: int = 1000) ‑> tuple</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Print the histogram of the flattened image data</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>bins</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>Numbers of bin to compute the histogram from. Defaults to 1000.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>tuple</code></dt>
+<dd>fig, ax tuple as returned by matplotlib.pyplot.subplots</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def show_histogram(self, bins: int = 1000) -&gt; tuple:
+    &#34;&#34;&#34;Print the histogram of the flattened image data
+
+    Args:
+        bins (int, optional): Numbers of bin to compute the histogram from. Defaults to 1000.
+
+    Returns:
+        tuple: fig, ax tuple as returned by matplotlib.pyplot.subplots
+    &#34;&#34;&#34;
+    fig, ax = plt.subplots(dpi=200, constrained_layout=True)
+    histo = np.histogram(self.data, bins=bins)
+    ax.stairs(*histo)
+    ax.set_title(&#34;Image histogram&#34;, color=&#34;black&#34;)
+    ax.set_xlabel(&#34;Signal [DN]&#34;)
+    ax.set_ylabel(&#34;Number of pixels&#34;)
+
+    return fig, ax</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="micropolarray" href="index.html">micropolarray</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="micropolarray.image.Image" href="#micropolarray.image.Image">Image</a></code></h4>
+<ul class="">
+<li><code><a title="micropolarray.image.Image.save_as_fits" href="#micropolarray.image.Image.save_as_fits">save_as_fits</a></code></li>
+<li><code><a title="micropolarray.image.Image.save_as_raw" href="#micropolarray.image.Image.save_as_raw">save_as_raw</a></code></li>
+<li><code><a title="micropolarray.image.Image.show" href="#micropolarray.image.Image.show">show</a></code></li>
+<li><code><a title="micropolarray.image.Image.show_histogram" href="#micropolarray.image.Image.show_histogram">show_histogram</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>

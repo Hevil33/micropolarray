@@ -52,6 +52,14 @@ def main():
     print(image.Q.data)
     print(image.U.data)
 
+    image.show_with_pol_params()
+    plt.show()
+
+    from pathlib import Path
+
+    filename = Path("aaa/bbb/ccc.fits")
+    print(type(filename.suffix))
+
     sys.exit()
 
     # folder = "./test_data/dummy_16x16"

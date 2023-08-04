@@ -1,9 +1,9 @@
-from micropolarray_lib.process.rebin import (
+from micropolarray.processing.rebin import (
     standard_jitrebin,
     micropolarray_jitrebin,
     trim_to_match_binning,
 )
-from micropolarray_lib.process.nrgf import (
+from micropolarray.processing.nrgf import (
     find_occulter_position,
     roi_from_polar,
 )
@@ -30,7 +30,7 @@ class Demodulator:
     def __init__(self, demo_matrices_path: str, binning: bool = False):
         self.demo_matrices_path = demo_matrices_path
         self.binning = binning  # needed for a correct image binning
-        self.mij = self.get_demodulation_tensor(demo_matrices_path)
+        self.mij = self._get_demodulation_tensor(demo_matrices_path)
 
     def rebin(self, binning: int):
         warning("USE OF BINNED DEMODULATION MATRIX IS INCORRECT")
@@ -63,10 +63,7 @@ class Demodulator:
         binned_demodulator.mij = new_mij
         return binned_demodulator
 
-    def get_demodulation_tensor(self, binning: bool = False):
-        """Reads files "MIJ.fits" from path folder and returns a (3,4,y,x)
-        numpy array representing the demodulation tensor."""
-
+    def _get_demodulation_tensor(self, binning: bool = False) -> np.ndarray:
         if not os.path.exists(self.demo_matrices_path):
             raise FileNotFoundError("self.demo_matrices_path not found.")
         mij_filenames_list = glob.glob(

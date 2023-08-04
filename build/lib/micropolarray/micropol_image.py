@@ -34,12 +34,13 @@ from micropolarray.processing.shift import shift, shift_micropol
 @dataclass
 class PolParam:
     """Auxiliary class for polarization parameters.
+
     Members:
-      ID (str): parameter identifier
-      data (np.array): parameter image as numpy 2D array
-      title (str): brief title of the parameter, useful for plotting
-      measure_unit (str): initial measure units of the parameter
-      fix_data (bool): controls whether data has to be constrained to [0, 4096] interval (not implemented yet)
+        ID (str): parameter identifier
+        data (np.array): parameter image as numpy 2D array
+        title (str): brief title of the parameter, useful for plotting
+        measure_unit (str): initial measure units of the parameter
+        fix_data (bool): controls whether data has to be constrained to [0, 4096] interval (not implemented yet)
     """
 
     ID: str
@@ -204,6 +205,17 @@ class MicroPolarizerArrayImage(Image):
         ]
 
     def demodulate(self, demodulator: Demodulator) -> MicroPolarizerArrayImage:
+        """Returns a MicroPolarizerArrayImage with polarization parameters calculated from the demodulation tensor provided.
+
+        Args:
+            demodulator (Demodulator): Demodulator object containing the demodulation tensor components (see processing.new_demodulation)
+
+        Raises:
+            ValueError: raised if image and demodulator do not have the same dimension, for example in case of different binning
+
+        Returns:
+            MicroPolarizerArrayImage: copy of the input image with I, Q, U, pB, DoLP, AoLP calculated from the demodulation tensor.
+        """
         if (self.height, self.width) != (
             demodulator.mij.shape[2],
             demodulator.mij.shape[3],
@@ -392,7 +404,14 @@ class MicroPolarizerArrayImage(Image):
     def subtract_dark(
         self, dark: MicroPolarizerArrayImage
     ) -> MicroPolarizerArrayImage:
-        """Subtracts dark data from image data."""
+        """Correctly subtracts the input dark image from the image
+
+        Args:
+            dark (MicroPolarizerArrayImage): dark to subtract
+
+        Returns:
+            MicroPolarizerArrayImage: copy of input image with dark subtracted
+        """
         self.data = self.data - dark.data
         self.data = np.where(self.data >= 0, self.data, 0)  # Fix data
         self._set_data_and_Stokes()
@@ -402,7 +421,14 @@ class MicroPolarizerArrayImage(Image):
     def correct_flat(
         self, flat: MicroPolarizerArrayImage
     ) -> MicroPolarizerArrayImage:
-        """Divides image data by flat data."""
+        """Normalizes the flat and uses it to correct the image.
+
+        Args:
+            flat (MicroPolarizerArrayImage): flat image, does not need to be normalized.
+
+        Returns:
+            MicroPolarizerArrayImage: copy of input image corrected by flat
+        """
         normalized_flat = flat.data / np.max(flat.data)
         self.data = np.where(
             normalized_flat != 0, self.data / normalized_flat, self.data
@@ -414,6 +440,11 @@ class MicroPolarizerArrayImage(Image):
         return self
 
     def correct_ifov(self) -> MicroPolarizerArrayImage:
+        """Corrects differences in single pixels fields of view inside each superpixel
+
+        Returns:
+            MicroPolarizerArrayImage: image with data corrected for field of view differences
+        """
         corrected_data = self.data.copy()
         corrected_data = ifov_jitcorrect(self.data, self.height, self.width)
         self._set_data_and_Stokes(corrected_data)
@@ -423,14 +454,20 @@ class MicroPolarizerArrayImage(Image):
     # ------------------------------ SHOW ----------------------------
     # ----------------------------------------------------------------
 
-    def show_with_pol_params(self, cmap="Greys_r"):
+    def show_with_pol_params(self, cmap="Greys_r") -> tuple:
         """Returns a fig for each set of image parameters. User must call
         plt.show after this is called.
         Returned parameters:
         - Original image
         - Stokes vector I, Q, U
-        - Angle, degree of linear polarizaimagetion
-        - Polarized brightness
+        - Angle, degree of linear polarizaimagetion Polarized brightness
+
+
+        Args:
+            cmap (str, optional): colormap string. Defaults to "Greys_r".
+
+        Returns:
+            tuple: a (figure, axis) couple same as matplotlib.pyplot.subplots for the image data and another for the six polarization parameters
         """
         data_ratio = self.data.shape[0] / self.data.shape[1]
         image_fig, imageax = plt.subplots(dpi=200, constrained_layout=True)
@@ -480,6 +517,14 @@ class MicroPolarizerArrayImage(Image):
         return image_fig, imageax, stokes_fig, stokesax
 
     def show_single_pol_images(self, cmap="Greys_r"):
+        """Plots the four polarizations images.
+
+        Args:
+            cmap (str, optional): colormap for the plot. Defaults to "Greys_r".
+
+        Returns:
+            tuple: a (figure, axis) couple same as matplotlib.pyplot.subplots
+        """
         data_ratio = self.data.shape[0] / self.data.shape[1]
         fig, ax = plt.subplots(2, 2, figsize=(9, 9), constrained_layout=True)
         ax = ax.ravel()
@@ -499,6 +544,14 @@ class MicroPolarizerArrayImage(Image):
         return fig, ax
 
     def show_demo_images(self, cmap="Greys_r"):
+        """Plots the four demosaiced images.
+
+        Args:
+            cmap (str, optional): colormap for the plot. Defaults to "Greys_r".
+
+        Returns:
+            tuple: a (figure, axis) couple same as matplotlib.pyplot.subplots
+        """
         if not self._is_demosaiced:
             error("Image is not yet demosaiced.")
         data_ratio = self.data.shape[0] / self.data.shape[1]
@@ -527,6 +580,15 @@ class MicroPolarizerArrayImage(Image):
         return fig, ax
 
     def show_pol_param(self, polparam: PolParam, cmap="Greys_r"):
+        """Plots a single polarization parameter given as input
+
+        Args:
+            polparam (PolParam): image PolParam containing the parameter to plot. Can be one among [self.I, self.Q, self.U, self.pB, self.AoLP, self.DoLP]
+            cmap (str, optional): colormap for the plot. Defaults to "Greys_r".
+
+        Returns:
+            tuple: a (figure, axis) couple same as matplotlib.pyplot.subplots
+        """
         data_ratio = self.data.shape[0] / self.data.shape[1]
         fig, ax = plt.subplots(dpi=200)
         mappable = ax.imshow(
@@ -553,9 +615,18 @@ class MicroPolarizerArrayImage(Image):
     def save_single_pol_images(
         self, filename: str, fixto: list[float, float] = None
     ) -> None:
+        """Saves the four polarized images as fits files
+
+        Args:
+            filename (str): filename of the output image. The four images will be saved as filename_POLXX.fits
+            fixto (list[float, float], optional): set the minimum and maximum value for the output images. Defaults to None.
+
+        Raises:
+            ValueError: an invalid file name is provided
+        """
         polslist = [self.pol0, self.pol45, self.pol90, self.pol_45]
         filepath = Path(make_abs_and_create_dir(filename))
-        if not filepath.suffix:
+        if filepath.suffix is not ".fits":
             raise ValueError("filename must be a valid file name, not folder.")
         group_filepath = filepath.joinpath(filepath.parent, filepath.stem)
         for single_pol in polslist:
@@ -585,8 +656,18 @@ class MicroPolarizerArrayImage(Image):
         polparam: PolParam,
         fixto: list[float, float] = None,
     ) -> None:
+        """Saves chosen polarization parameter as a fits file
+
+        Args:
+            filename (str): filename of the output image.
+            polparam (PolParam): polarization parameter to save. Can be one among [self.I, self.Q, self.U, self.pB, self.AoLP, self.DoLP]
+            fixto (list[float, float], optional): set the minimum and maximum value for the output images. Defaults to None.
+
+        Raises:
+            ValueError: filename is not a valid .fits file
+        """
         filepath = Path(make_abs_and_create_dir(filename))
-        if not filepath.suffix:
+        if filepath.suffix is not ".fits":
             raise ValueError("filename must be a valid file name, not folder.")
         hdr = self.header.copy()
         hdr["PARAM"] = (str(polparam.title), "Polarization parameter")
@@ -615,8 +696,16 @@ class MicroPolarizerArrayImage(Image):
         info(f'"{filename_with_ID}" {polparam.ID} successfully saved')
 
     def save_all_pol_params_as_fits(self, filename: str) -> None:
+        """Saves the image and all polarization parameters as fits file with the same name
+
+        Args:
+            filename (str): filename of the output image. Will be saved as filename_[I, Q, U, pB, AoLP, DoLP].fits
+
+        Raises:
+            ValueError: filename is not a valid .fits file
+        """
         filepath = Path(filename)
-        if not filepath.suffix:
+        if filepath.suffix is not ".fits":
             raise ValueError("filename must be a valid file name, not folder.")
         filepath = Path(make_abs_and_create_dir(filename))
         group_filename = str(filepath.joinpath(filepath.parent, filepath.stem))
@@ -641,6 +730,15 @@ class MicroPolarizerArrayImage(Image):
     def save_demosaiced_images_as_fits(
         self, filename: str, fixto: list[float, float] = None
     ) -> None:
+        """Saves the four demosaiced images as fits files
+
+        Args:
+            filename (str): filename of the output image. The four images will be saved as filename_POLXX.fits
+            fixto (list[float, float], optional): set the minimum and maximum value for the output images. Defaults to None.
+
+        Raises:
+            ValueError: an invalid file name is provided
+        """
         if not self._is_demosaiced:
             raise ValueError("Demosaiced images not yet calculated.")
         imageHdr = self.header.copy()
@@ -674,6 +772,11 @@ class MicroPolarizerArrayImage(Image):
     # -------------------- DATA MANIPULATION -------------------------
     # ----------------------------------------------------------------
     def demosaic(self) -> MicroPolarizerArrayImage:
+        """Returns a demosaiced copy of the image with updated polarization parameters.
+
+        Returns:
+            MicroPolarizerArrayImage: demosaiced image
+        """
         self.demosaiced_images = demosaic(self.data, option=self.demosaic_mode)
         self.Stokes_vec = self._get_theo_Stokes_vec_components(
             self.demosaiced_images
@@ -685,7 +788,17 @@ class MicroPolarizerArrayImage(Image):
 
     def rebin(self, binning: int) -> MicroPolarizerArrayImage:
         """Rebins the micropolarizer array image, binned each
-        binningxbinning. Sum bins by default."""
+        binningxbinning. Sum bins by default.
+
+        Args:
+            binning (int): binning to perform. A value of n will be translated in a nxn binning.
+
+        Raises:
+            ValueError: negative binning provided
+
+        Returns:
+            MicroPolarizerArrayImage: copy of the input image, rebinned.
+        """
         if binning <= 0:
             raise ValueError(f"Negative binning {binning}x{binning}")
         rebinned_image = MicroPolarizerArrayImage(self)
@@ -696,28 +809,6 @@ class MicroPolarizerArrayImage(Image):
         )
 
         rebinned_image._set_data_and_Stokes(rebinned_data)
-
-        """
-        # WRONG FOR PARAMS THAT ARE NOT S
-        rebinned_image.I.data = standard_jitrebin(
-            self.I.data, *self.I.data.shape, binning=binning
-        )
-        rebinned_image.Q.data = standard_jitrebin(
-            self.Q.data, *self.Q.data.shape, binning=binning
-        )
-        rebinned_image.U.data = standard_jitrebin(
-            self.U.data, *self.U.data.shape, binning=binning
-        )
-        rebinned_image.pB.data = standard_jitrebin(
-            self.pB.data, *self.pB.data.shape, binning=binning
-        )
-        rebinned_image.AoLP.data = standard_jitrebin(
-            self.AoLP.data, *self.AoLP.data.shape, binning=binning
-        )
-        rebinned_image.DoLP.data = standard_jitrebin(
-            self.DoLP.data, *self.DoLP.data.shape, binning=binning
-        )
-        """
 
         return rebinned_image
 

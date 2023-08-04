@@ -137,9 +137,17 @@ class Image:
     # ----------------------------------------------------------------
 
     def save_as_fits(self, filename: str, fixto: str[float, float] = None):
-        """Save image as fits file with current instance header."""
+        """Saves image as fits with current header
+
+        Args:
+            filename (str): output filename
+            fixto (str[float, float], optional): Set a maximum and minimum range for the data. Defaults to None.
+
+        Raises:
+            ValueError: filename does not end with ".fits"
+        """
         filepath = Path(filename)
-        if not filepath.suffix:
+        if filepath.suffix is not ".fits":
             raise ValueError("filename must be a valid file name, not folder.")
         filepath = Path(make_abs_and_create_dir(filename))
         if fixto:
@@ -159,8 +167,16 @@ class Image:
         info(f'Image successfully saved to "{filename}".')
 
     def save_as_raw(self, filename: str):
+        """Saves the image as a raw binary file
+
+        Args:
+            filename (str): output filename
+
+        Raises:
+            ValueError: filename does not end with ".raw"
+        """
         print(self.data.shape)
-        if not ".raw" in filename:
+        if Path(filename).suffix is not ".raw":
             raise ValueError("Filename must have .raw extension")
         self.data.astype("int16").tofile(filename)
 
@@ -168,8 +184,17 @@ class Image:
     # ------------------------------ SHOW ----------------------------
     # ----------------------------------------------------------------
 
-    def show(self, cmap="Greys_r", vmin=None, vmax=None):
-        """Shows image data with colorbar."""
+    def show(self, cmap="Greys_r", vmin=None, vmax=None) -> tuple:
+        """Shows the image data
+
+        Args:
+            cmap (str, optional): figure colorbar. Defaults to "Greys_r".
+            vmin (_type_, optional): Minimum value to plot. Defaults to None.
+            vmax (_type_, optional): Maximum value to plot. Defaults to None.
+
+        Returns:
+            tuple: fig, ax tuple as returned by matplotlib.pyplot.subplots
+        """
         data_to_plot = self.data
         data_ratio = data_to_plot.shape[0] / data_to_plot.shape[1]
         # image_fig, imageax = plt.subplots(figsize=(9, 9))
@@ -191,8 +216,15 @@ class Image:
 
         return image_fig, imageax
 
-    def show_histogram(self, bins: int = 1000):
-        """Shows a histogram of the image"""
+    def show_histogram(self, bins: int = 1000) -> tuple:
+        """Print the histogram of the flattened image data
+
+        Args:
+            bins (int, optional): Numbers of bin to compute the histogram from. Defaults to 1000.
+
+        Returns:
+            tuple: fig, ax tuple as returned by matplotlib.pyplot.subplots
+        """
         fig, ax = plt.subplots(dpi=200, constrained_layout=True)
         histo = np.histogram(self.data, bins=bins)
         ax.stairs(*histo)

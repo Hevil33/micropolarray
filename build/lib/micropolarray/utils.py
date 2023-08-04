@@ -66,20 +66,56 @@ def fix_data(data: np.array, min, max):
 
 
 def mean_minus_std(data: np.array, stds_n: int = 1) -> float:
+    """Returns the value at the mean - standard deviation for the input data
+
+    Args:
+        data (np.array): input data
+        stds_n (int, optional): number of standard deviations. Defaults to 1.
+
+    Returns:
+        float: mean value - n*stdevs
+    """
     return np.mean(data) - stds_n * np.std(data)
 
 
 def mean_plus_std(data: np.array, stds_n: int = 1) -> float:
+    """Returns the value at the mean + standard deviation for the input data
+
+    Args:
+        data (np.array): input data
+        stds_n (int, optional): number of standard deviations. Defaults to 1.
+
+    Returns:
+        float: mean value + n*stdevs
+    """
     return np.mean(data) + stds_n * np.std(data)
 
 
 def median_minus_std(data: np.array, stds_n: int = 1) -> float:
+    """Returns the value at the median - median deviation for the input data
+
+    Args:
+        data (np.array): input data
+        stds_n (int, optional): number of standard deviations. Defaults to 1.
+
+    Returns:
+        float: median value - n*mediandevs
+    """
     median = np.median(data)
     median_std = np.median(np.abs(data - median))
     return median - stds_n * median_std
 
 
 def median_plus_std(data: np.array, stds_n: int = 1) -> float:
+    """Returns the value at the median + median deviation for the input data
+
+    Args:
+        data (np.array): input data
+        stds_n (int, optional): number of standard deviations. Defaults to 1.
+
+    Returns:
+        float: median value + n*mediandevs
+    """
     median = np.median(data)
     median_std = np.median(np.abs(data - median))
     return median + stds_n * median_std
@@ -102,6 +138,12 @@ def normalize2pi(angles_list):
 
 # timer decorator
 def timer(func):
+    """Use this to time function execution
+
+    Args:
+        func (function): function of which to measure execution time
+    """
+
     def wrapper(*args, **kwargs):
         start = time.time()
         result = func(*args, **kwargs)
