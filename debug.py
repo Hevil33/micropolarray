@@ -58,7 +58,7 @@ def main():
     from pathlib import Path
 
     filename = Path("aaa/bbb/ccc.fits")
-    print(type(filename.suffix))
+    print()
 
     sys.exit()
 
