@@ -47,6 +47,7 @@ def main():
     data[1::2, 1::2] = 2
 
     image = ml.MicroPolarizerArrayImage(data)
+    image = image.rebin(3)
     print(image.AoLP.data)
     print(image.Q.data)
     print(image.U.data)

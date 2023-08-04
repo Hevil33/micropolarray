@@ -18,6 +18,7 @@ setup.py
 ./build/lib/micropolarray/processing/new_demodulation.py
 ./build/lib/micropolarray/processing/nrgf.py
 ./build/lib/micropolarray/processing/rebin.py
+./build/lib/micropolarray/processing/shift.py
 micropolarray.egg-info/PKG-INFO
 micropolarray.egg-info/SOURCES.txt
 micropolarray.egg-info/dependency_links.txt

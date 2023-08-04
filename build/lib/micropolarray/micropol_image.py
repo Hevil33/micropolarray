@@ -12,6 +12,7 @@ from micropolarray.processing.demosaic import (
 )
 from micropolarray.processing.rebin import (
     micropolarray_jitrebin,
+    micropolarray_rebin,
     trim_to_match_2xbinning,
     standard_jitrebin,
 )
@@ -688,7 +689,7 @@ class MicroPolarizerArrayImage(Image):
         if binning <= 0:
             raise ValueError(f"Negative binning {binning}x{binning}")
         rebinned_image = MicroPolarizerArrayImage(self)
-        rebinned_data = micropolarray_jitrebin(
+        rebinned_data = micropolarray_rebin(
             np.array(rebinned_image.data, dtype=np.double),
             *rebinned_image.data.shape,
             binning,

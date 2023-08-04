@@ -39,7 +39,7 @@ Keywords: micropolarizer,polarcam,polarization
 Classifier: License :: OSI Approved :: BSD License
 Classifier: Programming Language :: Python
 Classifier: Programming Language :: Python :: 3
-Requires-Python: >=3.9
+Requires-Python: >=3.0
 Description-Content-Type: text/markdown
 Provides-Extra: dev
 License-File: LICENSE
@@ -94,3 +94,11 @@ demosaiced_image = image.demosaic()
 binned_image = image.rebin(binning=4)  # binned 4x4 image
 
 ```
+
+If demodulation matrices are available, it is easy to get demodulated images
+
+```
+
+demodulator = ml.Demodulator(demodulation_tensor_path)
+
+demo_image = image.demodulate(demodulator) # This image is now demodulated

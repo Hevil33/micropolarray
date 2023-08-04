@@ -1,15 +1,16 @@
-from micropolarray.micropol_image import MicroPolarizerArrayImage
-from micropolarray.processing.new_demodulation import Demodulator
-from micropolarray.processing.demosaic import demosaic
-from micropolarray.image import Image
+import glob
+import os
+import sys
+from itertools import product
+from logging import debug, error, info, warning
+
 import matplotlib.pyplot as plt
 import numpy as np
-import glob
-import sys
-import os
-from logging import info, error, debug, warning
-from itertools import product
 from astropy.io import fits
+from micropolarray.image import Image
+from micropolarray.micropol_image import MicroPolarizerArrayImage
+from micropolarray.processing.demosaic import demosaic
+from micropolarray.processing.new_demodulation import Demodulator
 
 PIXELS = 16  # test data resolution pixels x pixels
 TEST_FILES_PATH = "test_data/"

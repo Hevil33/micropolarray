@@ -16,12 +16,11 @@ def AoLP(Stokes_vec_components):
     """Angle of linear polarization in [rad]"""
     I, Q, U = Stokes_vec_components
     angle = np.where(
-        Q != 0.0,
+        Q != 0,
         0.5 * np.arctan(1.0 * U / (1.0 * Q), dtype=float),
         np.deg2rad(90.0),
     )  # set it to 90 deg when denominator explodes
     return angle
-    return 0.5 * np.arctan2(U, Q)
 
 
 def DoLP(Stokes_vec_components):
