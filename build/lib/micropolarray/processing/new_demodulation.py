@@ -223,9 +223,8 @@ def calculate_demodulation_tensor(
         # occulter_r = occulter_r + overoccult
 
         # Match binning if needed
-        occulter_y = int(occulter_y / binning)
-        occulter_x = int(occulter_x / binning)
-        occulter_r = int(occulter_r / binning)
+        binned_occulter = [int(val / binning) for val in occulter]
+        occulter_y, occulter_x, occulter_r = binned_occulter
 
         occulter_flag = roi_from_polar(
             occulter_flag, [occulter_y, occulter_x], [0, occulter_r]
@@ -251,9 +250,10 @@ def calculate_demodulation_tensor(
     if flat_filename:
         with fits.open(flat_filename) as file:
             flat = np.array(file[0].data, dtype=np.float)
-            if correct_ifov:
-                flat = ifov_jitcorrect(flat, *flat.shape)
-            flat = micropolarray_jitrebin(flat, *flat.shape, binning)
+        if correct_ifov:
+            flat = ifov_jitcorrect(flat, *flat.shape)
+        flat = micropolarray_jitrebin(flat, *flat.shape, binning)
+        flat_max = np.max(flat, axis=(0, 1))
     if flat_filename and dark_filename:
         flat -= dark  # correct flat too
         flat = np.where(flat > 0, flat, 1.0)
@@ -573,7 +573,10 @@ def compute_demodulation_by_chunk(
 
     bounds = np.zeros(shape=(N_PIXELS_IN_SUPERPIX, 2, N_MALUS_PARAMS))
     bounds[:, 0, 0], bounds[:, 1, 0] = 0.1, 0.9999999  # Throughput bounds
-    # bounds[:, 0, 0], bounds[:, 1, 0] = (0.1,2.0)  # tk is multiplied by 0.5 so it can actually be > 1 and still physical
+    # bounds[:, 0, 0], bounds[:, 1, 0] = (
+    #    0.1,
+    #    2.0,
+    # )  # tk is multiplied by 0.5 so it can actually be > 1 and still physical
     bounds[:, 0, 1], bounds[:, 1, 1] = 0.1, 0.9999999  # Efficiency bounds
     bounds[:, 0, 2] = rad_micropol_phases_previsions - 15  # Lower angle bounds
     bounds[:, 1, 2] = rad_micropol_phases_previsions + 15  # Upper angle bounds
@@ -687,10 +690,6 @@ def compute_demodulation_by_chunk(
                 eff = superpix_params[:, 1]
                 phi = superpix_params[:, 2]
 
-                # modified 2023_02_13, worse
-                # t = t * (1 + FPN)
-                # eff = eff * (1 + FPN)
-
                 modulation_matrix = np.array(
                     [
                         0.5 * t,
@@ -700,6 +699,24 @@ def compute_demodulation_by_chunk(
                 )
                 modulation_matrix = modulation_matrix.T
                 demodulation_matrix = np.linalg.pinv(modulation_matrix)
+
+                if DEBUG:
+                    print()
+                    print("MOD")
+                    print(modulation_matrix)
+                    print(theo_modulation_matrix)
+
+                    print()
+                    print("DEMOD")
+                    print(demodulation_matrix)
+                    print(theo_demodulation_matrix)
+
+                    print()
+                    print("params")
+                    print(t)
+                    print(eff)
+                    print(phi)
+                    print("---")
 
                 # Remove matrices with big numbers
                 if np.any(demodulation_matrix > 100) or np.any(
@@ -761,21 +778,3 @@ def Malus(angle, throughput, efficiency, phase):
         + np.sin(2.0 * phase) * np.sin(2.0 * angle)
     )
     return 0.5 * throughput * (1.0 + modulated_efficiency)
-
-
-"""
-
-
-def Malus(angle, throughput, efficiency, phase, FPN):
-    # modified version 2022_02_13
-    modulated_efficiency = efficiency * (
-        np.cos(2.0 * phase) * np.cos(2.0 * angle)
-        + np.sin(2.0 * phase) * np.sin(2.0 * angle)
-    )
-    return (
-        0.5
-        * throughput
-        * (1.0 + FPN)
-        * (1.0 + modulated_efficiency * (1.0 + FPN))
-    )
-"""

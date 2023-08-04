@@ -6,7 +6,6 @@ import micropolarray as ml
 import numpy as np
 import numpy.linalg
 from micropolarray.processing.nrgf import remove_outliers_simple
-from scipy.ndimage.filters import gaussian_filter
 
 
 def main():
@@ -14,7 +13,7 @@ def main():
     e = 1
     angles = np.array([0, 45, -45, 90])
     angles = np.deg2rad(angles)
-    ml.set_default_angles({0: 0, 45: 1, -45: 2, 90: 3})
+    # ml.set_default_angles({0: 0, 45: 1, -45: 2, 90: 3})
 
     theo = (
         0.5
@@ -41,6 +40,19 @@ def main():
     X = numpy.linalg.pinv(theo)
     X_1 = numpy.linalg.pinv(theo_1)
 
+    data = np.ndarray((16, 16))
+    data[0::2, 0::2] = 1
+    data[0::2, 1::2] = 1
+    data[1::2, 0::2] = 1
+    data[1::2, 1::2] = 2
+
+    image = ml.MicroPolarizerArrayImage(data)
+    print(image.AoLP.data)
+    print(image.Q.data)
+    print(image.U.data)
+
+    sys.exit()
+
     # folder = "./test_data/dummy_16x16"
     for i in range(3):
         for j in range(4):
@@ -49,12 +61,6 @@ def main():
             image.save_as_fits(folder + f"/m{i}{j}.fits")
 
     demodulator = ml.Demodulator(folder)
-
-    data = np.zeros((32, 32))
-    data[0::2, 0::2] = 1
-    data[0::2, 1::2] = 0.5
-    data[1::2, 0::2] = 0.5
-    data[1::2, 1::2] = 0
 
     image = ml.MicroPolarizerArrayImage(
         "./test_data/image.fits", demosaic_mode="adjacent"
