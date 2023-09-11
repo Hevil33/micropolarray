@@ -5,7 +5,7 @@ Python open-source module for loading and using micropolarizer array and PolarCa
 
 ## Installation 
 
-Run one of the following commands:
+Run one of the following commands in your terminal:
 
 ```
 pip install micropolarray
@@ -29,9 +29,9 @@ You can run the `test.py` script to verify the correct installation of the micop
 
 ## Documentation
 
-Get the simple [jupyter tutorial]() for a brief introduction.
+Get the simple [jupyter tutorial](https://github.com/Hevil33/micropolarray_master/blob/main/tutorial.ipynb) for a brief introduction.
 
-Docs are in the [documentaion folder](https://github.com/Hevil33/micropolarray_master/tree/main/html/micropolarray) (html format)
+Docs are in the [documentaion folder](https://github.com/Hevil33/micropolarray_master/tree/main/html/micropolarray) (html format).
 
 
 
