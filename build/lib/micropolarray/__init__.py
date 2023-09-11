@@ -19,7 +19,11 @@ from micropolarray.processing.convert import (
     convert_rawfile_to_fits,
     average_rawfiles_to_fits,
 )
-from micropolarray.processing.demosaic import demosaic
+from micropolarray.processing.demosaic import (
+    demosaic,
+    merge_polarizations,
+    split_polarizations,
+)
 from micropolarray.utils import (
     sigma_DN,
     mean_minus_std,

@@ -992,3 +992,8 @@ class MicroPolarizerArrayImage(Image):
         else:
             newdata = np.where(second != 0, self.data / second, 4096)
             return MicroPolarizerArrayImage(newdata, angle_dic=self.angle_dic)
+
+
+# provide shorter aliases
+PolarcamImage = MicroPolarizerArrayImage
+MicropolImage = MicroPolarizerArrayImage

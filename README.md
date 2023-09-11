@@ -1,58 +1,87 @@
 # micropolarray
 
-Python module for loading and using micropolarizer array and polarcam images.
+Python open-source module for loading and using micropolarizer array and PolarCam images.
 
 
 ## Installation 
 
-Run the following command inside a terminal.
-If an error message about wheels appear, launch it again.
+Run one of the following commands:
+
+```
+pip install micropolarray
+```
+
+OR
 
 ```
 pip install git+https://github.com/Hevil33/micropolarray_master
 ```
 
+If an error message about wheels appear, launch it again.
 You can run the `test.py` script to verify the correct installation of the micopolarray package.
+
+## Features
+
+- Automatic polarization calculation
+- Fast and optimized operations on the micropolarizer array
+- Basic image cleaning (dark/flat subtraction)
+
+
+## Documentation
+
+Get the simple [jupyter tutorial]() for a brief introduction.
+
+Docs are in the [documentaion folder](https://github.com/Hevil33/micropolarray_master/tree/main/html/micropolarray) (html format)
+
 
 
 ## Usage
 
 ```
-import micropolarray
-import numpy as np
-
-
-# Can initialize images from np arrays or fitsfilenames.
-# If multiple filenames are used then the average is taken 
-
-
-micropolimage_from_file = micropolarray.MicroPolarizerArrayImage("test_data/image.fits.fits")
-
-micropolimage_from_nparray = micropolarray.MicroPolarizerArrayImage(np.ones(shape=(30,30)))
-
-image = micropolarray.MicroPolarizerArrayImage(image)
-
+import micropolarray as ml
 ```
 
-Multiple useful members can be used to get polarization parameters
+The main class is `MicroPolarizerArrayImage()`, which can be initialized from
 
-```
-angle_of_linear_polarization = image.AoLP.data  # Get the angle of linear polarization
+1. A `numpy` 2D array 
+2. A list of .fits filenames
+3. Another `MicroPolarizerArrayImage()`
 
-Stokes_I, Stokes_Q, Stokes_U = self.Stokes_vec  # Get the stokes vector components as np.ndarray
 
-pol_0_image = image.single_pol_subimages[image.angle_dic[0]]
+Some useful member functions are :
 
-demosaiced_image = image.demosaic() 
+MicroPolarizerArrayImage()
+- .show()
+- .show_with_pol_params()
+- .rebin()
+- .demosaic()
 
-binned_image = image.rebin(binning=4)  # binned 4x4 image
+Information on polarization is automatically calculated and stored in the class members as `numpy` arrays
 
-```
+MicroPolarizerArrayImage()
+- .data
+- single_pol_subimages
+- .Stokes_vec
+- .I.data
+- .Q.data
+- .U.data
+- pB.data (polarized brightness)
+- AoLP.data (angle of linear polarization)
+- DoLP.data (degree of linear polarization)
 
-If demodulation matrices are available, it is easy to get demodulated images
 
-```
+## Additional modules
 
-demodulator = ml.Demodulator(demodulation_tensor_path)
+micropolarray:
 
-demo_image = image.demodulate(demodulator) # This image is now demodulated
+- .processing
+  - .congrid (_experimental_) : fast congrid operations
+  - .convert : raw (binary) files to fits conversion
+  - .new_demodulation : image demodulation and demodulation tensor calculation
+  - .demosaic : fast image demosaicing
+  - .nrgf : occulter finding and roi selection, nrgf filter
+  - .rebin : fast image binning
+  - .shift : image shifting
+- .cameras (_experimental_) : classes for sensor informations
+- .image : general image handling
+- .utils 
