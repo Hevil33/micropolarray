@@ -6,6 +6,7 @@ from logging import debug, error, info, warning
 
 import matplotlib.pyplot as plt
 import numpy as np
+import pytest
 from astropy.io import fits
 from micropolarray.image import Image
 from micropolarray.micropol_image import MicroPolarizerArrayImage

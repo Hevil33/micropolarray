@@ -90,7 +90,7 @@ def split_polarizations(data: np.ndarray):
         #    self.data[1::2, 0::2], # x= 0, y = 1
         #    self.data[1::2, 1::2], # x= 1, y = 1
         # ],
-        dtype=np.float,
+        dtype=float,
     )
 
     return single_pol_images

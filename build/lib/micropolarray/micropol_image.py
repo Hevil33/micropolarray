@@ -330,7 +330,7 @@ class MicroPolarizerArrayImage(Image):
             - single_pol_images[self.angle_dic[-45]]
         )
 
-        S = np.array([I, Q, U], dtype=np.float)
+        S = np.array([I, Q, U], dtype=float)
         return S
 
     def _get_Stokes_from_demodulator(
@@ -363,12 +363,12 @@ class MicroPolarizerArrayImage(Image):
         #        demosaiced_images[self.angle_dic[-45]],
         #        demosaiced_images[self.angle_dic[90]],
         #    ],
-        #    dtype=np.float,
+        #    dtype=float,
         # )  # Liberatore article/thesis
 
         IMG = np.array(
             [demo_image for demo_image in demosaiced_images],
-            dtype=np.float,
+            dtype=float,
         )
         if (mij[0, 0].shape[0] != IMG[0].shape[0]) or (
             mij[0, 0].shape[1] != IMG[0].shape[1]
