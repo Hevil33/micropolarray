@@ -17,10 +17,12 @@ setup(
         "scipy",
         "wheel",
         "tqdm",
+        "pytest",
     ],
     packages=[
         "micropolarray",
         "micropolarray.processing",
+        "micropolarray.tests",
     ],  # name of the uppermost package directory
     package_dir={"micropolarray": "./build/lib/micropolarray"},
     # py_modules=[
