@@ -25,6 +25,7 @@ dependencies = [
     "scipy",
     "wheel",
     "tqdm",
+    "pytest",
 ]
 requires-python = ">=3.0"
 
