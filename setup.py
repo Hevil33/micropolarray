@@ -11,5 +11,5 @@ setup(
         "micropolarray.processing",
         "micropolarray.tests",
     ],  # name of the uppermost package directory
-    package_dir={"micropolarray": "./build/micropolarray"},
+    # package_dir={"micropolarray": "./micropolarray"},
 )
