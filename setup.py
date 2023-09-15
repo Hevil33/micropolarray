@@ -9,7 +9,6 @@ setup(
     packages=[
         "micropolarray",
         "micropolarray.processing",
-        "micropolarray.tests",
     ],  # name of the uppermost package directory
     # package_dir={"micropolarray": "./micropolarray"},
 )
