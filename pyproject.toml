@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "micropolarray"
-version = "1.0.3"
+version = '{{VERSION_PLACEHOLDER}}'
 description = "micropolarizer array data utilities"
 readme = "README.md"
 authors = [{ name ="Herve Haudemand", email = "herve.haudemand@inaf.it" }]
