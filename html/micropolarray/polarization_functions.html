@@ -43,6 +43,12 @@
 def AoLP(Stokes_vec_components):
     &#34;&#34;&#34;Angle of linear polarization in [rad]&#34;&#34;&#34;
     I, Q, U = Stokes_vec_components
+    angle = 0.5 * np.arctan(
+        np.divide(1.0 * U, 1.0 * Q, out=np.zeros_like(U), where=Q != 0),
+        dtype=float,
+    )  # avoids warning when dividing by 0
+    return angle
+
     angle = np.where(
         Q != 0,
         0.5 * np.arctan(1.0 * U / (1.0 * Q), dtype=float),
@@ -69,6 +75,14 @@ def pB(Stokes_vec_components):
 
 
 def normalize2pi(angles_list):
+    &#34;&#34;&#34;Normalizes the input angle list in the -90,90 range
+
+    Args:
+        angles_list (_type_): list of input angles in degrees
+
+    Returns:
+        _type_: normalized angles
+    &#34;&#34;&#34;
     if type(angles_list) is not list:
         angles_list = [
             angles_list,
@@ -102,6 +116,12 @@ def normalize2pi(angles_list):
 <pre><code class="python">def AoLP(Stokes_vec_components):
     &#34;&#34;&#34;Angle of linear polarization in [rad]&#34;&#34;&#34;
     I, Q, U = Stokes_vec_components
+    angle = 0.5 * np.arctan(
+        np.divide(1.0 * U, 1.0 * Q, out=np.zeros_like(U), where=Q != 0),
+        dtype=float,
+    )  # avoids warning when dividing by 0
+    return angle
+
     angle = np.where(
         Q != 0,
         0.5 * np.arctan(1.0 * U / (1.0 * Q), dtype=float),
@@ -131,12 +151,30 @@ def normalize2pi(angles_list):
 <span>def <span class="ident">normalize2pi</span></span>(<span>angles_list)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Normalizes the input angle list in the -90,90 range</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>angles_list</code></strong> :&ensp;<code>_type_</code></dt>
+<dd>list of input angles in degrees</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>_type_</code></dt>
+<dd>normalized angles</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def normalize2pi(angles_list):
+    &#34;&#34;&#34;Normalizes the input angle list in the -90,90 range
+
+    Args:
+        angles_list (_type_): list of input angles in degrees
+
+    Returns:
+        _type_: normalized angles
+    &#34;&#34;&#34;
     if type(angles_list) is not list:
         angles_list = [
             angles_list,

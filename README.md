@@ -41,16 +41,16 @@ Docs are in the [documentaion folder](https://github.com/Hevil33/micropolarray_m
 import micropolarray as ml
 ```
 
-The main class is `MicroPolarizerArrayImage()`, which can be initialized from
+The main class is `MicropolImage()`, which can be initialized from
 
 1. A `numpy` 2D array 
 2. A list of .fits filenames
-3. Another `MicroPolarizerArrayImage()`
+3. Another `MicropolImage()`
 
 
 Some useful member functions are :
 
-MicroPolarizerArrayImage()
+MicropolImage()
 - .show()
 - .show_with_pol_params()
 - .rebin()
@@ -58,7 +58,7 @@ MicroPolarizerArrayImage()
 
 Information on polarization is automatically calculated and stored in the class members as `numpy` arrays
 
-MicroPolarizerArrayImage()
+MicropolImage()
 - .data
 - single_pol_subimages
 - .Stokes_vec

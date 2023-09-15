@@ -9,9 +9,9 @@ import numpy as np
 import pytest
 from astropy.io import fits
 from micropolarray.image import Image
-from micropolarray.micropol_image import MicroPolarizerArrayImage
+from micropolarray.micropol_image import MicropolImage
+from micropolarray.processing.demodulation import Demodulator
 from micropolarray.processing.demosaic import demosaic
-from micropolarray.processing.new_demodulation import Demodulator
 
 PIXELS = 16  # test data resolution pixels x pixels
 TEST_FILES_PATH = "test_data/"
@@ -43,11 +43,9 @@ if __name__ == "__main__":
     # -----------------------micropol image class---------------------
     print("-" * 30)
     info("Testing: micropol_image.py, Stokes_params.py")
-    image = MicroPolarizerArrayImage(data)
-    image = MicroPolarizerArrayImage(TEST_FILES_PATH + "sample_image.fits")
-    image = MicroPolarizerArrayImage(
-        glob.glob(TEST_FILES_PATH + "sample_image.fits")
-    )
+    image = MicropolImage(data)
+    image = MicropolImage(TEST_FILES_PATH + "sample_image.fits")
+    image = MicropolImage(glob.glob(TEST_FILES_PATH + "sample_image.fits"))
 
     image.show_with_pol_params()
     image.save_as_fits(TEST_FILES_PATH + "/image.fits")
@@ -75,7 +73,7 @@ if __name__ == "__main__":
             [3, 4, 3, 4, 3, 4, 3, 4, 3, 4, 3, 4, 3, 4, 3, 4],
         ]
     )
-    image = MicroPolarizerArrayImage(dummydata, demosaic_mode="mean")
+    image = MicropolImage(dummydata, demosaic_mode="mean")
     image.demosaic()
     for idx, demo_image in enumerate(image.demosaiced_images):
         if not np.array_equal(demo_image, np.full((16, 16), (idx + 1) / 4.0)):
@@ -118,7 +116,7 @@ if __name__ == "__main__":
             [3, 4, 3, 4, 3, 4, 3, 4, 3, 4, 3, 4, 3, 4, 3, 4],
         ]
     )
-    image = MicroPolarizerArrayImage(dummydata)
+    image = MicropolImage(dummydata)
     rebinned_theo2 = np.array(
         [
             [4, 8, 4, 8, 4, 8, 4, 8],
@@ -132,7 +130,7 @@ if __name__ == "__main__":
         ]
     )
     binned_image_2 = image.rebin(2)
-    image2 = MicroPolarizerArrayImage(binned_image_2.data)
+    image2 = MicropolImage(binned_image_2.data)
     if not np.array_equal(image2.data, rebinned_theo2):
         error("rebinning 2x2 is incorrect")
         print(f"binned: {image2.data}")
@@ -147,7 +145,7 @@ if __name__ == "__main__":
         ]
     )
     binned_image_4 = image.rebin(4)
-    image4 = MicroPolarizerArrayImage(binned_image_4.data)
+    image4 = MicropolImage(binned_image_4.data)
     if not np.array_equal(image4.data, rebinned_theo4):
         error("rebinning 4x4 is incorrect")
         print(f"binned: {image4.data}")

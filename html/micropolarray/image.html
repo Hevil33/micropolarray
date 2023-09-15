@@ -175,7 +175,8 @@ class Image:
             ValueError: filename does not end with &#34;.fits&#34;
         &#34;&#34;&#34;
         filepath = Path(filename)
-        if filepath.suffix is not &#34;.fits&#34;:
+        if filepath.suffix != &#34;.fits&#34;:
+            print(filepath.suffix)
             raise ValueError(&#34;filename must be a valid file name, not folder.&#34;)
         filepath = Path(make_abs_and_create_dir(filename))
         if fixto:
@@ -446,7 +447,8 @@ class Image:
             ValueError: filename does not end with &#34;.fits&#34;
         &#34;&#34;&#34;
         filepath = Path(filename)
-        if filepath.suffix is not &#34;.fits&#34;:
+        if filepath.suffix != &#34;.fits&#34;:
+            print(filepath.suffix)
             raise ValueError(&#34;filename must be a valid file name, not folder.&#34;)
         filepath = Path(make_abs_and_create_dir(filename))
         if fixto:
@@ -563,7 +565,7 @@ class Image:
 </details>
 <h3>Subclasses</h3>
 <ul class="hlist">
-<li><a title="micropolarray.micropol_image.MicroPolarizerArrayImage" href="micropol_image.html#micropolarray.micropol_image.MicroPolarizerArrayImage">MicroPolarizerArrayImage</a></li>
+<li><a title="micropolarray.micropol_image.MicropolImage" href="micropol_image.html#micropolarray.micropol_image.MicropolImage">MicropolImage</a></li>
 </ul>
 <h3>Methods</h3>
 <dl>
@@ -599,7 +601,8 @@ class Image:
         ValueError: filename does not end with &#34;.fits&#34;
     &#34;&#34;&#34;
     filepath = Path(filename)
-    if filepath.suffix is not &#34;.fits&#34;:
+    if filepath.suffix != &#34;.fits&#34;:
+        print(filepath.suffix)
         raise ValueError(&#34;filename must be a valid file name, not folder.&#34;)
     filepath = Path(make_abs_and_create_dir(filename))
     if fixto:

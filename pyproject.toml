@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "micropolarray"
-version = "1.0.2"
+version = "1.0.3"
 description = "micropolarizer array data utilities"
 readme = "README.md"
 authors = [{ name ="Herve Haudemand", email = "herve.haudemand@inaf.it" }]
@@ -30,7 +30,7 @@ dependencies = [
 requires-python = ">=3.0"
 
 [project.optional-dependencies]
-dev = ["black", "bumpver", "isort", "pip-tools", "pytest"]
+dev = ["black", "bumpver", "isort", "pip-tools"]
 
 [project.urls]
 Homepage = "https://github.com/Hevil33/micropolarray_master"

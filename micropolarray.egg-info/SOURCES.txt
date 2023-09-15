@@ -15,7 +15,6 @@ setup.py
 ./build/lib/micropolarray/processing/convert.py
 ./build/lib/micropolarray/processing/demodulation.py
 ./build/lib/micropolarray/processing/demosaic.py
-./build/lib/micropolarray/processing/new_demodulation.py
 ./build/lib/micropolarray/processing/nrgf.py
 ./build/lib/micropolarray/processing/rebin.py
 ./build/lib/micropolarray/processing/shift.py

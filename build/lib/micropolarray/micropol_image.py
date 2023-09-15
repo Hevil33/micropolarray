@@ -14,7 +14,7 @@ from micropolarray.processing.rebin import (
     micropolarray_rebin,
 )
 from micropolarray.cameras import PolarCam, Camera
-from micropolarray.processing.new_demodulation import Demodulator
+from micropolarray.processing.demodulation import Demodulator
 from micropolarray.utils import make_abs_and_create_dir, fix_data
 from micropolarray.processing.congrid import congrid
 from PIL import Image as PILImage
@@ -60,18 +60,18 @@ def set_default_angles(angles_dic: dict):
     DEFAULT_ANGLES_DIC = angles_dic
 
 
-class MicroPolarizerArrayImage(Image):
-    """Micro-polarizer array image class. Can be initialized from a 2d array, a list of 1 or more file names (use the boolean keyword averageimages to select if sum or average is taken) or another MicroPolarizerArrayImage. Dark and flat micropolarray images can also be provided to automatically correct the result."""
+class MicropolImage(Image):
+    """Micro-polarizer array image class. Can be initialized from a 2d array, a list of 1 or more file names (use the boolean keyword averageimages to select if sum or average is taken) or another MicropolImage. Dark and flat micropolarray images can also be provided to automatically correct the result."""
 
     first_call = True  # Avoid repeating messages
 
     def __init__(
         self,
-        initializer: str | np.ndarray | list | MicroPolarizerArrayImage,
+        initializer: str | np.ndarray | list | MicropolImage,
         angle_dic: dict = None,
         demosaic_mode: str = "adjacent",
-        dark: MicroPolarizerArrayImage = None,
-        flat: MicroPolarizerArrayImage = None,
+        dark: MicropolImage = None,
+        flat: MicropolImage = None,
         averageimages: bool = True,
     ):
         self._is_demodulated = False
@@ -82,11 +82,11 @@ class MicroPolarizerArrayImage(Image):
         if angle_dic is None:
             global DEFAULT_ANGLES_DIC
             if DEFAULT_ANGLES_DIC is None:
-                if MicroPolarizerArrayImage.first_call:
+                if MicropolImage.first_call:
                     warning(
                         f"Micropolarizer orientation dictionary defaults to {PolarCam().angle_dic}, set it via set_default_angles(camera)\n"
                     )
-                MicroPolarizerArrayImage.first_call = False
+                MicropolImage.first_call = False
                 DEFAULT_ANGLES_DIC = PolarCam().angle_dic
             angle_dic = DEFAULT_ANGLES_DIC
         self.angle_dic = angle_dic
@@ -105,7 +105,7 @@ class MicroPolarizerArrayImage(Image):
             self._init_micropolimage_from_file(initializer)
         elif type(initializer) is np.ndarray:
             self._init_micropolimage_from_data(initializer)
-        elif type(initializer) is MicroPolarizerArrayImage:
+        elif type(initializer) is MicropolImage:
             self._init_micropolimage_from_image(initializer)
 
         self._update_stokes_derived_internal_dataclasses()
@@ -115,9 +115,9 @@ class MicroPolarizerArrayImage(Image):
             self.subtract_dark(dark=dark)
         if flat is not None:
             self.correct_flat(flat=flat)
-        elif MicroPolarizerArrayImage.first_call:
+        elif MicropolImage.first_call:
             warning("Remember to set dark")
-            MicroPolarizerArrayImage.first_call = False
+            MicropolImage.first_call = False
 
         self.height, self.width = self.data.shape
 
@@ -131,7 +131,7 @@ class MicroPolarizerArrayImage(Image):
         else:
             self._update_dims_in_header(self.data)
 
-    def _init_micropolimage_from_image(self, image: MicroPolarizerArrayImage):
+    def _init_micropolimage_from_image(self, image: MicropolImage):
         self._is_demodulated = image._is_demodulated
         self._is_demosaiced = image._is_demosaiced
         self._binning = image._binning
@@ -201,8 +201,8 @@ class MicroPolarizerArrayImage(Image):
             self.DoLP,
         ]
 
-    def demodulate(self, demodulator: Demodulator) -> MicroPolarizerArrayImage:
-        """Returns a MicroPolarizerArrayImage with polarization parameters calculated from the demodulation tensor provided.
+    def demodulate(self, demodulator: Demodulator) -> MicropolImage:
+        """Returns a MicropolImage with polarization parameters calculated from the demodulation tensor provided.
 
         Args:
             demodulator (Demodulator): Demodulator object containing the demodulation tensor components (see processing.new_demodulation)
@@ -211,7 +211,7 @@ class MicroPolarizerArrayImage(Image):
             ValueError: raised if image and demodulator do not have the same dimension, for example in case of different binning
 
         Returns:
-            MicroPolarizerArrayImage: copy of the input image with I, Q, U, pB, DoLP, AoLP calculated from the demodulation tensor.
+            MicropolImage: copy of the input image with I, Q, U, pB, DoLP, AoLP calculated from the demodulation tensor.
         """
         if (self.height, self.width) != (
             demodulator.mij.shape[2],
@@ -223,7 +223,7 @@ class MicroPolarizerArrayImage(Image):
                 "Image and demodulator do not have the same dimensions, check binning."
             )
         info("Demodulating...")
-        demodulated_image = MicroPolarizerArrayImage(self)
+        demodulated_image = MicropolImage(self)
         demodulated_image.Stokes_vec = (
             demodulated_image._get_Stokes_from_demodulator(demodulator)
         )
@@ -398,16 +398,14 @@ class MicroPolarizerArrayImage(Image):
         S = np.array([I, Q, U], dtype=float)
         return S
 
-    def subtract_dark(
-        self, dark: MicroPolarizerArrayImage
-    ) -> MicroPolarizerArrayImage:
+    def subtract_dark(self, dark: MicropolImage) -> MicropolImage:
         """Correctly subtracts the input dark image from the image
 
         Args:
-            dark (MicroPolarizerArrayImage): dark to subtract
+            dark (MicropolImage): dark to subtract
 
         Returns:
-            MicroPolarizerArrayImage: copy of input image with dark subtracted
+            MicropolImage: copy of input image with dark subtracted
         """
         self.data = self.data - dark.data
         self.data = np.where(self.data >= 0, self.data, 0)  # Fix data
@@ -415,16 +413,14 @@ class MicroPolarizerArrayImage(Image):
         self._dark_subtracted = True
         return self
 
-    def correct_flat(
-        self, flat: MicroPolarizerArrayImage
-    ) -> MicroPolarizerArrayImage:
+    def correct_flat(self, flat: MicropolImage) -> MicropolImage:
         """Normalizes the flat and uses it to correct the image.
 
         Args:
-            flat (MicroPolarizerArrayImage): flat image, does not need to be normalized.
+            flat (MicropolImage): flat image, does not need to be normalized.
 
         Returns:
-            MicroPolarizerArrayImage: copy of input image corrected by flat
+            MicropolImage: copy of input image corrected by flat
         """
         normalized_flat = flat.data / np.max(flat.data)
         self.data = np.where(
@@ -436,11 +432,11 @@ class MicroPolarizerArrayImage(Image):
         self._flat_subtracted = True
         return self
 
-    def correct_ifov(self) -> MicroPolarizerArrayImage:
+    def correct_ifov(self) -> MicropolImage:
         """Corrects differences in single pixels fields of view inside each superpixel
 
         Returns:
-            MicroPolarizerArrayImage: image with data corrected for field of view differences
+            MicropolImage: image with data corrected for field of view differences
         """
         corrected_data = self.data.copy()
         corrected_data = ifov_jitcorrect(self.data, self.height, self.width)
@@ -768,11 +764,11 @@ class MicroPolarizerArrayImage(Image):
     # ----------------------------------------------------------------
     # -------------------- DATA MANIPULATION -------------------------
     # ----------------------------------------------------------------
-    def demosaic(self) -> MicroPolarizerArrayImage:
+    def demosaic(self) -> MicropolImage:
         """Returns a demosaiced copy of the image with updated polarization parameters.
 
         Returns:
-            MicroPolarizerArrayImage: demosaiced image
+            MicropolImage: demosaiced image
         """
         self.demosaiced_images = demosaic(self.data, option=self.demosaic_mode)
         self.Stokes_vec = self._get_theo_Stokes_vec_components(
@@ -783,7 +779,7 @@ class MicroPolarizerArrayImage(Image):
 
         return self
 
-    def rebin(self, binning: int) -> MicroPolarizerArrayImage:
+    def rebin(self, binning: int) -> MicropolImage:
         """Rebins the micropolarizer array image, binned each
         binningxbinning. Sum bins by default.
 
@@ -794,11 +790,11 @@ class MicroPolarizerArrayImage(Image):
             ValueError: negative binning provided
 
         Returns:
-            MicroPolarizerArrayImage: copy of the input image, rebinned.
+            MicropolImage: copy of the input image, rebinned.
         """
         if binning <= 0:
             raise ValueError(f"Negative binning {binning}x{binning}")
-        rebinned_image = MicroPolarizerArrayImage(self)
+        rebinned_image = MicropolImage(self)
         rebinned_data = micropolarray_rebin(
             np.array(rebinned_image.data, dtype=np.double),
             *rebinned_image.data.shape,
@@ -809,9 +805,7 @@ class MicroPolarizerArrayImage(Image):
 
         return rebinned_image
 
-    def congrid(
-        self, newdim_y: int, newdim_x: int
-    ) -> MicroPolarizerArrayImage:
+    def congrid(self, newdim_y: int, newdim_x: int) -> MicropolImage:
         # Trim to nearest superpixel
         if (newdim_y % 2) or (newdim_x % 2):
             while newdim_y % 2:
@@ -845,10 +839,10 @@ class MicroPolarizerArrayImage(Image):
                         congridded_pol_images[3][pol_super_y, pol_super_x],
                     ],
                 ]
-        newimage = MicroPolarizerArrayImage(newdata)
+        newimage = MicropolImage(newdata)
         return newimage
 
-    def rotate(self, angle: float) -> MicroPolarizerArrayImage:
+    def rotate(self, angle: float) -> MicropolImage:
         """Rotates an image of angle degrees, counter-clockwise."""
 
         single_pols = split_polarizations(self.data)
@@ -858,7 +852,7 @@ class MicroPolarizerArrayImage(Image):
             single_pols[i] = np.asarray(image)
         data = merge_polarizations(single_pols)
 
-        return MicroPolarizerArrayImage(data)
+        return MicropolImage(data)
 
     def mask_occulter(
         self,
@@ -933,7 +927,7 @@ class MicroPolarizerArrayImage(Image):
                 ],
             )
 
-    def shift(self, y: int, x: int) -> MicroPolarizerArrayImage:
+    def shift(self, y: int, x: int) -> MicropolImage:
         """Shifts image by y, x pixels and fills with 0 the remaining space. Positive numbers for up/right shift and negative for down/left shift. Image is split into polarizations, each one is shifted, then they are merged again.
 
         Args:
@@ -941,11 +935,11 @@ class MicroPolarizerArrayImage(Image):
             x (int): horizontal shift in pix
 
         Returns:
-            MicroPolarizerArrayImage: shifted image copied from the original
+            MicropolImage: shifted image copied from the original
         """
         # newdata = shift(self.data, y, x)
         newdata = shift_micropol(self.data, y, x)
-        newimage = MicroPolarizerArrayImage(self)
+        newimage = MicropolImage(self)
         newimage._set_data_and_Stokes(newdata)
 
         return newimage
@@ -953,47 +947,47 @@ class MicroPolarizerArrayImage(Image):
     # ----------------------------------------------------------------
     # ------------------------ OVERLOADING ---------------------------
     # ----------------------------------------------------------------
-    def __add__(self, second) -> MicroPolarizerArrayImage:
+    def __add__(self, second) -> MicropolImage:
         if type(self) is type(second):
             newdata = self.data + second.data
-            newimage = MicroPolarizerArrayImage(self)
+            newimage = MicropolImage(self)
             newimage._set_data_and_Stokes(newdata)
             return newimage
         else:
             newdata = self.data + second
-            return MicroPolarizerArrayImage(newdata, angle_dic=self.angle_dic)
+            return MicropolImage(newdata, angle_dic=self.angle_dic)
 
-    def __sub__(self, second) -> MicroPolarizerArrayImage:
+    def __sub__(self, second) -> MicropolImage:
         if type(self) is type(second):
             newdata = self.data - second.data
-            newimage = MicroPolarizerArrayImage(self)
+            newimage = MicropolImage(self)
             newimage._set_data_and_Stokes(newdata)
             return newimage
         else:
             newdata = self.data - second
-            return MicroPolarizerArrayImage(newdata, angle_dic=self.angle_dic)
+            return MicropolImage(newdata, angle_dic=self.angle_dic)
 
-    def __mul__(self, second) -> MicroPolarizerArrayImage:
+    def __mul__(self, second) -> MicropolImage:
         if type(self) is type(second):
             newdata = self.data * second.data
-            newimage = MicroPolarizerArrayImage(self)
+            newimage = MicropolImage(self)
             newimage._set_data_and_Stokes(newdata)
             return newimage
         else:
             newdata = self.data * second
-            return MicroPolarizerArrayImage(newdata, angle_dic=self.angle_dic)
+            return MicropolImage(newdata, angle_dic=self.angle_dic)
 
-    def __truediv__(self, second) -> MicroPolarizerArrayImage:
+    def __truediv__(self, second) -> MicropolImage:
         if type(self) is type(second):
             newdata = np.where(second.data != 0, self.data / second.data, 4096)
-            newimage = MicroPolarizerArrayImage(self)
+            newimage = MicropolImage(self)
             newimage._set_data_and_Stokes(newdata)
             return newimage
         else:
             newdata = np.where(second != 0, self.data / second, 4096)
-            return MicroPolarizerArrayImage(newdata, angle_dic=self.angle_dic)
+            return MicropolImage(newdata, angle_dic=self.angle_dic)
 
 
 # provide shorter aliases
-PolarcamImage = MicroPolarizerArrayImage
-MicropolImage = MicroPolarizerArrayImage
+# PolarcamImage = MicropolImage
+# MicropolImage = MicropolImage

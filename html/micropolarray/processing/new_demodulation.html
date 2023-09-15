@@ -28,7 +28,7 @@
 </summary>
 <pre><code class="python">from micropolarray.processing.rebin import (
     standard_rebin,
-    micropolarray_jitrebin,
+    micropolarray_rebin,
     trim_to_match_binning,
 )
 from micropolarray.processing.nrgf import (
@@ -52,6 +52,7 @@ from logging import warning, info, error
 from micropolarray.processing.chen_wan_liang_calibration import (
     ifov_jitcorrect,
 )
+from micropolarray.utils import mean_plus_std
 
 # Shape of the demodulation matrix
 N_PIXELS_IN_SUPERPIX = 4
@@ -59,7 +60,7 @@ N_MALUS_PARAMS = 3
 
 
 class Demodulator:
-    &#34;&#34;&#34;Demodulation class needed for MicroPolarizerArrayImage
+    &#34;&#34;&#34;Demodulation class needed for MicropolImage
     demodulation.&#34;&#34;&#34;
 
     def __init__(self, demo_matrices_path: str):
@@ -256,9 +257,10 @@ def calculate_demodulation_tensor(
     with fits.open(filenames_list[0]) as file:
         data = file[0].data  # get data dimension
 
+    print(&#34;qui&#34;)
     # Count binning before dimensions
     data = np.array(data, dtype=float)
-    data = micropolarray_jitrebin(data, *data.shape, binning=binning)
+    data = micropolarray_rebin(data, *data.shape, binning=binning)
     height, width = data.shape
 
     occulter_flag = np.ones_like(data)  # 0 if not a occulted px, 1 otherwise
@@ -294,21 +296,23 @@ def calculate_demodulation_tensor(
     if dark_filename:
         with fits.open(dark_filename) as file:
             dark = np.array(file[0].data, dtype=np.float)
-            dark = micropolarray_jitrebin(dark, *dark.shape, binning)
+            dark = micropolarray_rebin(dark, *dark.shape, binning)
     # Collect flat field, normalize it
     if flat_filename:
         with fits.open(flat_filename) as file:
             flat = np.array(file[0].data, dtype=np.float)
         if correct_ifov:
             flat = ifov_jitcorrect(flat, *flat.shape)
-        flat = micropolarray_jitrebin(flat, *flat.shape, binning)
-        flat_max = np.max(flat, axis=(0, 1))
+        flat = micropolarray_rebin(flat, *flat.shape, binning)
+        # flat_max = np.max(flat, axis=(0, 1))
+        flat_max = mean_plus_std(flat, stds_n=1)
     if flat_filename and dark_filename:
         flat -= dark  # correct flat too
         flat = np.where(flat &gt; 0, flat, 1.0)
         if occulter:
             flat = np.where(occulter_flag, 1.0, flat)
-        flat_max = np.max(flat, axis=(0, 1))
+        # flat_max = np.max(flat, axis=(0, 1))
+        flat_max = mean_plus_std(flat, stds_n=1)
     if flat_filename:
         normalized_flat = np.where(occulter_flag, 1.0, flat / flat_max)
 
@@ -322,7 +326,7 @@ def calculate_demodulation_tensor(
                 all_data_arr[idx] = ifov_jitcorrect(
                     all_data_arr[idx], *all_data_arr[idx].shape
                 )
-            all_data_arr[idx] = micropolarray_jitrebin(
+            all_data_arr[idx] = micropolarray_rebin(
                 all_data_arr[idx], *all_data_arr[idx].shape, binning
             )
             if dark_filename is not None:
@@ -597,12 +601,15 @@ def compute_demodulation_by_chunk(
     # Checked errors
     sigma_S2 = np.sqrt(0.5 * normalizing_S / gain)
     normalizing_S2 = normalizing_S * normalizing_S
-    pix_DN_sigma = np.sqrt(
-        splitted_dara_arr / (gain * normalizing_S2)
-        + sigma_S2
-        * (splitted_dara_arr * splitted_dara_arr)
-        / (normalizing_S2 * normalizing_S2)
-    )
+    # pix_DN_sigma = np.sqrt(
+    #    splitted_dara_arr / (gain * normalizing_S2)
+    #    + sigma_S2
+    #    * (splitted_dara_arr * splitted_dara_arr)
+    #    / (normalizing_S2 * normalizing_S2)
+    # )
+    pix_DN_sigma = (
+        np.sqrt(splitted_dara_arr / gain) / normalizing_S
+    )  # poisson error on the photoelectrons
 
     normalized_splitted_data = splitted_dara_arr / normalizing_S
     all_zeros = np.zeros(shape=(num_of_points))
@@ -622,6 +629,7 @@ def compute_demodulation_by_chunk(
 
     bounds = np.zeros(shape=(N_PIXELS_IN_SUPERPIX, 2, N_MALUS_PARAMS))
     bounds[:, 0, 0], bounds[:, 1, 0] = 0.1, 0.9999999  # Throughput bounds
+
     # bounds[:, 0, 0], bounds[:, 1, 0] = (
     #    0.1,
     #    2.0,
@@ -954,9 +962,10 @@ def Malus(angle, throughput, efficiency, phase):
     with fits.open(filenames_list[0]) as file:
         data = file[0].data  # get data dimension
 
+    print(&#34;qui&#34;)
     # Count binning before dimensions
     data = np.array(data, dtype=float)
-    data = micropolarray_jitrebin(data, *data.shape, binning=binning)
+    data = micropolarray_rebin(data, *data.shape, binning=binning)
     height, width = data.shape
 
     occulter_flag = np.ones_like(data)  # 0 if not a occulted px, 1 otherwise
@@ -992,21 +1001,23 @@ def Malus(angle, throughput, efficiency, phase):
     if dark_filename:
         with fits.open(dark_filename) as file:
             dark = np.array(file[0].data, dtype=np.float)
-            dark = micropolarray_jitrebin(dark, *dark.shape, binning)
+            dark = micropolarray_rebin(dark, *dark.shape, binning)
     # Collect flat field, normalize it
     if flat_filename:
         with fits.open(flat_filename) as file:
             flat = np.array(file[0].data, dtype=np.float)
         if correct_ifov:
             flat = ifov_jitcorrect(flat, *flat.shape)
-        flat = micropolarray_jitrebin(flat, *flat.shape, binning)
-        flat_max = np.max(flat, axis=(0, 1))
+        flat = micropolarray_rebin(flat, *flat.shape, binning)
+        # flat_max = np.max(flat, axis=(0, 1))
+        flat_max = mean_plus_std(flat, stds_n=1)
     if flat_filename and dark_filename:
         flat -= dark  # correct flat too
         flat = np.where(flat &gt; 0, flat, 1.0)
         if occulter:
             flat = np.where(occulter_flag, 1.0, flat)
-        flat_max = np.max(flat, axis=(0, 1))
+        # flat_max = np.max(flat, axis=(0, 1))
+        flat_max = mean_plus_std(flat, stds_n=1)
     if flat_filename:
         normalized_flat = np.where(occulter_flag, 1.0, flat / flat_max)
 
@@ -1020,7 +1031,7 @@ def Malus(angle, throughput, efficiency, phase):
                 all_data_arr[idx] = ifov_jitcorrect(
                     all_data_arr[idx], *all_data_arr[idx].shape
                 )
-            all_data_arr[idx] = micropolarray_jitrebin(
+            all_data_arr[idx] = micropolarray_rebin(
                 all_data_arr[idx], *all_data_arr[idx].shape, binning
             )
             if dark_filename is not None:
@@ -1304,12 +1315,15 @@ def Malus(angle, throughput, efficiency, phase):
     # Checked errors
     sigma_S2 = np.sqrt(0.5 * normalizing_S / gain)
     normalizing_S2 = normalizing_S * normalizing_S
-    pix_DN_sigma = np.sqrt(
-        splitted_dara_arr / (gain * normalizing_S2)
-        + sigma_S2
-        * (splitted_dara_arr * splitted_dara_arr)
-        / (normalizing_S2 * normalizing_S2)
-    )
+    # pix_DN_sigma = np.sqrt(
+    #    splitted_dara_arr / (gain * normalizing_S2)
+    #    + sigma_S2
+    #    * (splitted_dara_arr * splitted_dara_arr)
+    #    / (normalizing_S2 * normalizing_S2)
+    # )
+    pix_DN_sigma = (
+        np.sqrt(splitted_dara_arr / gain) / normalizing_S
+    )  # poisson error on the photoelectrons
 
     normalized_splitted_data = splitted_dara_arr / normalizing_S
     all_zeros = np.zeros(shape=(num_of_points))
@@ -1329,6 +1343,7 @@ def Malus(angle, throughput, efficiency, phase):
 
     bounds = np.zeros(shape=(N_PIXELS_IN_SUPERPIX, 2, N_MALUS_PARAMS))
     bounds[:, 0, 0], bounds[:, 1, 0] = 0.1, 0.9999999  # Throughput bounds
+
     # bounds[:, 0, 0], bounds[:, 1, 0] = (
     #    0.1,
     #    2.0,
@@ -1537,14 +1552,14 @@ def Malus(angle, throughput, efficiency, phase):
 <span>(</span><span>demo_matrices_path: str)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Demodulation class needed for MicroPolarizerArrayImage
+<div class="desc"><p>Demodulation class needed for MicropolImage
 demodulation.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class Demodulator:
-    &#34;&#34;&#34;Demodulation class needed for MicroPolarizerArrayImage
+    &#34;&#34;&#34;Demodulation class needed for MicropolImage
     demodulation.&#34;&#34;&#34;
 
     def __init__(self, demo_matrices_path: str):

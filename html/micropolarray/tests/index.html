@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
-<title>micropolarray API documentation</title>
+<title>micropolarray.tests API documentation</title>
 <meta name="description" content="" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
@@ -19,107 +19,14 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Package <code>micropolarray</code></h1>
+<h1 class="title">Namespace <code>micropolarray.tests</code></h1>
 </header>
 <section id="section-intro">
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">from micropolarray.image import Image
-from micropolarray.micropol_image import (
-    MicropolImage,
-    set_default_angles,
-)
-from micropolarray.micropol_image import (
-    MicropolImage as PolarcamImage,
-)
-from micropolarray.micropol_image import (
-    MicropolImage as MicroPolarizerArrayImage,
-)
-from micropolarray.cameras import PolarCam, Kasi, Antarticor
-
-from micropolarray.processing.demodulation import Demodulator
-from micropolarray.processing.demodulation import (
-    calculate_demodulation_tensor,
-)
-from micropolarray.processing.nrgf import (
-    find_occulter_position,
-    roi_from_polar,
-    nrgf,
-)
-from micropolarray.processing.convert import (
-    convert_set,
-    convert_rawfile_to_fits,
-    average_rawfiles_to_fits,
-)
-from micropolarray.processing.demosaic import (
-    demosaic,
-    merge_polarizations,
-    split_polarizations,
-)
-from micropolarray.utils import (
-    sigma_DN,
-    mean_minus_std,
-    mean_plus_std,
-    median_minus_std,
-    median_plus_std,
-    get_Bsun_units,
-    get_malus_normalization,
-)
-from micropolarray.processing.chen_wan_liang_calibration import (
-    chen_wan_liang_calibration,
-    ifov_jitcorrect,
-)
-from micropolarray.processing.congrid import congrid
-from micropolarray.utils import (
-    normalize2pi,
-    align_keywords_and_data,
-)
-
-import logging
-
-logging.basicConfig(
-    level=logging.INFO, format=&#34;%(levelname)s - %(asctime)s - %(message)s&#34;
-)  # tempo, livello, messaggio. livello è warning, debug, info, error, critical
-
-__all__ = (
-    []
-)  # Imported modules when &#34;from microppolarray_lib import *&#34; is called</code></pre>
-</details>
 </section>
 <section>
 <h2 class="section-title" id="header-submodules">Sub-modules</h2>
 <dl>
-<dt><code class="name"><a title="micropolarray.cameras" href="cameras.html">micropolarray.cameras</a></code></dt>
-<dd>
-<div class="desc"></div>
-</dd>
-<dt><code class="name"><a title="micropolarray.image" href="image.html">micropolarray.image</a></code></dt>
-<dd>
-<div class="desc"></div>
-</dd>
-<dt><code class="name"><a title="micropolarray.micropol_image" href="micropol_image.html">micropolarray.micropol_image</a></code></dt>
-<dd>
-<div class="desc"></div>
-</dd>
-<dt><code class="name"><a title="micropolarray.parallelize" href="parallelize.html">micropolarray.parallelize</a></code></dt>
-<dd>
-<div class="desc"></div>
-</dd>
-<dt><code class="name"><a title="micropolarray.polarization_functions" href="polarization_functions.html">micropolarray.polarization_functions</a></code></dt>
-<dd>
-<div class="desc"></div>
-</dd>
-<dt><code class="name"><a title="micropolarray.processing" href="processing/index.html">micropolarray.processing</a></code></dt>
-<dd>
-<div class="desc"></div>
-</dd>
-<dt><code class="name"><a title="micropolarray.tests" href="tests/index.html">micropolarray.tests</a></code></dt>
-<dd>
-<div class="desc"></div>
-</dd>
-<dt><code class="name"><a title="micropolarray.utils" href="utils.html">micropolarray.utils</a></code></dt>
+<dt><code class="name"><a title="micropolarray.tests.test_v2" href="test_v2.html">micropolarray.tests.test_v2</a></code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
@@ -138,16 +45,14 @@ __all__ = (
 <ul></ul>
 </div>
 <ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="micropolarray" href="../index.html">micropolarray</a></code></li>
+</ul>
+</li>
 <li><h3><a href="#header-submodules">Sub-modules</a></h3>
 <ul>
-<li><code><a title="micropolarray.cameras" href="cameras.html">micropolarray.cameras</a></code></li>
-<li><code><a title="micropolarray.image" href="image.html">micropolarray.image</a></code></li>
-<li><code><a title="micropolarray.micropol_image" href="micropol_image.html">micropolarray.micropol_image</a></code></li>
-<li><code><a title="micropolarray.parallelize" href="parallelize.html">micropolarray.parallelize</a></code></li>
-<li><code><a title="micropolarray.polarization_functions" href="polarization_functions.html">micropolarray.polarization_functions</a></code></li>
-<li><code><a title="micropolarray.processing" href="processing/index.html">micropolarray.processing</a></code></li>
-<li><code><a title="micropolarray.tests" href="tests/index.html">micropolarray.tests</a></code></li>
-<li><code><a title="micropolarray.utils" href="utils.html">micropolarray.utils</a></code></li>
+<li><code><a title="micropolarray.tests.test_v2" href="test_v2.html">micropolarray.tests.test_v2</a></code></li>
 </ul>
 </li>
 </ul>

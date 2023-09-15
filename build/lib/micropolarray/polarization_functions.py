@@ -20,6 +20,7 @@ def AoLP(Stokes_vec_components):
         dtype=float,
     )  # avoids warning when dividing by 0
     return angle
+
     angle = np.where(
         Q != 0,
         0.5 * np.arctan(1.0 * U / (1.0 * Q), dtype=float),

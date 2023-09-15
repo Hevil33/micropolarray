@@ -1,12 +1,18 @@
 from micropolarray.image import Image
 from micropolarray.micropol_image import (
-    MicroPolarizerArrayImage,
+    MicropolImage,
     set_default_angles,
+)
+from micropolarray.micropol_image import (
+    MicropolImage as PolarcamImage,
+)
+from micropolarray.micropol_image import (
+    MicropolImage as MicroPolarizerArrayImage,
 )
 from micropolarray.cameras import PolarCam, Kasi, Antarticor
 
-from micropolarray.processing.new_demodulation import Demodulator
-from micropolarray.processing.new_demodulation import (
+from micropolarray.processing.demodulation import Demodulator
+from micropolarray.processing.demodulation import (
     calculate_demodulation_tensor,
 )
 from micropolarray.processing.nrgf import (
