@@ -29,7 +29,7 @@ You can run the `test.py` script to verify the correct installation of the micop
 
 ## Documentation
 
-Get the simple [jupyter tutorial](https://github.com/Hevil33/micropolarray_master/blob/main/tutorial.ipynb) for a brief introduction.
+Get the simple [jupyter tutorial](https://github.com/Hevil33/micropolarray_master/blob/main/TUTORIAL.ipynb) for a brief introduction.
 
 Docs are in the [documentaion folder](https://github.com/Hevil33/micropolarray_master/tree/main/html/micropolarray) (html format).
 
