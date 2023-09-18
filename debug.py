@@ -1,32 +1,27 @@
 import sys
 import time
 import tracemalloc
+from glob import glob
 
 import matplotlib.pyplot as plt
-import micropolarray as ml
 import numpy as np
 import numpy.linalg
+
+import micropolarray as ml
 from micropolarray.processing.nrgf import remove_outliers_simple
 
 
 def main():
-    data = np.ones(shape=(12, 12))
+    filename = glob(
+        "/media/herve/TOSHIBA EXT/dottorato/cormag/2023_flight/data/images/volo fase 1/seq. 10/*[!no]_tilt*.fits"
+    )[0]
 
-    image = ml.MicropolImage(data)
+    image = ml.MicropolImage(filename)
+    # image.mask_occulter(1471, 2172, 1181)
+    image.mask_occulter(1471, 2172, 500)
+    image.show_with_pol_params()
 
-    for name in image.__dir__():
-        if (not "__" in name) and (not hasattr(name, "__call__")):
-            print(name)
-
-    print(image.single_pol_subimages.shape)
-
-    print(image.single_pol_subimages[0])
-    print(image.pol0.data)
-    image.single_pol_subimages[0] = 3
-    print(image.pol0.data is image.single_pol_subimages[0])
-    print(image.single_pol_subimages[0] is image.pol0.data)
-
-    print(image.pol0.data)
+    plt.show()
 
     # image2 = ml.PolarcamImage(data)
 

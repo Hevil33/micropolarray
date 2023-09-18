@@ -2,7 +2,6 @@ import sys
 from functools import lru_cache
 from logging import info
 
-import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 from numpy.lib.stride_tricks import as_strided

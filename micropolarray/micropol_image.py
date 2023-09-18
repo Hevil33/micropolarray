@@ -865,7 +865,6 @@ class MicropolImage(Image):
         x: int = PolarCam().occulter_pos_last[1],
         r: int = PolarCam().occulter_pos_last[2],
         overoccult: int = 0,
-        camera=PolarCam(),
     ) -> None:
         """Masks occulter for all image parameters
 
@@ -881,25 +880,19 @@ class MicropolImage(Image):
         """
         # y, x, r = camera.occulter_pos_last
 
-        relative_y = y / camera.h_image
-        relative_x = x / camera.w_image
-        relative_r = (r + overoccult) / camera.h_image
-
-        abs_y = int(relative_y * self.height)
-        abs_x = int(relative_x * self.width)
-        abs_r = int(relative_r * self.height)
+        r = r + overoccult
 
         self.data = roi_from_polar(
             self.data,
-            (abs_y, abs_x),
-            [abs_r, 2 * np.max((self.height, self.width))],
+            (y, x),
+            [r, 2 * np.max((self.height, self.width))],
         )
         self.single_pol_subimages = [
             roi_from_polar(
                 data,
-                (int(abs_y / 2), int(abs_x / 2)),
+                (int(y / 2), int(x / 2)),
                 [
-                    int(abs_r / 2),
+                    int(r / 2),
                     2 * np.max((int(self.height / 2), int(self.width / 2))),
                 ],
             )
@@ -910,24 +903,21 @@ class MicropolImage(Image):
             self.demosaiced_images = [
                 roi_from_polar(
                     data,
-                    (abs_y, abs_x),
-                    (abs_r, 2 * np.max([self.height, self.width])),
+                    (y, x),
+                    (r, 2 * np.max([self.height, self.width])),
                 )
                 for data in self.demosaiced_images
             ]
         for param in self.polparam_list:
+            ratio = param.data.shape[0] / self.data.shape[0]
             param.data = roi_from_polar(
                 param.data,
                 (
-                    int(relative_y * param.data.shape[0]),
-                    int(relative_x * param.data.shape[1]),
+                    int(y * ratio),
+                    int(x * ratio),
                 ),
                 [
-                    int(
-                        relative_r
-                        * (param.data.shape[0] + param.data.shape[1])
-                        / 2
-                    ),
+                    int(r * ratio),
                     2 * np.max((param.data.shape[0], param.data.shape[0])),
                 ],
             )
