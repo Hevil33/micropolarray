@@ -1,10 +1,12 @@
-import numpy as np
 import sys
-from scipy.optimize import curve_fit
-from logging import info
-import matplotlib.pyplot as plt
 from functools import lru_cache
+from logging import info
+
+import cv2
+import matplotlib.pyplot as plt
+import numpy as np
 from numpy.lib.stride_tricks import as_strided
+from scipy.optimize import curve_fit
 
 
 def roi_from_polar(
@@ -277,11 +279,13 @@ def find_occulter_position(
             raise ValueError(
                 "ERROR: occulter edges not found, try to change the threshold"
             )
+    elif method == "hugh":
+        pass  # TODO
     if show:
         plt.show()
 
-    x_center = int(np.mean([occulter_bounds[:2]]))
-    y_center = int(np.mean([occulter_bounds[2:]]))
+    y_center = int(np.mean([occulter_bounds[:2]]))
+    x_center = int(np.mean([occulter_bounds[2:]]))
     radius = int(
         np.mean(
             [

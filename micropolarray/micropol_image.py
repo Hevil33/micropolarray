@@ -6,6 +6,7 @@ from pathlib import Path
 
 import matplotlib.pyplot as plt
 import numpy as np
+import scipy
 from astropy.io import fits
 from PIL import Image as PILImage
 
@@ -946,6 +947,31 @@ class MicropolImage(Image):
         newimage = MicropolImage(self)
         newimage._set_data_and_Stokes(newdata)
 
+        return newimage
+
+    def clean_hot_pixels(self, flagged_hot_pix_map: MicropolImage):
+        """Returns a copy of the image with gaussian smeared pixels where flagged_hot_pix_map == 1.
+
+        Args:
+            flagged_hot_pix_map (MicropolImage): hot pixels map.
+
+        Returns:
+            MicropolImage: copy of the original image, gaussian smeared where flagged_hot_pix_map == 1
+        """
+        subimages = self.single_pol_subimages
+        blurred_subimages = np.array(
+            [
+                scipy.ndimage.median_filter(subimage, size=2)
+                for subimage in subimages
+            ]
+        )
+        flagged_subimages = flagged_hot_pix_map.single_pol_subimages
+        subimages = np.where(
+            flagged_subimages == 1, blurred_subimages, subimages
+        )
+
+        newimage = MicropolImage(self)
+        newimage._set_data_and_Stokes(merge_polarizations(subimages))
         return newimage
 
     # ----------------------------------------------------------------
