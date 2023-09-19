@@ -1,6 +1,7 @@
-from numba import njit, jit
-import numpy as np
 from logging import info
+
+import numpy as np
+from numba import jit, njit
 
 
 def print_trimming_info(height, width, new_height, new_width):
@@ -124,7 +125,7 @@ def trim_to_match_2xbinning(height: int, width: int, binning: int):
     """Deletes the last image pixels until superpixel binning is compatible with new dimensions
 
     Args:
-        height (int): image height_
+        height (int): image height
         width (int): image width
         binning (int): image binning
 
@@ -150,7 +151,7 @@ def trim_to_match_binning(height, width, binning, verbose=True):
     """Deletes the last image pixels until simple binning is compatible with new dimensions
 
     Args:
-        height (int): image height_
+        height (int): image height
         width (int): image width
         binning (int): image binning
         verbose (bool, optional): warns user of trimming. Defaults to True.

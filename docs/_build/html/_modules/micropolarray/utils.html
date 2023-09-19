@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>micropolarray.utils &#8212; micropolarray 1.0.6 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b3523f8e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=039e1c02" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=c0ddf5a4"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for micropolarray.utils</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">constants</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">micropolarray.cameras</span> <span class="kn">import</span> <span class="n">PolarCam</span>
+<span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="kn">import</span> <span class="n">curve_fit</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">micropolarray.processing.demosaic</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">split_polarizations</span><span class="p">,</span>
+    <span class="n">merge_polarizations</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<div class="viewcode-block" id="make_abs_and_create_dir_old"><a class="viewcode-back" href="../../micropolarray.html#micropolarray.utils.make_abs_and_create_dir_old">[docs]</a><span class="k">def</span> <span class="nf">make_abs_and_create_dir_old</span><span class="p">(</span><span class="n">filenames</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="n">cwd</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
+    <span class="n">turned_to_list</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">filenames</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="nb">list</span><span class="p">:</span>
+        <span class="n">turned_to_list</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">filenames</span> <span class="o">=</span> <span class="p">[</span><span class="n">filenames</span><span class="p">]</span>
+    <span class="c1"># Make path absolute, create dirs if not existing</span>
+    <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">filename</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">filenames</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isabs</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="n">cwd</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">sep</span> <span class="o">+</span> <span class="n">filename</span>
+            <span class="n">filenames</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">filename</span>
+        <span class="n">parent_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">sep</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">filename</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">sep</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">parent_dir</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">parent_dir</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">turned_to_list</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">filenames</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">filenames</span></div>
+
+
+<div class="viewcode-block" id="make_abs_and_create_dir"><a class="viewcode-back" href="../../micropolarray.html#micropolarray.utils.make_abs_and_create_dir">[docs]</a><span class="k">def</span> <span class="nf">make_abs_and_create_dir</span><span class="p">(</span><span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="o">.</span><span class="n">is_absolute</span><span class="p">():</span>  <span class="c1"># suppose it is in cwd</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="n">Path</span><span class="p">()</span><span class="o">.</span><span class="n">cwd</span><span class="p">(),</span> <span class="n">path</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">suffix</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="n">path</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="n">path</span><span class="o">.</span><span class="n">mkdir</span><span class="p">()</span>
+    <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="sigma_DN"><a class="viewcode-back" href="../../micropolarray.html#micropolarray.utils.sigma_DN">[docs]</a><span class="k">def</span> <span class="nf">sigma_DN</span><span class="p">(</span><span class="n">pix_DN</span><span class="p">):</span>
+    <span class="n">gain</span> <span class="o">=</span> <span class="mf">6.93</span>
+    <span class="n">sigma_DN</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">gain</span> <span class="o">*</span> <span class="n">pix_DN</span><span class="p">)</span> <span class="o">/</span> <span class="n">gain</span>
+    <span class="k">return</span> <span class="n">sigma_DN</span></div>
+
+
+<div class="viewcode-block" id="fix_data"><a class="viewcode-back" href="../../micropolarray.html#micropolarray.utils.fix_data">[docs]</a><span class="k">def</span> <span class="nf">fix_data</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="nb">min</span><span class="p">,</span> <span class="nb">max</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">min</span> <span class="ow">and</span> <span class="nb">max</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">data</span>
+    <span class="n">fixed_data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">fixed_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">fixed_data</span> <span class="o">&gt;</span> <span class="nb">min</span><span class="p">,</span> <span class="n">fixed_data</span><span class="p">,</span> <span class="nb">min</span><span class="p">)</span>
+    <span class="n">fixed_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">fixed_data</span> <span class="o">&lt;</span> <span class="nb">max</span><span class="p">,</span> <span class="n">fixed_data</span><span class="p">,</span> <span class="nb">max</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">fixed_data</span></div>
+
+
+<div class="viewcode-block" id="mean_minus_std"><a class="viewcode-back" href="../../micropolarray.html#micropolarray.utils.mean_minus_std">[docs]</a><span class="k">def</span> <span class="nf">mean_minus_std</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">stds_n</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns the value at the mean - standard deviation for the input data</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        data (np.array): input data</span>
+<span class="sd">        stds_n (int, optional): number of standard deviations. Defaults to 1.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        float: mean value - n*stdevs</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">-</span> <span class="n">stds_n</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="mean_plus_std"><a class="viewcode-back" href="../../micropolarray.html#micropolarray.utils.mean_plus_std">[docs]</a><span class="k">def</span> <span class="nf">mean_plus_std</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">stds_n</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns the value at the mean + standard deviation for the input data</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        data (np.array): input data</span>
+<span class="sd">        stds_n (int, optional): number of standard deviations. Defaults to 1.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        float: mean value + n*stdevs</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">+</span> <span class="n">stds_n</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="median_minus_std"><a class="viewcode-back" href="../../micropolarray.html#micropolarray.utils.median_minus_std">[docs]</a><span class="k">def</span> <span class="nf">median_minus_std</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">stds_n</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns the value at the median - median deviation for the input data</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        data (np.array): input data</span>
+<span class="sd">        stds_n (int, optional): number of standard deviations. Defaults to 1.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        float: median value - n*mediandevs</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">median</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="n">median_std</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">data</span> <span class="o">-</span> <span class="n">median</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">median</span> <span class="o">-</span> <span class="n">stds_n</span> <span class="o">*</span> <span class="n">median_std</span></div>
+
+
+<div class="viewcode-block" id="median_plus_std"><a class="viewcode-back" href="../../micropolarray.html#micropolarray.utils.median_plus_std">[docs]</a><span class="k">def</span> <span class="nf">median_plus_std</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">stds_n</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns the value at the median + median deviation for the input data</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        data (np.array): input data</span>
+<span class="sd">        stds_n (int, optional): number of standard deviations. Defaults to 1.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        float: median value + n*mediandevs</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">median</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="n">median_std</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">data</span> <span class="o">-</span> <span class="n">median</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">median</span> <span class="o">+</span> <span class="n">stds_n</span> <span class="o">*</span> <span class="n">median_std</span></div>
+
+
+<div class="viewcode-block" id="normalize2pi"><a class="viewcode-back" href="../../micropolarray.html#micropolarray.utils.normalize2pi">[docs]</a><span class="k">def</span> <span class="nf">normalize2pi</span><span class="p">(</span><span class="n">angles_list</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">angles_list</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="nb">list</span><span class="p">:</span>
+        <span class="n">angles_list</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">angles_list</span><span class="p">,</span>
+        <span class="p">]</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">angle</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">angles_list</span><span class="p">):</span>
+        <span class="k">while</span> <span class="n">angle</span> <span class="o">&gt;</span> <span class="mi">90</span><span class="p">:</span>
+            <span class="n">angle</span> <span class="o">-=</span> <span class="mi">180</span>
+        <span class="k">while</span> <span class="n">angle</span> <span class="o">&lt;=</span> <span class="o">-</span><span class="mi">90</span><span class="p">:</span>
+            <span class="n">angle</span> <span class="o">+=</span> <span class="mi">180</span>
+        <span class="n">angles_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">angle</span>
+
+    <span class="k">return</span> <span class="n">angles_list</span></div>
+
+
+<span class="c1"># timer decorator</span>
+<div class="viewcode-block" id="timer"><a class="viewcode-back" href="../../micropolarray.html#micropolarray.utils.timer">[docs]</a><span class="k">def</span> <span class="nf">timer</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Use this to time function execution</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        func (function): function of which to measure execution time</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">end</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Function </span><span class="si">{</span><span class="n">func</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> took </span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">end</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">start</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">)</span><span class="si">}</span><span class="s2"> ns to run&quot;</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="k">return</span> <span class="n">wrapper</span></div>
+
+
+<div class="viewcode-block" id="align_keywords_and_data"><a class="viewcode-back" href="../../micropolarray.html#micropolarray.utils.align_keywords_and_data">[docs]</a><span class="k">def</span> <span class="nf">align_keywords_and_data</span><span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">sun_center</span><span class="p">,</span> <span class="n">platescale</span><span class="p">,</span> <span class="n">binning</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Fixes antarticor keywords and data to reflect each other.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        header (dict): fits file header</span>
+<span class="sd">        data (ndarray): data as np array</span>
+<span class="sd">        platescale (float): plate scale in arcsec/pixel</span>
+<span class="sd">        binning (int, optional): binning applied to image. Defaults to 1 (no binning).</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        header, data: new fixed header and data</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">single_pol_images</span> <span class="o">=</span> <span class="n">split_polarizations</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="c1"># data = np.rot90(data, k=-1)</span>
+    <span class="c1"># data = np.flip(data, axis=0)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">):</span>
+        <span class="n">single_pol_images</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">rot90</span><span class="p">(</span><span class="n">single_pol_images</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">k</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">single_pol_images</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">flip</span><span class="p">(</span><span class="n">single_pol_images</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">merge_polarizations</span><span class="p">(</span><span class="n">single_pol_images</span><span class="p">)</span>
+
+    <span class="n">header</span><span class="p">[</span><span class="s2">&quot;NAXIS1&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">header</span><span class="p">[</span><span class="s2">&quot;NAXIS2&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">height</span> <span class="o">=</span> <span class="n">header</span><span class="p">[</span><span class="s2">&quot;NAXIS1&quot;</span><span class="p">]</span>
+    <span class="n">width</span> <span class="o">=</span> <span class="n">header</span><span class="p">[</span><span class="s2">&quot;NAXIS2&quot;</span><span class="p">]</span>
+    <span class="n">rotation_angle</span> <span class="o">=</span> <span class="o">-</span><span class="mi">9</span>  <span class="c1"># degrees</span>
+    <span class="k">if</span> <span class="n">binning</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">platescale</span> <span class="o">=</span> <span class="n">platescale</span> <span class="o">*</span> <span class="n">binning</span>
+
+    <span class="n">header</span><span class="p">[</span><span class="s2">&quot;DATE-OBS&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">header</span><span class="p">[</span><span class="s2">&quot;DATE-OBS&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;T&quot;</span> <span class="o">+</span> <span class="n">header</span><span class="p">[</span><span class="s2">&quot;TIME-OBS&quot;</span><span class="p">]</span>
+
+    <span class="n">header</span><span class="p">[</span><span class="s2">&quot;WCSNAME&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;helioprojective-cartesian&quot;</span>
+    <span class="c1"># header[&quot;DSUN_OBS&quot;] = 1.495978707e11</span>
+    <span class="n">header</span><span class="p">[</span><span class="s2">&quot;CTYPE1&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;HPLN-TAN&quot;</span>
+    <span class="n">header</span><span class="p">[</span><span class="s2">&quot;CTYPE2&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;HPLT-TAN&quot;</span>
+    <span class="n">header</span><span class="p">[</span><span class="s2">&quot;CDELT1&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">platescale</span>
+    <span class="n">header</span><span class="p">[</span><span class="s2">&quot;CDELT2&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">platescale</span>
+    <span class="n">header</span><span class="p">[</span><span class="s2">&quot;CUNIT1&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;arcsec&quot;</span>
+    <span class="n">header</span><span class="p">[</span><span class="s2">&quot;CUNIT2&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;arcsec&quot;</span>
+    <span class="n">header</span><span class="p">[</span><span class="s2">&quot;CRVAL1&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">header</span><span class="p">[</span><span class="s2">&quot;CRVAL2&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">header</span><span class="p">[</span><span class="s2">&quot;CROTA2&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">rotation_angle</span>
+
+    <span class="n">y</span><span class="p">,</span> <span class="n">x</span> <span class="o">=</span> <span class="n">sun_center</span>
+    <span class="c1"># if year == 2021:</span>
+    <span class="c1">#    y, x, _ = PolarCam().occulter_pos_2021</span>
+    <span class="c1"># elif year == 2022:</span>
+    <span class="c1">#    y, x, _ = PolarCam().occulter_pos_last</span>
+    <span class="n">relative_y</span> <span class="o">=</span> <span class="n">y</span> <span class="o">/</span> <span class="mi">1952</span>
+    <span class="n">relative_x</span> <span class="o">=</span> <span class="n">x</span> <span class="o">/</span> <span class="mi">1952</span>
+    <span class="n">sun_x</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">width</span> <span class="o">*</span> <span class="n">relative_x</span><span class="p">)</span>
+    <span class="n">sun_y</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">height</span> <span class="o">*</span> <span class="n">relative_y</span><span class="p">)</span>
+
+    <span class="c1"># one changes because of rotation, the other because of jhelioviewer representation</span>
+    <span class="n">header</span><span class="p">[</span><span class="s2">&quot;CRPIX1&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">height</span> <span class="o">-</span> <span class="n">sun_y</span>  <span class="c1"># y, checked</span>
+    <span class="n">header</span><span class="p">[</span><span class="s2">&quot;CRPIX2&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">width</span> <span class="o">-</span> <span class="n">sun_x</span>  <span class="c1"># x, checked</span>
+
+    <span class="k">return</span> <span class="n">header</span><span class="p">,</span> <span class="n">data</span></div>
+
+
+<div class="viewcode-block" id="get_Bsun_units"><a class="viewcode-back" href="../../micropolarray.html#micropolarray.utils.get_Bsun_units">[docs]</a><span class="k">def</span> <span class="nf">get_Bsun_units</span><span class="p">(</span>
+    <span class="n">diffuser_I</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">texp_image</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+    <span class="n">texp_diffuser</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns the conversion unit for expressing brightness in units of sun brightness. Usage is</span>
+<span class="sd">    data [units of B_sun] = data[DN] * get_Bsun_units(mean_Bsun_brightness, texp_image, texp_diffuser)</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        mean_sun_brightness (float): diffuser mean in DN.</span>
+<span class="sd">        texp_image (float, optional): image exposure time. Defaults to 1.0.</span>
+<span class="sd">        texp_diffuser (float, optional): diffuser exposure time. Defaults to 1.0.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        float: Bsun units conversion factor</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">diffusion_solid_angle</span> <span class="o">=</span> <span class="mf">1.083</span> <span class="o">*</span> <span class="mf">1.0e-5</span>
+    <span class="n">diffuser_transmittancy</span> <span class="o">=</span> <span class="mf">0.28</span>
+    <span class="n">Bsun_unit</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">diffusion_solid_angle</span>
+        <span class="o">*</span> <span class="n">diffuser_transmittancy</span>
+        <span class="o">*</span> <span class="n">texp_diffuser</span>
+        <span class="o">/</span> <span class="n">texp_image</span>
+    <span class="p">)</span>
+    <span class="n">Bsun_unit</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="n">texp_image</span><span class="p">)</span>
+        <span class="o">*</span> <span class="n">diffuser_transmittancy</span>
+        <span class="o">*</span> <span class="n">diffusion_solid_angle</span>
+        <span class="o">/</span> <span class="p">(</span><span class="n">diffuser_I</span> <span class="o">/</span> <span class="n">texp_diffuser</span><span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">Bsun_unit</span></div>
+
+
+<div class="viewcode-block" id="get_malus_normalization"><a class="viewcode-back" href="../../micropolarray.html#micropolarray.utils.get_malus_normalization">[docs]</a><span class="k">def</span> <span class="nf">get_malus_normalization</span><span class="p">(</span><span class="n">four_peaks_images</span><span class="p">,</span> <span class="n">show_hist</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="n">S_max</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span>
+        <span class="n">four_peaks_images</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="p">)</span>  <span class="c1"># tk_sum = tk_0 + tk_45 + tk_90 + tk_45</span>
+    <span class="n">S_max</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">four_peaks_images</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="c1"># Normalizing S, has a spike of which maximum is taken</span>
+    <span class="n">bins</span> <span class="o">=</span> <span class="mi">1000</span>
+    <span class="n">histo</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">histogram</span><span class="p">(</span><span class="n">S_max</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="n">bins</span><span class="p">)</span>
+    <span class="n">maxvalue</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">histo</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">index</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">histo</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">maxvalue</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">normalizing_S</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">histo</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">index</span><span class="p">]</span> <span class="o">+</span> <span class="n">histo</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">histo</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">index</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">/</span> <span class="mi">3</span>
+    <span class="c1"># normalizing_S = np.max(S_max) # old</span>
+
+    <span class="c1"># ----------------------------------------------</span>
+    <span class="c1"># fit gaussian to S for normalization signal</span>
+    <span class="k">def</span> <span class="nf">gauss</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">norm</span><span class="p">,</span> <span class="n">x_0</span><span class="p">,</span> <span class="n">sigma</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">norm</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="p">((</span><span class="n">x</span> <span class="o">-</span> <span class="n">x_0</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">4</span> <span class="o">*</span> <span class="n">sigma</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
+
+    <span class="n">hist_roi</span> <span class="o">=</span> <span class="mi">10</span>  <span class="c1"># bins around max value</span>
+    <span class="n">xvalues</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">histo</span><span class="p">[</span><span class="mi">1</span><span class="p">])[</span><span class="n">index</span> <span class="o">-</span> <span class="n">hist_roi</span> <span class="p">:</span> <span class="n">index</span> <span class="o">+</span> <span class="n">hist_roi</span><span class="p">]</span>
+    <span class="n">yvalues</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">histo</span><span class="p">[</span><span class="mi">0</span><span class="p">])[</span><span class="n">index</span> <span class="o">-</span> <span class="n">hist_roi</span> <span class="p">:</span> <span class="n">index</span> <span class="o">+</span> <span class="n">hist_roi</span><span class="p">]</span>
+    <span class="n">yvalues_sum</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">yvalues</span><span class="p">)</span>
+    <span class="n">yvalues</span> <span class="o">=</span> <span class="n">yvalues</span> <span class="o">/</span> <span class="n">yvalues_sum</span>
+    <span class="n">xvalues</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+        <span class="p">[</span><span class="n">value</span> <span class="o">+</span> <span class="p">(</span><span class="n">xvalues</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">xvalues</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">/</span> <span class="mi">2</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">xvalues</span><span class="p">]</span>
+    <span class="p">)</span>  <span class="c1"># shift each bin to center</span>
+    <span class="n">prediction</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">yvalues</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">yvalues</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)],</span>  <span class="c1"># normalization</span>
+        <span class="n">xvalues</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">xvalues</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)],</span>  <span class="c1"># center</span>
+        <span class="n">xvalues</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">xvalues</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="nb">int</span><span class="p">(</span><span class="n">hist_roi</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)]</span>
+        <span class="o">-</span> <span class="n">xvalues</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">xvalues</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)],</span>  <span class="c1"># sigma</span>
+    <span class="p">]</span>
+    <span class="n">params</span><span class="p">,</span> <span class="n">cov</span> <span class="o">=</span> <span class="n">curve_fit</span><span class="p">(</span>
+        <span class="n">gauss</span><span class="p">,</span>
+        <span class="n">xvalues</span><span class="p">,</span>
+        <span class="n">yvalues</span><span class="p">,</span>
+        <span class="n">prediction</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">normalizing_S</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">params</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>  <span class="c1"># center of gaussian + 2sigma</span>
+    <span class="c1"># 3sigma -&gt; P = 2.7e-3 outliers</span>
+    <span class="c1"># 4sigma -&gt; P = 6.3e-5 outliers</span>
+    <span class="c1"># ----------------------------------------------</span>
+    <span class="k">if</span> <span class="n">show_hist</span><span class="p">:</span>
+        <span class="n">index</span> <span class="o">=</span> <span class="mi">5</span>
+        <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">9</span><span class="p">))</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">stairs</span><span class="p">(</span><span class="n">histo</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">histo</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;S, max = </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">S_max</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">normalizing_S</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;normalizing_S&quot;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+            <span class="n">xvalues</span><span class="p">,</span>
+            <span class="n">gauss</span><span class="p">(</span><span class="n">xvalues</span><span class="p">,</span> <span class="n">params</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">yvalues_sum</span><span class="p">,</span> <span class="n">params</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">params</span><span class="p">[</span><span class="mi">2</span><span class="p">]),</span>
+            <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Fitted curve for normalizing S&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Normalizing S (t_0 + t_45 + t_90 + t_135)&quot;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;S [DN]&quot;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Counts&quot;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">normalizing_S</span></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">micropolarray</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2023, Herve Haudemand.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 7.1.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.13</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

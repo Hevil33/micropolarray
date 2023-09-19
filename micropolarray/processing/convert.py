@@ -1,13 +1,14 @@
-import os
-import numpy as np
-import multiprocessing as mp
-from astropy.io import fits
-import sys
-import tqdm
 import datetime
-import pytz
+import multiprocessing as mp
+import os
+import sys
 from logging import critical, info
 from pathlib import Path
+
+import numpy as np
+import pytz
+import tqdm
+from astropy.io import fits
 
 
 def three_bytes_to_two_ints(filecontent):
@@ -29,11 +30,11 @@ def three_bytes_to_two_ints(filecontent):
 def nparr_from_binary(filename):
     """Converts a PolarCam binary file into a numpy array. Bytes are saved like this
 
-     - 24 bit (3 bytes)
-         1             |   3                |     2
-    111111111111       | 1111               | 11111111
-     - 2 numbers
-    First number 12bit | Second number (little endian) 8+4=12 bit
+    - 24 bit (3 bytes)
+        1             |   3                |     2
+        111111111111       | 1111               | 11111111
+    - 2 numbers
+        First number 12bit | Second number (little endian) 8+4=12 bit
 
     Args:
         filename (str): name of the file to be converted

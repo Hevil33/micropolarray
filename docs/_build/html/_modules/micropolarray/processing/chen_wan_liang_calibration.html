@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>micropolarray.processing.chen_wan_liang_calibration &#8212; micropolarray 1.0.6 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b3523f8e" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css?v=039e1c02" />
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=c0ddf5a4"></script>
+    <script src="../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for micropolarray.processing.chen_wan_liang_calibration</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">astropy.io</span> <span class="kn">import</span> <span class="n">fits</span>
+<span class="kn">from</span> <span class="nn">micropolarray.cameras</span> <span class="kn">import</span> <span class="n">PolarCam</span>
+<span class="kn">from</span> <span class="nn">micropolarray.processing.nrgf</span> <span class="kn">import</span> <span class="n">roi_from_polar</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">numba</span> <span class="kn">import</span> <span class="n">njit</span>
+<span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">micropolarray.utils</span> <span class="kn">import</span> <span class="n">make_abs_and_create_dir</span>
+<span class="kn">from</span> <span class="nn">logging</span> <span class="kn">import</span> <span class="n">warning</span><span class="p">,</span> <span class="n">info</span>
+
+
+<div class="viewcode-block" id="calculate_chen_wan_lian_calibration"><a class="viewcode-back" href="../../../micropolarray.processing.html#micropolarray.processing.chen_wan_liang_calibration.calculate_chen_wan_lian_calibration">[docs]</a><span class="k">def</span> <span class="nf">calculate_chen_wan_lian_calibration</span><span class="p">(</span>
+    <span class="n">polarizer_orientations</span><span class="p">,</span>
+    <span class="n">filenames_list</span><span class="p">,</span>
+    <span class="n">micropol_phases_previsions</span><span class="p">,</span>
+    <span class="n">output_dir</span><span class="p">,</span>
+    <span class="n">occulter</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">dark_filename</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">flat_filename</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Performs calibration from Chen-Wang-Liang paper 2014</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        polarizer_orientations (list[float]): List of polarizer orienataions</span>
+<span class="sd">        filenames_list (list[str]): List of filenames coupled with</span>
+<span class="sd">        micropol_phases_previsions (list[float]): Previsions of the micropolarizer orientations inside a superpixel</span>
+<span class="sd">        output_dir (str): output path for the calibration matrices</span>
+<span class="sd">        occulter (bool, optional): wether to exclude the occulter area. Defaults to True.</span>
+<span class="sd">        dark_filename (str, optional): path to the dark to be subtracted from the images. Defaults to None.</span>
+<span class="sd">        flat_filename (str, optional): path to the dark to be subtracted from the images. Defaults to None.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ValueError: polarizer orientation list and filenames list do not have the same lenght</span>
+<span class="sd">        ValueError: any of 0,45,90,-45 polarizarions is not included in the polarizer orientation list</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">DEBUG</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">filenames_list</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="nb">list</span><span class="p">:</span>
+        <span class="n">filenames_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">filenames_list</span><span class="p">]</span>
+
+    <span class="n">pols_n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">polarizer_orientations</span><span class="p">)</span>
+    <span class="n">filenames_n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">filenames_list</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">pols_n</span> <span class="o">!=</span> <span class="n">filenames_n</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Polarizer orientations do not match filenames.&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isin</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">45</span><span class="p">,</span> <span class="mi">90</span><span class="p">,</span> <span class="o">-</span><span class="mi">45</span><span class="p">],</span> <span class="n">polarizer_orientations</span><span class="p">)):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;All (0, 45, 90, -45) pols must be included in the polarizer orientation array&quot;</span>
+        <span class="p">)</span>
+    <span class="c1"># Have to be sorted</span>
+    <span class="n">polarizer_orientations</span><span class="p">,</span> <span class="n">filenames_list</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="nb">list</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="nb">sorted</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">polarizer_orientations</span><span class="p">,</span> <span class="n">filenames_list</span><span class="p">)))</span>
+    <span class="p">)</span>
+
+    <span class="n">angle_dic</span> <span class="o">=</span> <span class="p">{</span><span class="n">micropol_phases_previsions</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span> <span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">)}</span>
+
+    <span class="k">with</span> <span class="n">fits</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">filenames_list</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">file</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>  <span class="c1"># get data dimension</span>
+    <span class="n">occulter_flag</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>  <span class="c1"># 0 if not a occulted px, 1 otherwise</span>
+    <span class="k">if</span> <span class="n">occulter</span><span class="p">:</span>
+        <span class="c1"># Mean values from coronal observations 2022_12_03</span>
+        <span class="c1"># (campagna_2022/mean_occulter_pos.py)</span>
+
+        <span class="n">occulter_y</span><span class="p">,</span> <span class="n">occulter_x</span><span class="p">,</span> <span class="n">occulter_r</span> <span class="o">=</span> <span class="n">PolarCam</span><span class="p">()</span><span class="o">.</span><span class="n">occulter_pos_nov2022</span>
+        <span class="n">occulter_r</span> <span class="o">+=</span> <span class="mi">10</span>  <span class="c1"># Better to overoccult</span>
+
+        <span class="n">occulter_flag</span> <span class="o">=</span> <span class="n">roi_from_polar</span><span class="p">(</span>
+            <span class="n">occulter_flag</span><span class="p">,</span> <span class="p">[</span><span class="n">occulter_y</span><span class="p">,</span> <span class="n">occulter_x</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">occulter_r</span><span class="p">]</span>
+        <span class="p">)</span>
+        <span class="k">for</span> <span class="n">super_y</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">occulter_flag</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">2</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">super_x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">occulter_flag</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">2</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span>
+                    <span class="n">occulter_flag</span><span class="p">[</span><span class="n">super_y</span> <span class="p">:</span> <span class="n">super_y</span> <span class="o">+</span> <span class="mi">2</span><span class="p">,</span> <span class="n">super_x</span> <span class="p">:</span> <span class="n">super_x</span> <span class="o">+</span> <span class="mi">2</span><span class="p">]</span>
+                <span class="p">):</span>
+                    <span class="n">occulter_flag</span><span class="p">[</span>
+                        <span class="n">super_y</span> <span class="p">:</span> <span class="n">super_y</span> <span class="o">+</span> <span class="mi">2</span><span class="p">,</span> <span class="n">super_x</span> <span class="p">:</span> <span class="n">super_x</span> <span class="o">+</span> <span class="mi">2</span>
+                    <span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+                    <span class="k">continue</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">occulter_flag</span> <span class="o">*=</span> <span class="mi">0</span>
+
+    <span class="c1"># Collect dark</span>
+    <span class="k">if</span> <span class="n">dark_filename</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">fits</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">dark_filename</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+            <span class="n">dark</span> <span class="o">=</span> <span class="n">file</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
+    <span class="c1"># Collect flat field, normalize it</span>
+    <span class="k">if</span> <span class="n">flat_filename</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">fits</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">flat_filename</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+            <span class="n">flat</span> <span class="o">=</span> <span class="n">file</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
+    <span class="k">if</span> <span class="n">flat_filename</span> <span class="ow">and</span> <span class="n">dark_filename</span><span class="p">:</span>
+        <span class="n">flat</span> <span class="o">-=</span> <span class="n">dark</span>  <span class="c1"># correct flat too</span>
+        <span class="n">flat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">flat</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="n">flat</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">occulter</span><span class="p">:</span>
+            <span class="n">flat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">occulter_flag</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">flat</span><span class="p">)</span>
+
+    <span class="n">flat_max</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">flat</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="n">normalized_flat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">occulter_flag</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">flat</span> <span class="o">/</span> <span class="n">flat_max</span><span class="p">)</span>
+
+    <span class="n">all_data_arr</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">]</span> <span class="o">*</span> <span class="n">filenames_n</span>
+    <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">filename</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">filenames_list</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">fits</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+            <span class="n">all_data_arr</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">file</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
+            <span class="k">if</span> <span class="n">dark_filename</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">all_data_arr</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">-=</span> <span class="n">dark</span>
+                <span class="n">all_data_arr</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
+                    <span class="n">all_data_arr</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">all_data_arr</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="mf">0.0</span>
+                <span class="p">)</span>
+            <span class="k">if</span> <span class="n">flat_filename</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">all_data_arr</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
+                    <span class="n">normalized_flat</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">,</span>
+                    <span class="n">all_data_arr</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">/</span> <span class="n">normalized_flat</span><span class="p">,</span>
+                    <span class="n">all_data_arr</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span>
+                <span class="p">)</span>
+
+    <span class="n">all_data_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">all_data_arr</span><span class="p">)</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">width</span> <span class="o">=</span> <span class="n">all_data_arr</span><span class="o">.</span><span class="n">shape</span>
+
+    <span class="k">if</span> <span class="n">DEBUG</span><span class="p">:</span>
+        <span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Running in DEBUG mode&quot;</span><span class="p">)</span>
+        <span class="n">height</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">height</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">width</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">width</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">all_data_arr</span> <span class="o">=</span> <span class="n">all_data_arr</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">:</span><span class="n">height</span><span class="p">,</span> <span class="mi">0</span><span class="p">:</span><span class="n">width</span><span class="p">]</span>
+
+    <span class="c1"># Stokes input vector: S = [pol] * [S_0, S_1, S_2, 1] * [width, height]</span>
+    <span class="n">S_input</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">filenames_n</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">))</span>
+
+    <span class="n">single_pol_images</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+        <span class="p">[</span>
+            <span class="p">[</span>
+                <span class="n">all_data_arr</span><span class="p">[</span><span class="n">pol_idx</span><span class="p">,</span> <span class="n">y</span><span class="p">::</span><span class="mi">2</span><span class="p">,</span> <span class="n">x</span><span class="p">::</span><span class="mi">2</span><span class="p">]</span>
+                <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+            <span class="p">]</span>
+            <span class="k">for</span> <span class="n">pol_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">pols_n</span><span class="p">)</span>
+        <span class="p">]</span>
+    <span class="p">)</span>
+
+    <span class="n">sorted_single_pol_images</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">single_pol_images</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">sorted_single_pol_images</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">single_pol_images</span><span class="p">[</span>
+        <span class="p">:,</span> <span class="n">angle_dic</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="p">:,</span> <span class="p">:</span>
+    <span class="p">]</span>
+    <span class="n">sorted_single_pol_images</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">single_pol_images</span><span class="p">[</span>
+        <span class="p">:,</span> <span class="n">angle_dic</span><span class="p">[</span><span class="mi">45</span><span class="p">],</span> <span class="p">:,</span> <span class="p">:</span>
+    <span class="p">]</span>
+    <span class="n">sorted_single_pol_images</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">single_pol_images</span><span class="p">[</span>
+        <span class="p">:,</span> <span class="n">angle_dic</span><span class="p">[</span><span class="o">-</span><span class="mi">45</span><span class="p">],</span> <span class="p">:,</span> <span class="p">:</span>
+    <span class="p">]</span>
+    <span class="n">sorted_single_pol_images</span><span class="p">[:,</span> <span class="mi">3</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">single_pol_images</span><span class="p">[</span>
+        <span class="p">:,</span> <span class="n">angle_dic</span><span class="p">[</span><span class="mi">90</span><span class="p">],</span> <span class="p">:,</span> <span class="p">:</span>
+    <span class="p">]</span>
+
+    <span class="n">build_S_input</span><span class="p">(</span><span class="n">sorted_single_pol_images</span><span class="p">,</span> <span class="n">S_input</span><span class="p">)</span>  <span class="c1"># speeds up A LOT</span>
+
+    <span class="n">W_ideal</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+        <span class="p">[</span>
+            <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">],</span>
+            <span class="p">[</span>
+                <span class="mf">0.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">micropol_phases_previsions</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+            <span class="p">],</span>
+            <span class="p">[</span>
+                <span class="mf">0.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">micropol_phases_previsions</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+            <span class="p">],</span>
+        <span class="p">]</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">T</span>  <span class="c1"># shape=(4,3)</span>
+
+    <span class="n">C_ij</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">pols_n</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">))</span>  <span class="c1"># correction matrix</span>
+    <span class="n">d_ij</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
+        <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">pols_n</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">)</span>
+    <span class="p">)</span>  <span class="c1"># offsets, each element is equal in the superpixel so we can save one image with 4 pixel to save space</span>
+
+    <span class="k">if</span> <span class="n">DEBUG</span><span class="p">:</span>
+        <span class="n">height</span> <span class="o">=</span> <span class="mi">8</span>
+        <span class="n">width</span> <span class="o">=</span> <span class="mi">8</span>
+
+    <span class="k">for</span> <span class="n">pol_idx</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">pols_n</span><span class="p">)):</span>
+        <span class="k">for</span> <span class="n">super_y</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="mi">2</span><span class="p">)):</span>
+            <span class="k">for</span> <span class="n">super_x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span>
+                <span class="n">S</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">S_input</span><span class="p">[</span><span class="n">pol_idx</span><span class="p">,</span> <span class="p">:,</span> <span class="n">super_y</span><span class="p">,</span> <span class="n">super_x</span><span class="p">]])</span><span class="o">.</span><span class="n">T</span>
+
+                <span class="n">S_inv_ij</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">pinv</span><span class="p">(</span><span class="n">S</span><span class="p">)</span>
+                <span class="n">P_ij</span> <span class="o">=</span> <span class="n">all_data_arr</span><span class="p">[</span>
+                    <span class="n">pol_idx</span><span class="p">,</span> <span class="n">super_y</span> <span class="p">:</span> <span class="n">super_y</span> <span class="o">+</span> <span class="mi">2</span><span class="p">,</span> <span class="n">super_x</span> <span class="p">:</span> <span class="n">super_x</span> <span class="o">+</span> <span class="mi">2</span>
+                <span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+                <span class="n">W_d</span> <span class="o">=</span> <span class="n">P_ij</span> <span class="o">@</span> <span class="n">S_inv_ij</span>
+                <span class="c1"># W_d = W_d.T</span>
+                <span class="n">W</span> <span class="o">=</span> <span class="n">W_d</span><span class="p">[:,</span> <span class="p">:</span><span class="mi">3</span><span class="p">]</span>
+                <span class="n">d</span> <span class="o">=</span> <span class="n">W_d</span><span class="p">[:,</span> <span class="mi">3</span><span class="p">]</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">W_inv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">pinv</span><span class="p">(</span><span class="n">W</span><span class="p">)</span>
+                <span class="k">except</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">LinAlgError</span><span class="p">:</span>
+                    <span class="n">W_inv</span> <span class="o">=</span> <span class="mf">0.0</span> <span class="o">*</span> <span class="n">W</span><span class="o">.</span><span class="n">T</span>
+
+                <span class="n">d_ij</span><span class="p">[</span>
+                    <span class="n">pol_idx</span><span class="p">,</span> <span class="n">super_y</span> <span class="p">:</span> <span class="n">super_y</span> <span class="o">+</span> <span class="mi">2</span><span class="p">,</span> <span class="n">super_x</span> <span class="p">:</span> <span class="n">super_x</span> <span class="o">+</span> <span class="mi">2</span>
+                <span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+
+                <span class="n">C</span> <span class="o">=</span> <span class="n">W_ideal</span> <span class="o">@</span> <span class="n">W_inv</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
+                    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
+                        <span class="n">C_ij</span><span class="p">[</span><span class="n">pol_idx</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="n">super_y</span> <span class="o">+</span> <span class="n">i</span><span class="p">,</span> <span class="n">super_x</span> <span class="o">+</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">C</span>
+
+    <span class="n">C_ij</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">C_ij</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">d_ij</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">d_ij</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="n">output_dir</span> <span class="o">=</span> <span class="n">make_abs_and_create_dir</span><span class="p">(</span><span class="n">output_dir</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">):</span>
+            <span class="n">hdu</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">PrimaryHDU</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">C_ij</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">])</span>
+            <span class="n">hdu</span><span class="o">.</span><span class="n">writeto</span><span class="p">(</span><span class="n">output_dir</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;/C</span><span class="si">{</span><span class="n">i</span><span class="si">}{</span><span class="n">j</span><span class="si">}</span><span class="s2">.fits&quot;</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">hdu</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">PrimaryHDU</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">d_ij</span><span class="p">)</span>
+    <span class="n">hdu</span><span class="o">.</span><span class="n">writeto</span><span class="p">(</span><span class="n">output_dir</span> <span class="o">+</span> <span class="s2">&quot;/d_ij.fits&quot;</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="build_S_input"><a class="viewcode-back" href="../../../micropolarray.processing.html#micropolarray.processing.chen_wan_liang_calibration.build_S_input">[docs]</a><span class="nd">@njit</span>
+<span class="k">def</span> <span class="nf">build_S_input</span><span class="p">(</span><span class="n">single_pol_images</span><span class="p">,</span> <span class="n">S_input</span><span class="p">):</span>
+    <span class="c1"># ANGLES_LIST positions:</span>
+    <span class="c1">#    0 &lt;==&gt; 0</span>
+    <span class="c1">#    1 &lt;==&gt; 45</span>
+    <span class="c1">#    2 &lt;==&gt; -45</span>
+    <span class="c1">#    3 &lt;==&gt; 90</span>
+    <span class="n">pols_n</span> <span class="o">=</span> <span class="n">single_pol_images</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">height</span> <span class="o">=</span> <span class="n">single_pol_images</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">*</span> <span class="mi">2</span>
+    <span class="n">width</span> <span class="o">=</span> <span class="n">single_pol_images</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">*</span> <span class="mi">2</span>
+
+    <span class="n">S_input</span><span class="p">[:,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="c1"># Initialize stokes vector</span>
+    <span class="k">for</span> <span class="n">pol_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">pols_n</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">super_y</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">super_y</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">super_x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span>
+                <span class="n">x</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">super_x</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+                <span class="n">S_input</span><span class="p">[</span>
+                    <span class="n">pol_idx</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">super_y</span> <span class="p">:</span> <span class="n">super_y</span> <span class="o">+</span> <span class="mi">2</span><span class="p">,</span> <span class="n">super_x</span> <span class="p">:</span> <span class="n">super_x</span> <span class="o">+</span> <span class="mi">2</span>
+                <span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">single_pol_images</span><span class="p">[</span><span class="n">pol_idx</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">]</span>
+                    <span class="o">+</span> <span class="n">single_pol_images</span><span class="p">[</span><span class="n">pol_idx</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">]</span>
+                <span class="p">)</span>
+                <span class="n">S_input</span><span class="p">[</span>
+                    <span class="n">pol_idx</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">super_y</span> <span class="p">:</span> <span class="n">super_y</span> <span class="o">+</span> <span class="mi">2</span><span class="p">,</span> <span class="n">super_x</span> <span class="p">:</span> <span class="n">super_x</span> <span class="o">+</span> <span class="mi">2</span>
+                <span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">single_pol_images</span><span class="p">[</span><span class="n">pol_idx</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">]</span>
+                    <span class="o">-</span> <span class="n">single_pol_images</span><span class="p">[</span><span class="n">pol_idx</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">]</span>
+                <span class="p">)</span>
+                <span class="n">S_input</span><span class="p">[</span>
+                    <span class="n">pol_idx</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">super_y</span> <span class="p">:</span> <span class="n">super_y</span> <span class="o">+</span> <span class="mi">2</span><span class="p">,</span> <span class="n">super_x</span> <span class="p">:</span> <span class="n">super_x</span> <span class="o">+</span> <span class="mi">2</span>
+                <span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">single_pol_images</span><span class="p">[</span><span class="n">pol_idx</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">]</span>
+                    <span class="o">-</span> <span class="n">single_pol_images</span><span class="p">[</span><span class="n">pol_idx</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">]</span>
+                <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="chen_wan_liang_calibration"><a class="viewcode-back" href="../../../micropolarray.processing.html#micropolarray.processing.chen_wan_liang_calibration.chen_wan_liang_calibration">[docs]</a><span class="k">def</span> <span class="nf">chen_wan_liang_calibration</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">calibration_matrices_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Calibrates the images using Chen-Wang-Liang 2014 paper calibration</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        data (np.array): data to be calibrated</span>
+<span class="sd">        calibration_matrices_dir (str): path to the calibration matrices</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        np.array: calibrated data</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">info</span><span class="p">(</span><span class="s2">&quot;Applying Chen-Wan-Liang correction...&quot;</span><span class="p">)</span>
+    <span class="n">height</span><span class="p">,</span> <span class="n">width</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">C_ij</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">))</span>
+    <span class="n">d_ij</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="n">corrected_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="n">ifov_corrected_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="n">correction_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">calibration_matrices_dir</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">correction_path</span><span class="o">.</span><span class="n">is_absolute</span><span class="p">():</span>  <span class="c1"># suppose it is in cwd</span>
+        <span class="n">correction_path</span> <span class="o">=</span> <span class="n">correction_path</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span>
+            <span class="n">Path</span><span class="p">()</span><span class="o">.</span><span class="n">cwd</span><span class="p">(),</span> <span class="n">correction_path</span>
+        <span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">):</span>
+            <span class="k">with</span> <span class="n">fits</span><span class="o">.</span><span class="n">open</span><span class="p">(</span>
+                <span class="n">calibration_matrices_dir</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;/C</span><span class="si">{</span><span class="n">i</span><span class="si">}{</span><span class="n">j</span><span class="si">}</span><span class="s2">.fits&quot;</span>
+            <span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+                <span class="n">C_ij</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">file</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
+    <span class="k">with</span> <span class="n">fits</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">calibration_matrices_dir</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;/d_ij.fits&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+        <span class="n">d_ij</span> <span class="o">=</span> <span class="n">file</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
+
+    <span class="n">P_minus_d</span> <span class="o">=</span> <span class="n">data</span> <span class="o">-</span> <span class="n">d_ij</span>
+
+    <span class="k">for</span> <span class="n">super_y</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">super_x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span>
+            <span class="n">mult</span> <span class="o">=</span> <span class="n">C_ij</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">super_y</span><span class="p">,</span> <span class="n">super_x</span><span class="p">]</span> <span class="o">@</span> <span class="n">P_minus_d</span><span class="p">[</span>
+                <span class="n">super_y</span> <span class="p">:</span> <span class="n">super_y</span> <span class="o">+</span> <span class="mi">2</span><span class="p">,</span> <span class="n">super_x</span> <span class="p">:</span> <span class="n">super_x</span> <span class="o">+</span> <span class="mi">2</span>
+            <span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+            <span class="n">corrected_data</span><span class="p">[</span>
+                <span class="n">super_y</span> <span class="p">:</span> <span class="n">super_y</span> <span class="o">+</span> <span class="mi">2</span><span class="p">,</span> <span class="n">super_x</span> <span class="p">:</span> <span class="n">super_x</span> <span class="o">+</span> <span class="mi">2</span>
+            <span class="p">]</span> <span class="o">=</span> <span class="n">mult</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+
+    <span class="n">ifov_corrected_data</span> <span class="o">=</span> <span class="n">ifov_jitcorrect</span><span class="p">(</span><span class="n">corrected_data</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">ifov_corrected_data</span></div>
+
+
+<div class="viewcode-block" id="ifov_jitcorrect"><a class="viewcode-back" href="../../../micropolarray.processing.html#micropolarray.processing.chen_wan_liang_calibration.ifov_jitcorrect">[docs]</a><span class="nd">@njit</span>
+<span class="k">def</span> <span class="nf">ifov_jitcorrect</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">):</span>
+    <span class="n">corrected_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">))</span>
+    <span class="c1"># correct IFOV error, skip first rows/cols</span>
+    <span class="k">for</span> <span class="n">super_y</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">super_x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
+                    <span class="n">corrected_data</span><span class="p">[</span><span class="n">super_y</span> <span class="o">+</span> <span class="n">j</span><span class="p">,</span> <span class="n">super_x</span> <span class="o">+</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.25</span> <span class="o">*</span> <span class="p">(</span>
+                        <span class="n">data</span><span class="p">[</span><span class="n">super_y</span> <span class="o">+</span> <span class="n">j</span> <span class="o">-</span> <span class="mi">2</span><span class="p">,</span> <span class="n">super_x</span> <span class="o">+</span> <span class="n">i</span> <span class="o">-</span> <span class="mi">2</span><span class="p">]</span>
+                        <span class="o">+</span> <span class="n">data</span><span class="p">[</span><span class="n">super_y</span> <span class="o">+</span> <span class="n">j</span> <span class="o">-</span> <span class="mi">2</span><span class="p">,</span> <span class="n">super_x</span> <span class="o">+</span> <span class="n">i</span><span class="p">]</span>
+                        <span class="o">+</span> <span class="n">data</span><span class="p">[</span><span class="n">super_y</span> <span class="o">+</span> <span class="n">j</span><span class="p">,</span> <span class="n">super_x</span> <span class="o">+</span> <span class="n">i</span> <span class="o">-</span> <span class="mi">2</span><span class="p">]</span>
+                        <span class="o">+</span> <span class="n">data</span><span class="p">[</span><span class="n">super_y</span> <span class="o">+</span> <span class="n">j</span><span class="p">,</span> <span class="n">super_x</span> <span class="o">+</span> <span class="n">i</span><span class="p">]</span>
+                    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">corrected_data</span></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">micropolarray</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2023, Herve Haudemand.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 7.1.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.13</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

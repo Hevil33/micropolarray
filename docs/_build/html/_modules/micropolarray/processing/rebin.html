@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>micropolarray.processing.rebin &#8212; micropolarray 1.0.6 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b3523f8e" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css?v=039e1c02" />
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=c0ddf5a4"></script>
+    <script src="../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for micropolarray.processing.rebin</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">logging</span> <span class="kn">import</span> <span class="n">info</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">numba</span> <span class="kn">import</span> <span class="n">jit</span><span class="p">,</span> <span class="n">njit</span>
+
+
+<div class="viewcode-block" id="print_trimming_info"><a class="viewcode-back" href="../../../micropolarray.processing.html#micropolarray.processing.rebin.print_trimming_info">[docs]</a><span class="k">def</span> <span class="nf">print_trimming_info</span><span class="p">(</span><span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">new_height</span><span class="p">,</span> <span class="n">new_width</span><span class="p">):</span>
+    <span class="c1"># print(</span>
+    <span class="c1">#    f&quot;Data trimmed to fit rebinning: ({height}, {width}) -&gt; ({new_height}, {new_width})&quot;</span>
+    <span class="c1"># )</span>
+    <span class="nb">print</span><span class="p">(</span>
+        <span class="s2">&quot;Data trimmed to fit rebinning: (&quot;</span><span class="p">,</span>
+        <span class="n">height</span><span class="p">,</span>
+        <span class="s2">&quot;,&quot;</span><span class="p">,</span>
+        <span class="n">width</span><span class="p">,</span>
+        <span class="s2">&quot;) -&gt; (&quot;</span><span class="p">,</span>
+        <span class="n">new_height</span><span class="p">,</span>
+        <span class="s2">&quot;,&quot;</span><span class="p">,</span>
+        <span class="n">new_width</span><span class="p">,</span>
+        <span class="s2">&quot;)&quot;</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="micropolarray_rebin"><a class="viewcode-back" href="../../../micropolarray.processing.html#micropolarray.processing.rebin.micropolarray_rebin">[docs]</a><span class="k">def</span> <span class="nf">micropolarray_rebin</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">height</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">width</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">binning</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Wrapper for the faster rebinning donw with numba. First deletes last row/column until binning is possible, then calls binning on the result shape.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        data (np.ndarray): data to rebin</span>
+<span class="sd">        height (int): lenght of first axis</span>
+<span class="sd">        width (int): lenght of second axis</span>
+<span class="sd">        binning (int, optional): Binning to be performed. Defaults to 2.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        ndarray: binned data, trimmed if necessary</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">trimmed</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">new_height</span><span class="p">,</span> <span class="n">new_width</span> <span class="o">=</span> <span class="n">trim_to_match_2xbinning</span><span class="p">(</span><span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">binning</span><span class="p">)</span>
+    <span class="n">new_height</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">new_height</span> <span class="o">/</span> <span class="n">binning</span><span class="p">)</span>
+    <span class="n">new_width</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">new_width</span> <span class="o">/</span> <span class="n">binning</span><span class="p">)</span>
+    <span class="n">new_data</span> <span class="o">=</span> <span class="n">micropolarray_jitrebin</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">new_height</span><span class="p">,</span> <span class="n">new_width</span><span class="p">,</span> <span class="n">binning</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">new_data</span></div>
+
+
+<div class="viewcode-block" id="micropolarray_jitrebin_old"><a class="viewcode-back" href="../../../micropolarray.processing.html#micropolarray.processing.rebin.micropolarray_jitrebin_old">[docs]</a><span class="nd">@njit</span>
+<span class="k">def</span> <span class="nf">micropolarray_jitrebin_old</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">binning</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Fast rebinning function for the micropolarray image.&quot;&quot;&quot;</span>
+    <span class="c1"># Skip last row/columns until they are divisible by binning,</span>
+    <span class="c1"># allows any binning</span>
+    <span class="n">trimmed</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">new_height</span><span class="p">,</span> <span class="n">new_width</span> <span class="o">=</span> <span class="n">trim_to_match_2xbinning</span><span class="p">(</span><span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">binning</span><span class="p">)</span>
+    <span class="n">new_height</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">new_height</span> <span class="o">/</span> <span class="n">binning</span><span class="p">)</span>
+    <span class="n">new_width</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">new_width</span> <span class="o">/</span> <span class="n">binning</span><span class="p">)</span>
+    <span class="n">new_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">new_height</span><span class="p">,</span> <span class="n">new_width</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">double</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">new_y</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">new_height</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">new_x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">new_width</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">y_scaler</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">((</span><span class="n">new_y</span> <span class="o">%</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="n">new_y</span> <span class="o">%</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">binning</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">x_scaler</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span>
+                    <span class="p">(</span><span class="n">new_x</span> <span class="o">%</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="n">new_x</span> <span class="o">%</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">binning</span><span class="p">,</span> <span class="mi">2</span>
+                <span class="p">):</span>
+                    <span class="n">i</span> <span class="o">=</span> <span class="p">(</span><span class="n">new_y</span> <span class="o">-</span> <span class="n">new_y</span> <span class="o">%</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">binning</span> <span class="o">+</span> <span class="n">y_scaler</span>
+                    <span class="n">j</span> <span class="o">=</span> <span class="p">(</span><span class="n">new_x</span> <span class="o">-</span> <span class="n">new_x</span> <span class="o">%</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">binning</span> <span class="o">+</span> <span class="n">x_scaler</span>
+                    <span class="n">new_data</span><span class="p">[</span><span class="n">new_y</span><span class="p">,</span> <span class="n">new_x</span><span class="p">]</span> <span class="o">+=</span> <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">new_data</span></div>
+
+
+<div class="viewcode-block" id="micropolarray_jitrebin"><a class="viewcode-back" href="../../../micropolarray.processing.html#micropolarray.processing.rebin.micropolarray_jitrebin">[docs]</a><span class="nd">@njit</span>
+<span class="k">def</span> <span class="nf">micropolarray_jitrebin</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">new_height</span><span class="p">,</span> <span class="n">new_width</span><span class="p">,</span> <span class="n">binning</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Fast rebinning function for the micropolarray image. Needs to be wrapped to print info.&quot;&quot;&quot;</span>
+    <span class="n">new_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">new_height</span><span class="p">,</span> <span class="n">new_width</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">double</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">new_y</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">new_height</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">new_x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">new_width</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">y_scaler</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">((</span><span class="n">new_y</span> <span class="o">%</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="n">new_y</span> <span class="o">%</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">binning</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">x_scaler</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span>
+                    <span class="p">(</span><span class="n">new_x</span> <span class="o">%</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="n">new_x</span> <span class="o">%</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">binning</span><span class="p">,</span> <span class="mi">2</span>
+                <span class="p">):</span>
+                    <span class="n">i</span> <span class="o">=</span> <span class="p">(</span><span class="n">new_y</span> <span class="o">-</span> <span class="n">new_y</span> <span class="o">%</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">binning</span> <span class="o">+</span> <span class="n">y_scaler</span>
+                    <span class="n">j</span> <span class="o">=</span> <span class="p">(</span><span class="n">new_x</span> <span class="o">-</span> <span class="n">new_x</span> <span class="o">%</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">binning</span> <span class="o">+</span> <span class="n">x_scaler</span>
+                    <span class="n">new_data</span><span class="p">[</span><span class="n">new_y</span><span class="p">,</span> <span class="n">new_x</span><span class="p">]</span> <span class="o">+=</span> <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">new_data</span></div>
+
+
+<div class="viewcode-block" id="standard_rebin"><a class="viewcode-back" href="../../../micropolarray.processing.html#micropolarray.processing.rebin.standard_rebin">[docs]</a><span class="k">def</span> <span class="nf">standard_rebin</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">binning</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Rebins the data, binned each binningxbinning.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        image (np.array): data to be binned</span>
+<span class="sd">        binning (int): binning to be applied. A value of 2 will result in a 2x2 binning (1 pixel is a sum of 4 neighbour pixels)</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        KeyError: cannot divide image height/width by the binning value</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        np.array: binned data</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">%</span> <span class="n">binning</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">%</span> <span class="n">binning</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span>
+            <span class="s2">&quot;Invalid binning, must be divisor of both image height and width.&quot;</span>
+        <span class="p">)</span>
+    <span class="n">rebinned_data</span> <span class="o">=</span> <span class="n">standard_jitrebin</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="o">*</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">binning</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">rebinned_data</span></div>
+
+
+<div class="viewcode-block" id="standard_jitrebin"><a class="viewcode-back" href="../../../micropolarray.processing.html#micropolarray.processing.rebin.standard_jitrebin">[docs]</a><span class="nd">@njit</span>
+<span class="k">def</span> <span class="nf">standard_jitrebin</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">binning</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+    <span class="n">new_height</span><span class="p">,</span> <span class="n">new_width</span> <span class="o">=</span> <span class="n">trim_to_match_2xbinning</span><span class="p">(</span><span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">binning</span><span class="p">)</span>
+    <span class="n">new_height</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">new_height</span> <span class="o">/</span> <span class="n">binning</span><span class="p">)</span>
+    <span class="n">new_width</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">new_width</span> <span class="o">/</span> <span class="n">binning</span><span class="p">)</span>
+    <span class="n">new_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">new_height</span><span class="p">,</span> <span class="n">new_width</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">new_y</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">new_height</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">new_x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">new_width</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">y_scaler</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">binning</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">x_scaler</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">binning</span><span class="p">):</span>
+                    <span class="n">new_data</span><span class="p">[</span><span class="n">new_y</span><span class="p">,</span> <span class="n">new_x</span><span class="p">]</span> <span class="o">+=</span> <span class="n">data</span><span class="p">[</span>
+                        <span class="n">binning</span> <span class="o">*</span> <span class="n">new_y</span> <span class="o">+</span> <span class="n">y_scaler</span><span class="p">,</span>
+                        <span class="n">binning</span> <span class="o">*</span> <span class="n">new_x</span> <span class="o">+</span> <span class="n">x_scaler</span><span class="p">,</span>
+                    <span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">new_data</span></div>
+
+
+<div class="viewcode-block" id="trim_to_match_2xbinning"><a class="viewcode-back" href="../../../micropolarray.processing.html#micropolarray.processing.rebin.trim_to_match_2xbinning">[docs]</a><span class="k">def</span> <span class="nf">trim_to_match_2xbinning</span><span class="p">(</span><span class="n">height</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">width</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">binning</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Deletes the last image pixels until superpixel binning is compatible with new dimensions</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        height (int): image height</span>
+<span class="sd">        width (int): image width</span>
+<span class="sd">        binning (int): image binning</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        int, int: image new height and width</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">trimmed</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">new_width</span> <span class="o">=</span> <span class="n">width</span>
+    <span class="n">new_height</span> <span class="o">=</span> <span class="n">height</span>
+    <span class="k">while</span> <span class="n">new_width</span> <span class="o">%</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">binning</span><span class="p">):</span>
+        <span class="n">new_width</span> <span class="o">-=</span> <span class="mi">2</span>
+        <span class="n">trimmed</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">while</span> <span class="n">new_height</span> <span class="o">%</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">binning</span><span class="p">):</span>
+        <span class="n">new_height</span> <span class="o">-=</span> <span class="mi">2</span>
+        <span class="n">trimmed</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">if</span> <span class="n">trimmed</span><span class="p">:</span>
+        <span class="n">print_trimming_info</span><span class="p">(</span><span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">new_height</span><span class="p">,</span> <span class="n">new_width</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">new_height</span><span class="p">,</span> <span class="n">new_width</span></div>
+
+
+<div class="viewcode-block" id="trim_to_match_binning"><a class="viewcode-back" href="../../../micropolarray.processing.html#micropolarray.processing.rebin.trim_to_match_binning">[docs]</a><span class="k">def</span> <span class="nf">trim_to_match_binning</span><span class="p">(</span><span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">binning</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Deletes the last image pixels until simple binning is compatible with new dimensions</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        height (int): image height</span>
+<span class="sd">        width (int): image width</span>
+<span class="sd">        binning (int): image binning</span>
+<span class="sd">        verbose (bool, optional): warns user of trimming. Defaults to True.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        int, int: image new height and width</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">trimmed</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">new_height</span> <span class="o">=</span> <span class="n">height</span>
+    <span class="n">new_width</span> <span class="o">=</span> <span class="n">width</span>
+    <span class="k">while</span> <span class="n">new_width</span> <span class="o">%</span> <span class="p">(</span><span class="n">binning</span><span class="p">):</span>
+        <span class="n">new_width</span> <span class="o">-=</span> <span class="mi">1</span>
+        <span class="n">trimmed</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">while</span> <span class="n">new_height</span> <span class="o">%</span> <span class="p">(</span><span class="n">binning</span><span class="p">):</span>
+        <span class="n">new_height</span> <span class="o">-=</span> <span class="mi">1</span>
+        <span class="n">trimmed</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">if</span> <span class="n">trimmed</span> <span class="ow">and</span> <span class="n">verbose</span><span class="p">:</span>
+        <span class="n">print_trimming_info</span><span class="p">(</span><span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">new_height</span><span class="p">,</span> <span class="n">new_width</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">new_height</span><span class="p">,</span> <span class="n">new_width</span></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">micropolarray</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2023, Herve Haudemand.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 7.1.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.13</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

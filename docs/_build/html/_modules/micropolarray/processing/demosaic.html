@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>micropolarray.processing.demosaic &#8212; micropolarray 1.0.6 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b3523f8e" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css?v=039e1c02" />
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=c0ddf5a4"></script>
+    <script src="../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for micropolarray.processing.demosaic</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">from</span> <span class="nn">numba</span> <span class="kn">import</span> <span class="n">njit</span>
+<span class="kn">from</span> <span class="nn">logging</span> <span class="kn">import</span> <span class="n">info</span>
+<span class="kn">from</span> <span class="nn">micropolarray.processing.congrid</span> <span class="kn">import</span> <span class="n">congrid</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span>
+    <span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">UserWarning</span><span class="p">,</span> <span class="n">append</span><span class="o">=</span><span class="kc">True</span>
+<span class="p">)</span>  <span class="c1"># Warnings of fits package became annoying.</span>
+
+
+<div class="viewcode-block" id="demosaicmean"><a class="viewcode-back" href="../../../micropolarray.processing.html#micropolarray.processing.demosaic.demosaicmean">[docs]</a><span class="nd">@njit</span>  <span class="c1"># MAKES OPERATIONS REALLY FAST, checked</span>
+<span class="k">def</span> <span class="nf">demosaicmean</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Loops over right polarization pixel location, takes 1/4 of that,</span>
+<span class="sd">    stores it in the 2x2 superpixel.</span>
+<span class="sd">    demo_images[0] = data[y=0, x=0]</span>
+<span class="sd">    demo_images[1] = data[y=0, x=1]</span>
+<span class="sd">    demo_images[2] = data[y=1, x=0]</span>
+<span class="sd">    demo_images[3] = data[y=1, x=1]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">*</span> <span class="n">data</span>
+    <span class="n">temp_data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">demo_images</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">temp_data</span><span class="p">),</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">temp_data</span><span class="p">),</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">temp_data</span><span class="p">),</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">temp_data</span><span class="p">),</span>
+    <span class="p">]</span>
+    <span class="n">counter</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">y_super</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">2</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">x_super</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">2</span><span class="p">):</span>
+                    <span class="n">mean</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">y_super</span> <span class="o">+</span> <span class="n">j</span><span class="p">,</span> <span class="n">x_super</span> <span class="o">+</span> <span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="mf">0.25</span>
+                    <span class="n">temp_data</span><span class="p">[</span>
+                        <span class="n">y_super</span> <span class="p">:</span> <span class="n">y_super</span> <span class="o">+</span> <span class="mi">2</span><span class="p">,</span> <span class="n">x_super</span> <span class="p">:</span> <span class="n">x_super</span> <span class="o">+</span> <span class="mi">2</span>
+                    <span class="p">]</span> <span class="o">=</span> <span class="n">mean</span>
+            <span class="n">demo_images</span><span class="p">[</span><span class="n">counter</span><span class="p">]</span> <span class="o">=</span> <span class="n">temp_data</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="n">counter</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="k">return</span> <span class="n">demo_images</span></div>
+
+
+<div class="viewcode-block" id="demosaicadjacent"><a class="viewcode-back" href="../../../micropolarray.processing.html#micropolarray.processing.demosaic.demosaicadjacent">[docs]</a><span class="nd">@njit</span>
+<span class="k">def</span> <span class="nf">demosaicadjacent</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">*</span> <span class="n">data</span>
+    <span class="n">temp_data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">demo_images</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">temp_data</span><span class="p">),</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">temp_data</span><span class="p">),</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">temp_data</span><span class="p">),</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">temp_data</span><span class="p">),</span>
+    <span class="p">]</span>
+    <span class="n">counter</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">y_pix_family</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">x_pix_family</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span>
+                    <span class="n">temp_data</span><span class="p">[</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">y</span> <span class="o">+</span> <span class="n">y_pix_family</span><span class="p">,</span> <span class="n">x</span> <span class="o">+</span> <span class="n">x_pix_family</span><span class="p">]</span>
+                    <span class="n">temp_data</span><span class="p">[</span><span class="n">y</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">x</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span>
+                        <span class="n">data</span><span class="p">[</span><span class="n">y</span> <span class="o">+</span> <span class="n">y_pix_family</span><span class="p">,</span> <span class="n">x</span> <span class="o">+</span> <span class="n">x_pix_family</span><span class="p">]</span>
+                        <span class="o">+</span> <span class="n">data</span><span class="p">[</span><span class="n">y</span> <span class="o">+</span> <span class="n">y_pix_family</span> <span class="o">+</span> <span class="mi">2</span><span class="p">,</span> <span class="n">x</span> <span class="o">+</span> <span class="n">x_pix_family</span><span class="p">]</span>
+                    <span class="p">)</span>
+                    <span class="n">temp_data</span><span class="p">[</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span>
+                        <span class="n">data</span><span class="p">[</span><span class="n">y</span> <span class="o">+</span> <span class="n">y_pix_family</span><span class="p">,</span> <span class="n">x</span> <span class="o">+</span> <span class="n">x_pix_family</span><span class="p">]</span>
+                        <span class="o">+</span> <span class="n">data</span><span class="p">[</span><span class="n">y</span> <span class="o">+</span> <span class="n">y_pix_family</span><span class="p">,</span> <span class="n">x</span> <span class="o">+</span> <span class="n">x_pix_family</span> <span class="o">+</span> <span class="mi">2</span><span class="p">]</span>
+                    <span class="p">)</span>
+                    <span class="n">temp_data</span><span class="p">[</span><span class="n">y</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                        <span class="n">data</span><span class="p">[</span><span class="n">y</span> <span class="o">+</span> <span class="n">y_pix_family</span><span class="p">,</span> <span class="n">x</span> <span class="o">+</span> <span class="n">x_pix_family</span><span class="p">]</span>
+                        <span class="o">+</span> <span class="n">data</span><span class="p">[</span><span class="n">y</span> <span class="o">+</span> <span class="n">y_pix_family</span> <span class="o">+</span> <span class="mi">2</span><span class="p">,</span> <span class="n">x</span> <span class="o">+</span> <span class="n">x_pix_family</span><span class="p">]</span>
+                        <span class="o">+</span> <span class="n">data</span><span class="p">[</span><span class="n">y</span> <span class="o">+</span> <span class="n">y_pix_family</span><span class="p">,</span> <span class="n">x</span> <span class="o">+</span> <span class="n">x_pix_family</span> <span class="o">+</span> <span class="mi">2</span><span class="p">]</span>
+                        <span class="o">+</span> <span class="n">data</span><span class="p">[</span>
+                            <span class="n">y</span> <span class="o">+</span> <span class="n">y_pix_family</span> <span class="o">+</span> <span class="mi">2</span><span class="p">,</span>
+                            <span class="n">x</span> <span class="o">+</span> <span class="n">x_pix_family</span> <span class="o">+</span> <span class="mi">2</span><span class="p">,</span>
+                        <span class="p">]</span>
+                    <span class="p">)</span> <span class="o">*</span> <span class="mf">0.25</span>
+            <span class="n">demo_images</span><span class="p">[</span><span class="n">counter</span><span class="p">]</span> <span class="o">=</span> <span class="n">temp_data</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="n">counter</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="k">return</span> <span class="n">demo_images</span></div>
+
+
+<div class="viewcode-block" id="split_polarizations"><a class="viewcode-back" href="../../../micropolarray.processing.html#micropolarray.processing.demosaic.split_polarizations">[docs]</a><span class="k">def</span> <span class="nf">split_polarizations</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+    <span class="n">single_pol_images</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+        <span class="p">[</span><span class="n">data</span><span class="p">[</span><span class="n">j</span><span class="p">::</span><span class="mi">2</span><span class="p">,</span> <span class="n">i</span><span class="p">::</span><span class="mi">2</span><span class="p">]</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">)],</span>
+        <span class="c1"># [</span>
+        <span class="c1">#    self.data[0::2, 0::2], # x= 0, y = 0</span>
+        <span class="c1">#    self.data[0::2, 1::2], # x= 1, y = 0</span>
+        <span class="c1">#    self.data[1::2, 0::2], # x= 0, y = 1</span>
+        <span class="c1">#    self.data[1::2, 1::2], # x= 1, y = 1</span>
+        <span class="c1"># ],</span>
+        <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">single_pol_images</span></div>
+
+
+<div class="viewcode-block" id="merge_polarizations"><a class="viewcode-back" href="../../../micropolarray.processing.html#micropolarray.processing.demosaic.merge_polarizations">[docs]</a><span class="nd">@njit</span>
+<span class="k">def</span> <span class="nf">merge_polarizations</span><span class="p">(</span><span class="n">single_pol_images</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
+        <span class="n">shape</span><span class="o">=</span><span class="p">(</span>
+            <span class="n">single_pol_images</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="mi">2</span><span class="p">,</span>
+            <span class="n">single_pol_images</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="mi">2</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">::</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">::</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">single_pol_images</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">::</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">::</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">single_pol_images</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">::</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">::</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">single_pol_images</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+    <span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">::</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">::</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">single_pol_images</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">data</span></div>
+
+
+<div class="viewcode-block" id="demosaic"><a class="viewcode-back" href="../../../micropolarray.processing.html#micropolarray.processing.demosaic.demosaic">[docs]</a><span class="k">def</span> <span class="nf">demosaic</span><span class="p">(</span><span class="n">image_data</span><span class="p">,</span> <span class="n">option</span><span class="o">=</span><span class="s2">&quot;adjacent&quot;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a [4,n,m] array of polarized images, starting from a</span>
+<span class="sd">    micropolarizer image array [n, m].</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">image_data</span>
+    <span class="n">temp_data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">demo_images</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">([</span><span class="mi">4</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]],</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;d&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">option</span> <span class="o">==</span> <span class="s2">&quot;mean&quot;</span><span class="p">:</span>
+        <span class="n">info</span><span class="p">(</span><span class="s2">&quot;Demosaicing (mean method)... &quot;</span><span class="p">)</span>
+        <span class="n">demo_images</span> <span class="o">=</span> <span class="n">demosaicmean</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">image_data</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">double</span><span class="p">)</span>
+        <span class="p">)</span>  <span class="c1"># casting needed by numba</span>
+
+    <span class="k">elif</span> <span class="n">option</span> <span class="o">==</span> <span class="s2">&quot;adjacent&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        longer: loops over superpixel, tries to get value of right polarized pixel, except if at image boundary. Then takes the mean of adjacent cells, stores it temporarily in the 2x2 pixel, then rotates it to match the right</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">info</span><span class="p">(</span><span class="s2">&quot;Demosaicing (adjacent method)...&quot;</span><span class="p">)</span>
+        <span class="c1"># Adding two new columns/rows to avoid segmentationfault-like error</span>
+        <span class="n">stacked_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">image_data</span><span class="p">,</span> <span class="n">image_data</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">:,</span> <span class="p">:]])</span>
+        <span class="n">stacked_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">([</span><span class="n">stacked_data</span><span class="p">,</span> <span class="n">stacked_data</span><span class="p">[:,</span> <span class="o">-</span><span class="mi">2</span><span class="p">:]])</span>
+        <span class="n">demo_images</span> <span class="o">=</span> <span class="n">demosaicadjacent</span><span class="p">(</span><span class="n">stacked_data</span><span class="p">)</span>
+        <span class="n">demo_images</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">demo_images</span><span class="p">)[:,</span> <span class="p">:</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="p">:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
+
+    <span class="k">elif</span> <span class="n">option</span> <span class="o">==</span> <span class="s2">&quot;spline&quot;</span><span class="p">:</span>
+        <span class="n">single_pol_subimages</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+            <span class="p">[</span><span class="n">image_data</span><span class="p">[</span><span class="n">j</span><span class="p">::</span><span class="mi">2</span><span class="p">,</span> <span class="n">i</span><span class="p">::</span><span class="mi">2</span><span class="p">]</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">)],</span>
+            <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">demo_images</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">congrid</span><span class="p">(</span>
+                <span class="n">single_pol_subimages</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+                <span class="p">(</span><span class="n">image_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">image_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+        <span class="p">]</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;&quot;option&quot; should be one of [&quot;mean&quot;, &quot;adjacent&quot;]&#39;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">demo_images</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">micropolarray</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2023, Herve Haudemand.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 7.1.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.13</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

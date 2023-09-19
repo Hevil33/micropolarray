@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>micropolarray.processing.demodulation &#8212; micropolarray 1.0.6 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b3523f8e" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css?v=039e1c02" />
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=c0ddf5a4"></script>
+    <script src="../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for micropolarray.processing.demodulation</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">glob</span>
+<span class="kn">import</span> <span class="nn">multiprocessing</span> <span class="k">as</span> <span class="nn">mp</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">logging</span> <span class="kn">import</span> <span class="n">error</span><span class="p">,</span> <span class="n">info</span><span class="p">,</span> <span class="n">warning</span>
+
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">astropy.io</span> <span class="kn">import</span> <span class="n">fits</span>
+<span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="kn">import</span> <span class="n">curve_fit</span>
+<span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
+
+<span class="kn">from</span> <span class="nn">micropolarray.cameras</span> <span class="kn">import</span> <span class="n">PolarCam</span>
+<span class="kn">from</span> <span class="nn">micropolarray.processing.chen_wan_liang_calibration</span> <span class="kn">import</span> <span class="n">ifov_jitcorrect</span>
+<span class="kn">from</span> <span class="nn">micropolarray.processing.nrgf</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">find_occulter_position</span><span class="p">,</span>
+    <span class="n">roi_from_polar</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">micropolarray.processing.rebin</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">micropolarray_rebin</span><span class="p">,</span>
+    <span class="n">standard_rebin</span><span class="p">,</span>
+    <span class="n">trim_to_match_binning</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">micropolarray.utils</span> <span class="kn">import</span> <span class="n">mean_plus_std</span>
+
+<span class="c1"># Shape of the demodulation matrix</span>
+<span class="n">N_PIXELS_IN_SUPERPIX</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="n">N_MALUS_PARAMS</span> <span class="o">=</span> <span class="mi">3</span>
+
+
+<div class="viewcode-block" id="Demodulator"><a class="viewcode-back" href="../../../micropolarray.processing.html#micropolarray.processing.demodulation.Demodulator">[docs]</a><span class="k">class</span> <span class="nc">Demodulator</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Demodulation class needed for MicropolImage</span>
+<span class="sd">    demodulation.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">demo_matrices_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_pixels_in_superpix</span> <span class="o">=</span> <span class="n">N_PIXELS_IN_SUPERPIX</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_malus_params</span> <span class="o">=</span> <span class="n">N_MALUS_PARAMS</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">demo_matrices_path</span> <span class="o">=</span> <span class="n">demo_matrices_path</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">mij</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_demodulation_tensor</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_get_demodulation_tensor</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Reads files &quot;MIJ.fits&quot; from path folder and returns a (3,4,y,x)</span>
+<span class="sd">        numpy array representing the demodulation tensor.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            binning (bool, optional): _description_. Defaults to False.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            FileNotFoundError: couldn&#39;t find the matrices in the specified path</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            ndarray: (3, 4, *data.shape) array containing the demodulation tensor</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">demo_matrices_path</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="s2">&quot;self.demo_matrices_path not found.&quot;</span><span class="p">)</span>
+        <span class="n">filenames_list</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">demo_matrices_path</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">sep</span> <span class="o">+</span> <span class="s2">&quot;*.fits&quot;</span>
+        <span class="p">)</span>
+
+        <span class="k">with</span> <span class="n">fits</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">filenames_list</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="k">as</span> <span class="n">firsthul</span><span class="p">:</span>
+            <span class="n">sample_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">firsthul</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+        <span class="n">Mij</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
+            <span class="n">shape</span><span class="o">=</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">n_malus_params</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">n_pixels_in_superpix</span><span class="p">,</span>
+                <span class="n">sample_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                <span class="n">sample_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+            <span class="p">),</span>
+            <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">matches</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">filenames_list</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;[Mm][0-9]</span><span class="si">{2}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">filename</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">sep</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+                <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="p">):</span>  <span class="c1"># Exclude files not matching m/Mij</span>
+                <span class="n">matches</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span>
+                    <span class="s2">&quot;[Mm][0-9]</span><span class="si">{2}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">filename</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">sep</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                <span class="p">)</span><span class="o">.</span><span class="n">group</span><span class="p">()[</span>
+                    <span class="o">-</span><span class="mi">2</span><span class="p">:</span>
+                <span class="p">]</span>  <span class="c1"># Searches for pattern M/m + ij as last string before .fits</span>
+                <span class="n">i</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+                <span class="n">j</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">j</span><span class="p">)</span>
+                <span class="k">with</span> <span class="n">fits</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span> <span class="k">as</span> <span class="n">hul</span><span class="p">:</span>
+                    <span class="n">Mij</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">hul</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
+        <span class="k">if</span> <span class="n">matches</span> <span class="o">!=</span> <span class="mi">12</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;Some matrices were not found in the selected folder. Check correct folder name and files pattern Mij.fits or mij.fits&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">Mij</span>
+
+<div class="viewcode-block" id="Demodulator.show"><a class="viewcode-back" href="../../../micropolarray.processing.html#micropolarray.processing.demodulation.Demodulator.show">[docs]</a>    <span class="k">def</span> <span class="nf">show</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;Greys&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Shows the demodulation tensor</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            vmin (int, optional): Minimum shown value. Defaults to -1.</span>
+<span class="sd">            vmax (int, optional): Maximum shown value. Defaults to 1.</span>
+<span class="sd">            cmap (str, optional): Colormap of the plot. Defaults to &quot;Greys&quot;.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            tuple: fig, ax tuple as returned by matplotlib.pyplot.subplots</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span>
+            <span class="mi">3</span><span class="p">,</span>
+            <span class="mi">4</span><span class="p">,</span>
+            <span class="n">dpi</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span>
+            <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>
+            <span class="n">constrained_layout</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">sharex</span><span class="o">=</span><span class="s2">&quot;col&quot;</span><span class="p">,</span>
+            <span class="n">sharey</span><span class="o">=</span><span class="s2">&quot;row&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">):</span>
+                <span class="n">mappable</span> <span class="o">=</span> <span class="n">ax</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">mij</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">],</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cmap</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="n">vmax</span>
+                <span class="p">)</span>
+                <span class="n">ax</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">rf</span><span class="s2">&quot;M$_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">$$_</span><span class="si">{</span><span class="n">j</span><span class="si">}</span><span class="s2">$&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">ax</span> <span class="ow">in</span> <span class="n">fig</span><span class="o">.</span><span class="n">get_axes</span><span class="p">():</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">label_outer</span><span class="p">()</span>
+
+        <span class="n">fig</span><span class="o">.</span><span class="n">subplots_adjust</span><span class="p">(</span><span class="n">right</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
+        <span class="n">cbar_ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_axes</span><span class="p">([</span><span class="mf">0.85</span><span class="p">,</span> <span class="mf">0.15</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">])</span>
+        <span class="n">fig</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">mappable</span><span class="p">,</span> <span class="n">cax</span><span class="o">=</span><span class="n">cbar_ax</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span></div>
+
+<div class="viewcode-block" id="Demodulator.rebin"><a class="viewcode-back" href="../../../micropolarray.processing.html#micropolarray.processing.demodulation.Demodulator.rebin">[docs]</a>    <span class="k">def</span> <span class="nf">rebin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">binning</span><span class="p">):</span>  <span class="c1"># TODO</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;DO NOT USE THIS, calculate the tensor from the binned images&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mij</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">/</span> <span class="n">binning</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span>
+            <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mij</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">/</span> <span class="n">binning</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span>
+        <span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;incorrect binning, resulting matrix would be </span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mij</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">binning</span><span class="p">)</span><span class="si">}</span><span class="s2">x</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mij</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">binning</span><span class="p">)</span><span class="si">}</span><span class="s2"> (not even values).&quot;</span>
+            <span class="p">)</span>
+        <span class="n">new_demodulator</span> <span class="o">=</span> <span class="n">Demodulator</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">demo_matrices_path</span><span class="p">)</span>
+        <span class="n">new_mij</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
+            <span class="n">shape</span><span class="o">=</span><span class="p">(</span>
+                <span class="n">new_demodulator</span><span class="o">.</span><span class="n">n_malus_params</span><span class="p">,</span>
+                <span class="n">new_demodulator</span><span class="o">.</span><span class="n">n_pixels_in_superpix</span><span class="p">,</span>
+                <span class="nb">int</span><span class="p">(</span><span class="n">new_demodulator</span><span class="o">.</span><span class="n">mij</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">/</span> <span class="n">binning</span><span class="p">),</span>
+                <span class="nb">int</span><span class="p">(</span><span class="n">new_demodulator</span><span class="o">.</span><span class="n">mij</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">/</span> <span class="n">binning</span><span class="p">),</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">new_demodulator</span><span class="o">.</span><span class="n">n_malus_params</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">new_demodulator</span><span class="o">.</span><span class="n">n_pixels_in_superpix</span><span class="p">):</span>
+                <span class="n">new_mij</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">standard_rebin</span><span class="p">(</span>
+                    <span class="n">new_demodulator</span><span class="o">.</span><span class="n">mij</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">],</span> <span class="n">binning</span>
+                <span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">binning</span> <span class="o">*</span> <span class="n">binning</span><span class="p">)</span>
+        <span class="n">new_demodulator</span><span class="o">.</span><span class="n">mij</span> <span class="o">=</span> <span class="n">new_mij</span>
+
+        <span class="k">return</span> <span class="n">new_demodulator</span></div>
+
+<div class="viewcode-block" id="Demodulator.rot90"><a class="viewcode-back" href="../../../micropolarray.processing.html#micropolarray.processing.demodulation.Demodulator.rot90">[docs]</a>    <span class="k">def</span> <span class="nf">rot90</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="c1"># NB: rotation could switch micropol positions inside superpixel, but for demo matrix all px in superpix are equal</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_malus_params</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_pixels_in_superpix</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">mij</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">rot90</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mij</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">],</span> <span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Demodulator.flip"><a class="viewcode-back" href="../../../micropolarray.processing.html#micropolarray.processing.demodulation.Demodulator.flip">[docs]</a>    <span class="k">def</span> <span class="nf">flip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_malus_params</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_pixels_in_superpix</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">mij</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">flip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mij</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="calculate_demodulation_tensor"><a class="viewcode-back" href="../../../micropolarray.processing.html#micropolarray.processing.demodulation.calculate_demodulation_tensor">[docs]</a><span class="k">def</span> <span class="nf">calculate_demodulation_tensor</span><span class="p">(</span>
+    <span class="n">polarizer_orientations</span><span class="p">,</span>
+    <span class="n">filenames_list</span><span class="p">,</span>
+    <span class="n">micropol_phases_previsions</span><span class="p">,</span>
+    <span class="n">gain</span><span class="p">,</span>  <span class="c1">#  needed for errors</span>
+    <span class="n">output_dir</span><span class="p">,</span>
+    <span class="n">binning</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">occulter</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">procs_grid</span><span class="o">=</span><span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span>
+    <span class="n">dark_filename</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">flat_filename</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">normalizing_S</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">DEBUG</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculates the demodulation tensor images and saves them. Requires a set of images with different polarizations to fit a Malus curve model.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        polarizer_orientations (list[float]): List containing the orientations of the incoming light for each image.</span>
+<span class="sd">        filenames_list (list[str]): List of input images filenames to read. Must include [0, 45, 90, -45].</span>
+<span class="sd">        micropol_phases_previsions (list[float]): Previsions for the micropolarizer orientations required to initialize fit.</span>
+<span class="sd">        gain (float): Detector [e-/DN], required to compute errors.</span>
+<span class="sd">        output_dir (str): output folder to save matrix to.</span>
+<span class="sd">        binning (int, optional): Output matrices binning. Defaults to 1 (no binning). Be warned that binning matrices AFTER calculation is an incorrect operation.</span>
+<span class="sd">        occulter (list, optional): occulter y, x center and radius to exclude from calculations. Defaults to None.</span>
+<span class="sd">        procs_grid ([int, int], optional): number of processors per side [Y, X], parallelization will be done in a Y x X grid. Defaults to [4,4] (16 procs in a 4x4 grid).</span>
+<span class="sd">        dark_filename (str, optional): Dark image filename to correct input images. Defaults to None.</span>
+<span class="sd">        flat_filename (str, optional): Flat image filename to correct input images. Defaults to None.</span>
+<span class="sd">        normalizing_S (float, optional): maximum signal used to normalize single pixel signal. Defaults to None.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ValueError: Raised if any among [0, 45, 90, -45] is not included in the input polarizations.</span>
+
+<span class="sd">    Notes:</span>
+<span class="sd">        In the binning process the sum of values is considered, which is ok because data is normalized over the maximum S before being fitted.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">correct_ifov</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="c1"># polarizations = array of polarizer orientations</span>
+    <span class="c1"># filenames_list = list of filenames</span>
+    <span class="n">firstcall</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">normalizing_S</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span>
+        <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isin</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">45</span><span class="p">,</span> <span class="mi">90</span><span class="p">,</span> <span class="o">-</span><span class="mi">45</span><span class="p">],</span> <span class="n">polarizer_orientations</span><span class="p">))</span>
+    <span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;Each one among (0, 45, 90, -45) polarizations must be included in the polarizer orientation array&quot;</span>
+        <span class="p">)</span>  <span class="c1"># for calculating normalizing_S</span>
+    <span class="c1"># Have to be sorted</span>
+    <span class="n">polarizer_orientations</span><span class="p">,</span> <span class="n">filenames_list</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="nb">list</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="nb">sorted</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">polarizer_orientations</span><span class="p">,</span> <span class="n">filenames_list</span><span class="p">)))</span>
+    <span class="p">)</span>
+    <span class="n">micropol_phases_previsions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">micropol_phases_previsions</span><span class="p">)</span>
+    <span class="n">rad_micropol_phases_previsions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">micropol_phases_previsions</span><span class="p">)</span>
+
+    <span class="c1"># Flag occulter position to not be fitted, expand to superpixel.</span>
+    <span class="k">with</span> <span class="n">fits</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">filenames_list</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">file</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>  <span class="c1"># get data dimension</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;qui&quot;</span><span class="p">)</span>
+    <span class="c1"># Count binning before dimensions</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">micropolarray_rebin</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="o">*</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">binning</span><span class="o">=</span><span class="n">binning</span><span class="p">)</span>
+    <span class="n">height</span><span class="p">,</span> <span class="n">width</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span>
+
+    <span class="n">occulter_flag</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>  <span class="c1"># 0 if not a occulted px, 1 otherwise</span>
+    <span class="k">if</span> <span class="n">occulter</span><span class="p">:</span>
+        <span class="c1"># info(&quot;Cleaning occulter...&quot;)</span>
+        <span class="c1">## Mean values from coronal observations 2022_12_03</span>
+        <span class="c1">## (campagna_2022/mean_occulter_pos.py)</span>
+        <span class="c1"># occulter_y, occulter_x, occulter_r = PolarCam().occulter_pos_last</span>
+        <span class="c1"># overoccult = 16</span>
+        <span class="c1"># overoccult = 0</span>
+        <span class="c1"># occulter_r = occulter_r + overoccult</span>
+
+        <span class="c1"># Match binning if needed</span>
+        <span class="n">binned_occulter</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">val</span> <span class="o">/</span> <span class="n">binning</span><span class="p">)</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">occulter</span><span class="p">]</span>
+        <span class="n">occulter_y</span><span class="p">,</span> <span class="n">occulter_x</span><span class="p">,</span> <span class="n">occulter_r</span> <span class="o">=</span> <span class="n">binned_occulter</span>
+
+        <span class="n">occulter_flag</span> <span class="o">=</span> <span class="n">roi_from_polar</span><span class="p">(</span>
+            <span class="n">occulter_flag</span><span class="p">,</span> <span class="p">[</span><span class="n">occulter_y</span><span class="p">,</span> <span class="n">occulter_x</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">occulter_r</span><span class="p">]</span>
+        <span class="p">)</span>
+        <span class="k">for</span> <span class="n">super_y</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">occulter_flag</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">2</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">super_x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">occulter_flag</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">2</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span>
+                    <span class="n">occulter_flag</span><span class="p">[</span><span class="n">super_y</span> <span class="p">:</span> <span class="n">super_y</span> <span class="o">+</span> <span class="mi">2</span><span class="p">,</span> <span class="n">super_x</span> <span class="p">:</span> <span class="n">super_x</span> <span class="o">+</span> <span class="mi">2</span><span class="p">]</span>
+                <span class="p">):</span>
+                    <span class="n">occulter_flag</span><span class="p">[</span>
+                        <span class="n">super_y</span> <span class="p">:</span> <span class="n">super_y</span> <span class="o">+</span> <span class="mi">2</span><span class="p">,</span> <span class="n">super_x</span> <span class="p">:</span> <span class="n">super_x</span> <span class="o">+</span> <span class="mi">2</span>
+                    <span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+                    <span class="k">continue</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">occulter_flag</span> <span class="o">*=</span> <span class="mi">0</span>
+
+    <span class="c1"># Collect dark</span>
+    <span class="k">if</span> <span class="n">dark_filename</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">fits</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">dark_filename</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+            <span class="n">dark</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">file</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+            <span class="n">dark</span> <span class="o">=</span> <span class="n">micropolarray_rebin</span><span class="p">(</span><span class="n">dark</span><span class="p">,</span> <span class="o">*</span><span class="n">dark</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">binning</span><span class="p">)</span>
+    <span class="c1"># Collect flat field, normalize it</span>
+    <span class="k">if</span> <span class="n">flat_filename</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">fits</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">flat_filename</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+            <span class="n">flat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">file</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">correct_ifov</span><span class="p">:</span>
+            <span class="n">flat</span> <span class="o">=</span> <span class="n">ifov_jitcorrect</span><span class="p">(</span><span class="n">flat</span><span class="p">,</span> <span class="o">*</span><span class="n">flat</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="n">flat</span> <span class="o">=</span> <span class="n">micropolarray_rebin</span><span class="p">(</span><span class="n">flat</span><span class="p">,</span> <span class="o">*</span><span class="n">flat</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">binning</span><span class="p">)</span>
+        <span class="c1"># flat_max = np.max(flat, axis=(0, 1))</span>
+        <span class="n">flat_max</span> <span class="o">=</span> <span class="n">mean_plus_std</span><span class="p">(</span><span class="n">flat</span><span class="p">,</span> <span class="n">stds_n</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">flat_filename</span> <span class="ow">and</span> <span class="n">dark_filename</span><span class="p">:</span>
+        <span class="n">flat</span> <span class="o">-=</span> <span class="n">dark</span>  <span class="c1"># correct flat too</span>
+        <span class="n">flat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">flat</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="n">flat</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">occulter</span><span class="p">:</span>
+            <span class="n">flat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">occulter_flag</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">flat</span><span class="p">)</span>
+        <span class="c1"># flat_max = np.max(flat, axis=(0, 1))</span>
+        <span class="n">flat_max</span> <span class="o">=</span> <span class="n">mean_plus_std</span><span class="p">(</span><span class="n">flat</span><span class="p">,</span> <span class="n">stds_n</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">flat_filename</span><span class="p">:</span>
+        <span class="n">normalized_flat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">occulter_flag</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">flat</span> <span class="o">/</span> <span class="n">flat_max</span><span class="p">)</span>
+
+    <span class="c1"># collect data</span>
+    <span class="n">all_data_arr</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">filenames_list</span><span class="p">)</span>
+    <span class="n">info</span><span class="p">(</span><span class="s2">&quot;Collecting data from files...&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">filename</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">filenames_list</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">fits</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+            <span class="n">all_data_arr</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">file</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">correct_ifov</span><span class="p">:</span>
+                <span class="n">all_data_arr</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">ifov_jitcorrect</span><span class="p">(</span>
+                    <span class="n">all_data_arr</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="o">*</span><span class="n">all_data_arr</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
+                <span class="p">)</span>
+            <span class="n">all_data_arr</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">micropolarray_rebin</span><span class="p">(</span>
+                <span class="n">all_data_arr</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="o">*</span><span class="n">all_data_arr</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">binning</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">dark_filename</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">all_data_arr</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">-=</span> <span class="n">dark</span>
+                <span class="n">all_data_arr</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
+                    <span class="n">all_data_arr</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">all_data_arr</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="mf">0.0</span>
+                <span class="p">)</span>
+            <span class="k">if</span> <span class="n">flat_filename</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">all_data_arr</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">divide</span><span class="p">(</span>
+                    <span class="n">all_data_arr</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span>
+                    <span class="n">normalized_flat</span><span class="p">,</span>
+                    <span class="n">where</span><span class="o">=</span><span class="n">normalized_flat</span> <span class="o">!=</span> <span class="mf">0.0</span><span class="p">,</span>
+                <span class="p">)</span>
+    <span class="n">all_data_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">all_data_arr</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">DEBUG</span><span class="p">:</span>
+        <span class="n">procs_grid</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+
+    <span class="c1"># parallelize into a procs_per_size x procs_per_size grid</span>
+    <span class="n">info</span><span class="p">(</span><span class="s2">&quot;Splitting into subdomains to parallelize...&quot;</span><span class="p">)</span>
+    <span class="n">chunks_n_y</span><span class="p">,</span> <span class="n">chunks_n_x</span> <span class="o">=</span> <span class="n">procs_grid</span>
+    <span class="n">chunk_size_y</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">height</span> <span class="o">/</span> <span class="n">chunks_n_y</span><span class="p">)</span>
+    <span class="n">chunk_size_x</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">width</span> <span class="o">/</span> <span class="n">chunks_n_x</span><span class="p">)</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">chunk_size_x</span> <span class="o">%</span> <span class="mi">2</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">chunk_size_y</span> <span class="o">%</span> <span class="mi">2</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;cant decompose into a </span><span class="si">{</span><span class="n">procs_grid</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">x</span><span class="si">{</span><span class="n">procs_grid</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2"> grid (odd side grid </span><span class="si">{</span><span class="n">chunk_size_y</span><span class="si">}</span><span class="s2">x</span><span class="si">{</span><span class="n">chunk_size_x</span><span class="si">}</span><span class="s2">). Try changing the number of processors.&quot;</span>
+        <span class="p">)</span>
+    <span class="n">splitted_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
+        <span class="n">shape</span><span class="o">=</span><span class="p">(</span>
+            <span class="n">chunks_n_y</span> <span class="o">*</span> <span class="n">chunks_n_x</span><span class="p">,</span>
+            <span class="nb">len</span><span class="p">(</span><span class="n">polarizer_orientations</span><span class="p">),</span>
+            <span class="n">chunk_size_y</span><span class="p">,</span>
+            <span class="n">chunk_size_x</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">splitted_occulter</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
+        <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">chunks_n_y</span> <span class="o">*</span> <span class="n">chunks_n_x</span><span class="p">,</span> <span class="n">chunk_size_y</span><span class="p">,</span> <span class="n">chunk_size_x</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">chunks_n_y</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">chunks_n_x</span><span class="p">):</span>
+            <span class="n">splitted_data</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="n">chunks_n_y</span> <span class="o">*</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+                <span class="n">all_data_arr</span><span class="p">[</span>
+                    <span class="p">:,</span>
+                    <span class="n">i</span> <span class="o">*</span> <span class="p">(</span><span class="n">chunk_size_y</span><span class="p">)</span> <span class="p">:</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">chunk_size_y</span><span class="p">,</span>
+                    <span class="n">j</span> <span class="o">*</span> <span class="p">(</span><span class="n">chunk_size_x</span><span class="p">)</span> <span class="p">:</span> <span class="p">(</span><span class="n">j</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">chunk_size_x</span><span class="p">,</span>
+                <span class="p">]</span>
+            <span class="p">)</span>  <span class="c1"># shape = (chunks_n*chunks_n, len(filenames_list), chunk_size_y, chunk_size_x)</span>
+            <span class="n">splitted_occulter</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="n">chunks_n_y</span> <span class="o">*</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+                <span class="n">occulter_flag</span><span class="p">[</span>
+                    <span class="n">i</span> <span class="o">*</span> <span class="p">(</span><span class="n">chunk_size_y</span><span class="p">)</span> <span class="p">:</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">chunk_size_y</span><span class="p">,</span>
+                    <span class="n">j</span> <span class="o">*</span> <span class="p">(</span><span class="n">chunk_size_x</span><span class="p">)</span> <span class="p">:</span> <span class="p">(</span><span class="n">j</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">chunk_size_x</span><span class="p">,</span>
+                <span class="p">]</span>
+            <span class="p">)</span>  <span class="c1"># shape = (chunks_n*chunks_n, chunk_size_y, chunk_size_x)</span>
+
+    <span class="k">if</span> <span class="n">normalizing_S</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">info</span><span class="p">(</span><span class="s2">&quot;Calculating normalization...&quot;</span><span class="p">)</span>
+        <span class="n">S_max</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
+            <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">)</span>
+        <span class="p">)</span>  <span class="c1"># tk_sum = tk_0 + tk_45 + tk_90 + tk_45</span>
+        <span class="k">for</span> <span class="n">pol</span><span class="p">,</span> <span class="n">image</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">polarizer_orientations</span><span class="p">,</span> <span class="n">all_data_arr</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">pol</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">90</span><span class="p">,</span> <span class="mi">45</span><span class="p">,</span> <span class="o">-</span><span class="mi">45</span><span class="p">]:</span>
+                <span class="n">S_max</span> <span class="o">+=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">image</span>
+        <span class="c1"># Normalizing S, has a spike of which maximum is taken</span>
+        <span class="n">bins</span> <span class="o">=</span> <span class="mi">1000</span>
+        <span class="n">histo</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">histogram</span><span class="p">(</span><span class="n">S_max</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="n">bins</span><span class="p">)</span>
+        <span class="n">maxvalue</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">histo</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">index</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">histo</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">maxvalue</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">normalizing_S</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">histo</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">index</span><span class="p">]</span> <span class="o">+</span> <span class="n">histo</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">histo</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">index</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="p">)</span> <span class="o">/</span> <span class="mi">3</span>
+        <span class="c1"># normalizing_S = np.max(S_max) # old</span>
+
+        <span class="c1"># ----------------------------------------------</span>
+        <span class="c1"># fit gaussian to S for normalization signal</span>
+        <span class="k">def</span> <span class="nf">gauss</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">norm</span><span class="p">,</span> <span class="n">x_0</span><span class="p">,</span> <span class="n">sigma</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">norm</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="p">((</span><span class="n">x</span> <span class="o">-</span> <span class="n">x_0</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">4</span> <span class="o">*</span> <span class="n">sigma</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
+
+        <span class="n">hist_roi</span> <span class="o">=</span> <span class="mi">10</span>  <span class="c1"># bins around max value</span>
+        <span class="n">xvalues</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">histo</span><span class="p">[</span><span class="mi">1</span><span class="p">])[</span><span class="n">index</span> <span class="o">-</span> <span class="n">hist_roi</span> <span class="p">:</span> <span class="n">index</span> <span class="o">+</span> <span class="n">hist_roi</span><span class="p">]</span>
+        <span class="n">yvalues</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">histo</span><span class="p">[</span><span class="mi">0</span><span class="p">])[</span><span class="n">index</span> <span class="o">-</span> <span class="n">hist_roi</span> <span class="p">:</span> <span class="n">index</span> <span class="o">+</span> <span class="n">hist_roi</span><span class="p">]</span>
+        <span class="n">yvalues_sum</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">yvalues</span><span class="p">)</span>
+        <span class="n">yvalues</span> <span class="o">=</span> <span class="n">yvalues</span> <span class="o">/</span> <span class="n">yvalues_sum</span>
+        <span class="n">xvalues</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+            <span class="p">[</span><span class="n">value</span> <span class="o">+</span> <span class="p">(</span><span class="n">xvalues</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">xvalues</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">/</span> <span class="mi">2</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">xvalues</span><span class="p">]</span>
+        <span class="p">)</span>  <span class="c1"># shift each bin to center</span>
+        <span class="n">prediction</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">yvalues</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">yvalues</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)],</span>  <span class="c1"># normalization</span>
+            <span class="n">xvalues</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">xvalues</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)],</span>  <span class="c1"># center</span>
+            <span class="n">xvalues</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">xvalues</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="nb">int</span><span class="p">(</span><span class="n">hist_roi</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)]</span>
+            <span class="o">-</span> <span class="n">xvalues</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">xvalues</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)],</span>  <span class="c1"># sigma</span>
+        <span class="p">]</span>
+        <span class="n">params</span><span class="p">,</span> <span class="n">cov</span> <span class="o">=</span> <span class="n">curve_fit</span><span class="p">(</span>
+            <span class="n">gauss</span><span class="p">,</span>
+            <span class="n">xvalues</span><span class="p">,</span>
+            <span class="n">yvalues</span><span class="p">,</span>
+            <span class="n">prediction</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">normalizing_S</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">params</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">params</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+        <span class="p">)</span>  <span class="c1"># center of gaussian + 2sigma</span>
+        <span class="c1"># 3sigma -&gt; P = 2.7e-3 outliers</span>
+        <span class="c1"># 4sigma -&gt; P = 6.3e-5 outliers</span>
+        <span class="c1"># ----------------------------------------------</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">normalizing_S</span> <span class="o">*=</span> <span class="n">binning</span> <span class="o">*</span> <span class="n">binning</span>  <span class="c1"># account binning</span>
+
+    <span class="c1"># Debug</span>
+    <span class="k">if</span> <span class="kc">False</span><span class="p">:</span>
+        <span class="n">index</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">histo_0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">histogram</span><span class="p">(</span><span class="n">all_data_arr</span><span class="p">[</span><span class="n">index</span><span class="p">],</span> <span class="n">bins</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+        <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">9</span><span class="p">))</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">stairs</span><span class="p">(</span><span class="n">histo_0</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">histo_0</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;sample image&quot;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">stairs</span><span class="p">(</span><span class="n">histo</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">histo</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;S, max = </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">S_max</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">normalizing_S</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;normalizing_S&quot;</span><span class="p">)</span>
+        <span class="c1"># ax.plot(</span>
+        <span class="c1">#    xvalues,</span>
+        <span class="c1">#    gauss(xvalues, params[0] * yvalues_sum, params[1], params[2]),</span>
+        <span class="c1">#    label=&quot;Fitted curve for normalizing S&quot;,</span>
+        <span class="c1"># )</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Prepol at </span><span class="si">{</span><span class="n">polarizer_orientations</span><span class="p">[</span><span class="n">index</span><span class="p">]</span><span class="si">}</span><span class="s2"> deg&quot;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;S [DN]&quot;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Counts&quot;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
+
+    <span class="n">args</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="p">[</span>
+            <span class="n">splitted_data</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+            <span class="n">normalizing_S</span><span class="p">,</span>
+            <span class="n">splitted_occulter</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+            <span class="n">polarizer_orientations</span><span class="p">,</span>
+            <span class="n">rad_micropol_phases_previsions</span><span class="p">,</span>
+            <span class="n">gain</span><span class="p">,</span>
+            <span class="n">DEBUG</span><span class="p">,</span>
+        <span class="p">]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">chunks_n_y</span> <span class="o">*</span> <span class="n">chunks_n_x</span><span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="n">starting_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
+    <span class="n">loc_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%H:%M:%S  (%Y/%m/</span><span class="si">%d</span><span class="s2">)&quot;</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">localtime</span><span class="p">())</span>
+    <span class="n">info</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;Starting parallel calculation (</span><span class="si">{</span><span class="n">procs_grid</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">x</span><span class="si">{</span><span class="n">procs_grid</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">) processors&quot;</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">procs_grid</span> <span class="o">!=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">mp</span><span class="o">.</span><span class="n">Pool</span><span class="p">(</span><span class="n">processes</span><span class="o">=</span><span class="n">chunks_n_y</span> <span class="o">*</span> <span class="n">chunks_n_x</span><span class="p">)</span> <span class="k">as</span> <span class="n">p</span><span class="p">:</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">starmap</span><span class="p">(</span>
+                    <span class="n">compute_demodulation_by_chunk</span><span class="p">,</span>
+                    <span class="n">args</span><span class="p">,</span>
+                <span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">error</span><span class="p">(</span><span class="s2">&quot;Fit not found&quot;</span><span class="p">)</span>
+            <span class="n">ending_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
+
+            <span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Elapsed : </span><span class="si">{</span><span class="p">(</span><span class="n">ending_time</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">starting_time</span><span class="p">)</span><span class="o">/</span><span class="mi">60</span><span class="si">:</span><span class="s2">3.2f</span><span class="si">}</span><span class="s2"> mins&quot;</span><span class="p">)</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">arglist</span> <span class="o">=</span> <span class="p">[</span><span class="n">arg</span> <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">args</span><span class="p">]</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="p">[[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]]</span> <span class="o">*</span> <span class="n">chunks_n_y</span> <span class="o">*</span> <span class="n">chunks_n_x</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">chunks_n_y</span> <span class="o">*</span> <span class="n">chunks_n_x</span><span class="p">):</span>
+            <span class="n">result</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">compute_demodulation_by_chunk</span><span class="p">(</span><span class="o">*</span><span class="n">arglist</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+
+    <span class="n">loc_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%H:%M:%S (%Y/%m/</span><span class="si">%d</span><span class="s2">)&quot;</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">localtime</span><span class="p">())</span>
+    <span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Ending parallel calculation&quot;</span><span class="p">)</span>
+
+    <span class="n">ending_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
+    <span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Elapsed : </span><span class="si">{</span><span class="p">(</span><span class="n">ending_time</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">starting_time</span><span class="p">)</span><span class="o">/</span><span class="mi">60</span><span class="si">:</span><span class="s2">3.2f</span><span class="si">}</span><span class="s2"> mins&quot;</span><span class="p">)</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+    <span class="n">m_ij</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
+        <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">N_MALUS_PARAMS</span><span class="p">,</span> <span class="n">N_PIXELS_IN_SUPERPIX</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">tks</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">))</span>
+    <span class="n">efficiences</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">))</span>
+    <span class="n">phases</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">))</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">chunks_n_y</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">chunks_n_x</span><span class="p">):</span>
+            <span class="n">m_ij</span><span class="p">[</span>
+                <span class="p">:,</span>
+                <span class="p">:,</span>
+                <span class="n">i</span> <span class="o">*</span> <span class="p">(</span><span class="n">chunk_size_y</span><span class="p">)</span> <span class="p">:</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">chunk_size_y</span><span class="p">,</span>
+                <span class="n">j</span> <span class="o">*</span> <span class="p">(</span><span class="n">chunk_size_x</span><span class="p">)</span> <span class="p">:</span> <span class="p">(</span><span class="n">j</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">chunk_size_x</span><span class="p">,</span>
+            <span class="p">]</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="n">chunks_n_y</span> <span class="o">*</span> <span class="n">j</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span>
+                <span class="n">N_MALUS_PARAMS</span><span class="p">,</span>
+                <span class="n">N_PIXELS_IN_SUPERPIX</span><span class="p">,</span>
+                <span class="n">chunk_size_y</span><span class="p">,</span>
+                <span class="n">chunk_size_x</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">tks</span><span class="p">[</span>
+                <span class="n">i</span> <span class="o">*</span> <span class="p">(</span><span class="n">chunk_size_y</span><span class="p">)</span> <span class="p">:</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">chunk_size_y</span><span class="p">,</span>
+                <span class="n">j</span> <span class="o">*</span> <span class="p">(</span><span class="n">chunk_size_x</span><span class="p">)</span> <span class="p">:</span> <span class="p">(</span><span class="n">j</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">chunk_size_x</span><span class="p">,</span>
+            <span class="p">]</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="n">chunks_n_y</span> <span class="o">*</span> <span class="n">j</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span>
+                <span class="n">chunk_size_y</span><span class="p">,</span> <span class="n">chunk_size_x</span>
+            <span class="p">)</span>
+            <span class="n">efficiences</span><span class="p">[</span>
+                <span class="n">i</span> <span class="o">*</span> <span class="p">(</span><span class="n">chunk_size_y</span><span class="p">)</span> <span class="p">:</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">chunk_size_y</span><span class="p">,</span>
+                <span class="n">j</span> <span class="o">*</span> <span class="p">(</span><span class="n">chunk_size_x</span><span class="p">)</span> <span class="p">:</span> <span class="p">(</span><span class="n">j</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">chunk_size_x</span><span class="p">,</span>
+            <span class="p">]</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="n">chunks_n_y</span> <span class="o">*</span> <span class="n">j</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span>
+                <span class="n">chunk_size_y</span><span class="p">,</span> <span class="n">chunk_size_x</span>
+            <span class="p">)</span>
+            <span class="n">phases</span><span class="p">[</span>
+                <span class="n">i</span> <span class="o">*</span> <span class="p">(</span><span class="n">chunk_size_y</span><span class="p">)</span> <span class="p">:</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">chunk_size_y</span><span class="p">,</span>
+                <span class="n">j</span> <span class="o">*</span> <span class="p">(</span><span class="n">chunk_size_x</span><span class="p">)</span> <span class="p">:</span> <span class="p">(</span><span class="n">j</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">chunk_size_x</span><span class="p">,</span>
+            <span class="p">]</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="n">chunks_n_y</span> <span class="o">*</span> <span class="n">j</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span>
+                <span class="n">chunk_size_y</span><span class="p">,</span> <span class="n">chunk_size_x</span>
+            <span class="p">)</span>
+
+    <span class="n">phases</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">rad2deg</span><span class="p">(</span><span class="n">phases</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">DEBUG</span><span class="p">:</span>
+        <span class="c1"># prevents overwriting</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">output_dir</span><span class="p">):</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">output_dir</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N_MALUS_PARAMS</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N_PIXELS_IN_SUPERPIX</span><span class="p">):</span>
+            <span class="n">hdu</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">PrimaryHDU</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">m_ij</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">])</span>
+            <span class="n">hdu</span><span class="o">.</span><span class="n">writeto</span><span class="p">(</span><span class="n">output_dir</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;M</span><span class="si">{</span><span class="n">i</span><span class="si">}{</span><span class="n">j</span><span class="si">}</span><span class="s2">.fits&quot;</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">hdu</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">PrimaryHDU</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">tks</span><span class="p">)</span>
+    <span class="n">hdu</span><span class="o">.</span><span class="n">writeto</span><span class="p">(</span><span class="n">output_dir</span> <span class="o">+</span> <span class="s2">&quot;transmittancies.fits&quot;</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">hdu</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">PrimaryHDU</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">efficiences</span><span class="p">)</span>
+    <span class="n">hdu</span><span class="o">.</span><span class="n">writeto</span><span class="p">(</span><span class="n">output_dir</span> <span class="o">+</span> <span class="s2">&quot;efficiences.fits&quot;</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">hdu</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">PrimaryHDU</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">phases</span><span class="p">)</span>
+    <span class="n">hdu</span><span class="o">.</span><span class="n">writeto</span><span class="p">(</span><span class="n">output_dir</span> <span class="o">+</span> <span class="s2">&quot;phases.fits&quot;</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">info</span><span class="p">(</span><span class="s2">&quot;Demodulation matrices and fit data successfully saved!&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span></div>
+
+
+<div class="viewcode-block" id="compute_demodulation_by_chunk"><a class="viewcode-back" href="../../../micropolarray.processing.html#micropolarray.processing.demodulation.compute_demodulation_by_chunk">[docs]</a><span class="k">def</span> <span class="nf">compute_demodulation_by_chunk</span><span class="p">(</span>
+    <span class="n">splitted_dara_arr</span><span class="p">,</span>
+    <span class="n">normalizing_S</span><span class="p">,</span>
+    <span class="n">splitted_occulter_flag</span><span class="p">,</span>
+    <span class="n">polarizer_orientations</span><span class="p">,</span>
+    <span class="n">rad_micropol_phases_previsions</span><span class="p">,</span>
+    <span class="n">gain</span><span class="p">,</span>
+    <span class="n">DEBUG</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Utility function to parallelize calculations.&quot;&quot;&quot;</span>
+    <span class="n">N_MALUS_PARAMS</span> <span class="o">=</span> <span class="mi">3</span>
+    <span class="n">N_PIXELS_IN_SUPERPIX</span> <span class="o">=</span> <span class="mi">4</span>
+    <span class="c1"># Preemptly compute the theoretical demo matrix to save time</span>
+    <span class="n">theo_modulation_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+        <span class="p">[</span>
+            <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">],</span>
+            <span class="p">[</span>
+                <span class="mf">0.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">rad_micropol_phases_previsions</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N_PIXELS_IN_SUPERPIX</span><span class="p">)</span>
+            <span class="p">],</span>
+            <span class="p">[</span>
+                <span class="mf">0.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">rad_micropol_phases_previsions</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N_PIXELS_IN_SUPERPIX</span><span class="p">)</span>
+            <span class="p">],</span>
+        <span class="p">]</span>
+    <span class="p">)</span>
+    <span class="n">theo_modulation_matrix</span> <span class="o">=</span> <span class="n">theo_modulation_matrix</span><span class="o">.</span><span class="n">T</span>
+    <span class="n">theo_demodulation_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">pinv</span><span class="p">(</span><span class="n">theo_modulation_matrix</span><span class="p">)</span>
+
+    <span class="n">num_of_points</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">width</span> <span class="o">=</span> <span class="n">splitted_dara_arr</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">rad_micropol_phases_previsions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">rad_micropol_phases_previsions</span><span class="p">)</span>
+    <span class="n">polarizations_rad</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">polarizer_orientations</span><span class="p">)</span>
+    <span class="n">tk_prediction</span> <span class="o">=</span> <span class="mf">0.5</span>
+    <span class="n">efficiency_prediction</span> <span class="o">=</span> <span class="mf">0.4</span>
+
+    <span class="c1"># Checked errors</span>
+    <span class="n">sigma_S2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">normalizing_S</span> <span class="o">/</span> <span class="n">gain</span><span class="p">)</span>
+    <span class="n">normalizing_S2</span> <span class="o">=</span> <span class="n">normalizing_S</span> <span class="o">*</span> <span class="n">normalizing_S</span>
+    <span class="c1"># pix_DN_sigma = np.sqrt(</span>
+    <span class="c1">#    splitted_dara_arr / (gain * normalizing_S2)</span>
+    <span class="c1">#    + sigma_S2</span>
+    <span class="c1">#    * (splitted_dara_arr * splitted_dara_arr)</span>
+    <span class="c1">#    / (normalizing_S2 * normalizing_S2)</span>
+    <span class="c1"># )</span>
+    <span class="n">pix_DN_sigma</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">splitted_dara_arr</span> <span class="o">/</span> <span class="n">gain</span><span class="p">)</span> <span class="o">/</span> <span class="n">normalizing_S</span>
+    <span class="p">)</span>  <span class="c1"># poisson error on the photoelectrons</span>
+
+    <span class="n">normalized_splitted_data</span> <span class="o">=</span> <span class="n">splitted_dara_arr</span> <span class="o">/</span> <span class="n">normalizing_S</span>
+    <span class="n">all_zeros</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">num_of_points</span><span class="p">))</span>
+
+    <span class="n">m_ij</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
+        <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">N_MALUS_PARAMS</span><span class="p">,</span> <span class="n">N_PIXELS_IN_SUPERPIX</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">)</span>
+    <span class="p">)</span>  <span class="c1"># demodulation matrix</span>
+    <span class="n">tk_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">))</span> <span class="o">*</span> <span class="n">tk_prediction</span>
+    <span class="n">eff_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">))</span> <span class="o">*</span> <span class="n">efficiency_prediction</span>
+    <span class="n">phase_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">))</span>
+    <span class="n">superpix_params</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">N_PIXELS_IN_SUPERPIX</span><span class="p">,</span> <span class="n">N_MALUS_PARAMS</span><span class="p">))</span>
+
+    <span class="n">predictions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">N_PIXELS_IN_SUPERPIX</span><span class="p">,</span> <span class="n">N_MALUS_PARAMS</span><span class="p">))</span>
+    <span class="n">predictions</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">tk_prediction</span>  <span class="c1"># Throughput prediction</span>
+    <span class="n">predictions</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">efficiency_prediction</span>  <span class="c1"># Efficiency prediction</span>
+    <span class="n">predictions</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">rad_micropol_phases_previsions</span>  <span class="c1"># Angle prediction</span>
+
+    <span class="n">bounds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">N_PIXELS_IN_SUPERPIX</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">N_MALUS_PARAMS</span><span class="p">))</span>
+    <span class="n">bounds</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">bounds</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.9999999</span>  <span class="c1"># Throughput bounds</span>
+
+    <span class="c1"># bounds[:, 0, 0], bounds[:, 1, 0] = (</span>
+    <span class="c1">#    0.1,</span>
+    <span class="c1">#    2.0,</span>
+    <span class="c1"># )  # tk is multiplied by 0.5 so it can actually be &gt; 1 and still physical</span>
+    <span class="n">bounds</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">bounds</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.9999999</span>  <span class="c1"># Efficiency bounds</span>
+    <span class="n">bounds</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">rad_micropol_phases_previsions</span> <span class="o">-</span> <span class="mi">15</span>  <span class="c1"># Lower angle bounds</span>
+    <span class="n">bounds</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">rad_micropol_phases_previsions</span> <span class="o">+</span> <span class="mi">15</span>  <span class="c1"># Upper angle bounds</span>
+
+    <span class="c1"># Fit for each superpixel. Use theoretical demodulation matrix for</span>
+    <span class="c1"># occulter if present.</span>
+    <span class="k">if</span> <span class="n">DEBUG</span><span class="p">:</span>
+        <span class="n">x_start</span><span class="p">,</span> <span class="n">x_end</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">110</span>
+        <span class="n">y_start</span><span class="p">,</span> <span class="n">y_end</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">110</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">y_start</span><span class="p">,</span> <span class="n">y_end</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">height</span>
+        <span class="n">x_start</span><span class="p">,</span> <span class="n">x_end</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">width</span>
+    <span class="n">milestones</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="nb">int</span><span class="p">(</span><span class="n">height</span> <span class="o">/</span> <span class="mi">4</span><span class="p">),</span>
+        <span class="nb">int</span><span class="p">(</span><span class="n">height</span> <span class="o">/</span> <span class="mi">4</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="nb">int</span><span class="p">(</span><span class="n">height</span> <span class="o">/</span> <span class="mi">2</span><span class="p">),</span>
+        <span class="nb">int</span><span class="p">(</span><span class="n">height</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="nb">int</span><span class="p">(</span><span class="mi">3</span> <span class="o">*</span> <span class="n">height</span> <span class="o">/</span> <span class="mi">4</span><span class="p">),</span>
+        <span class="nb">int</span><span class="p">(</span><span class="mi">3</span> <span class="o">*</span> <span class="n">height</span> <span class="o">/</span> <span class="mi">4</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="nb">int</span><span class="p">(</span><span class="n">height</span><span class="p">),</span>
+        <span class="nb">int</span><span class="p">(</span><span class="n">height</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="p">]</span>  <span class="c1"># used for printing progress</span>
+    <span class="k">for</span> <span class="n">super_y</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">y_start</span><span class="p">,</span> <span class="n">y_end</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">super_y</span> <span class="ow">in</span> <span class="n">milestones</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Thread at </span><span class="si">{</span><span class="n">super_y</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">height</span><span class="o">*</span><span class="mi">100</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> %&quot;</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">super_x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">x_start</span><span class="p">,</span> <span class="n">x_end</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span>
+                    <span class="n">splitted_occulter_flag</span><span class="p">[</span>
+                        <span class="n">super_y</span> <span class="p">:</span> <span class="n">super_y</span> <span class="o">+</span> <span class="mi">2</span><span class="p">,</span> <span class="n">super_x</span> <span class="p">:</span> <span class="n">super_x</span> <span class="o">+</span> <span class="mi">2</span>
+                    <span class="p">]</span>
+                <span class="p">)</span>
+            <span class="p">):</span>
+                <span class="n">normalized_superpix_arr</span> <span class="o">=</span> <span class="n">normalized_splitted_data</span><span class="p">[</span>
+                    <span class="p">:,</span> <span class="n">super_y</span> <span class="p">:</span> <span class="n">super_y</span> <span class="o">+</span> <span class="mi">2</span><span class="p">,</span> <span class="n">super_x</span> <span class="p">:</span> <span class="n">super_x</span> <span class="o">+</span> <span class="mi">2</span>
+                <span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">num_of_points</span><span class="p">,</span> <span class="n">N_PIXELS_IN_SUPERPIX</span><span class="p">)</span>
+
+                <span class="n">sigma_pix</span> <span class="o">=</span> <span class="n">pix_DN_sigma</span><span class="p">[</span>
+                    <span class="p">:,</span> <span class="n">super_y</span> <span class="p">:</span> <span class="n">super_y</span> <span class="o">+</span> <span class="mi">2</span><span class="p">,</span> <span class="n">super_x</span> <span class="p">:</span> <span class="n">super_x</span> <span class="o">+</span> <span class="mi">2</span>
+                <span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">num_of_points</span><span class="p">,</span> <span class="n">N_PIXELS_IN_SUPERPIX</span><span class="p">)</span>
+                <span class="n">sigma_pix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">sigma_pix</span> <span class="o">!=</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">sigma_pix</span><span class="p">,</span> <span class="mf">1.0e-5</span><span class="p">)</span>
+
+                <span class="k">for</span> <span class="n">pixel_num</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N_PIXELS_IN_SUPERPIX</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">array_equal</span><span class="p">(</span>
+                        <span class="n">normalized_superpix_arr</span><span class="p">[:,</span> <span class="n">pixel_num</span><span class="p">],</span> <span class="n">all_zeros</span>
+                    <span class="p">):</span>  <span class="c1"># catch bad pixels</span>
+                        <span class="n">fit_success</span> <span class="o">=</span> <span class="kc">False</span>
+                        <span class="k">break</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="p">(</span>
+                            <span class="n">superpix_params</span><span class="p">[</span><span class="n">pixel_num</span><span class="p">],</span>
+                            <span class="n">superpix_pcov</span><span class="p">,</span>
+                        <span class="p">)</span> <span class="o">=</span> <span class="n">curve_fit</span><span class="p">(</span>
+                            <span class="n">Malus</span><span class="p">,</span>
+                            <span class="n">polarizations_rad</span><span class="p">,</span>
+                            <span class="n">normalized_superpix_arr</span><span class="p">[:,</span> <span class="n">pixel_num</span><span class="p">],</span>
+                            <span class="n">predictions</span><span class="p">[</span><span class="n">pixel_num</span><span class="p">],</span>
+                            <span class="n">sigma</span><span class="o">=</span><span class="n">sigma_pix</span><span class="p">[:,</span> <span class="n">pixel_num</span><span class="p">],</span>
+                            <span class="n">bounds</span><span class="o">=</span><span class="n">bounds</span><span class="p">[</span><span class="n">pixel_num</span><span class="p">],</span>
+                        <span class="p">)</span>
+                        <span class="n">fit_success</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="k">except</span> <span class="ne">RuntimeError</span><span class="p">:</span>
+                        <span class="n">fit_success</span> <span class="o">=</span> <span class="kc">False</span>
+                        <span class="k">break</span>
+
+                <span class="k">if</span> <span class="n">DEBUG</span><span class="p">:</span>  <span class="c1"># DEBUG</span>
+                    <span class="n">colors</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;blue&quot;</span><span class="p">,</span> <span class="s2">&quot;orange&quot;</span><span class="p">,</span> <span class="s2">&quot;green&quot;</span><span class="p">,</span> <span class="s2">&quot;red&quot;</span><span class="p">]</span>
+                    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span>
+                        <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">9</span><span class="p">),</span> <span class="n">constrained_layout</span><span class="o">=</span><span class="kc">True</span>
+                    <span class="p">)</span>
+                    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">):</span>
+                        <span class="n">ax</span><span class="o">.</span><span class="n">errorbar</span><span class="p">(</span>
+                            <span class="n">np</span><span class="o">.</span><span class="n">rad2deg</span><span class="p">(</span><span class="n">polarizations_rad</span><span class="p">),</span>
+                            <span class="n">normalized_superpix_arr</span><span class="p">[:,</span> <span class="n">i</span><span class="p">],</span>
+                            <span class="n">yerr</span><span class="o">=</span><span class="n">sigma_pix</span><span class="p">[:,</span> <span class="n">i</span><span class="p">],</span>
+                            <span class="n">xerr</span><span class="o">=</span><span class="p">[</span><span class="mf">1.0</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">polarizations_rad</span><span class="p">),</span>
+                            <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;points </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                            <span class="n">fmt</span><span class="o">=</span><span class="s2">&quot;k-&quot;</span><span class="p">,</span>
+                            <span class="n">color</span><span class="o">=</span><span class="n">colors</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+                        <span class="p">)</span>
+                        <span class="nb">min</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">polarizations_rad</span><span class="p">)</span>
+                        <span class="c1"># min = 225</span>
+                        <span class="nb">max</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">polarizations_rad</span><span class="p">)</span>
+                        <span class="c1"># max = 405</span>
+                        <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">min</span><span class="p">,</span> <span class="nb">max</span><span class="p">,</span> <span class="p">(</span><span class="nb">max</span> <span class="o">-</span> <span class="nb">min</span><span class="p">)</span> <span class="o">/</span> <span class="mi">100</span><span class="p">)</span>
+                        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+                            <span class="n">np</span><span class="o">.</span><span class="n">rad2deg</span><span class="p">(</span><span class="n">x</span><span class="p">),</span>
+                            <span class="n">Malus</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">*</span><span class="n">superpix_params</span><span class="p">[</span><span class="n">i</span><span class="p">]),</span>
+                            <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;t = </span><span class="si">{</span><span class="n">superpix_params</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">2.2f</span><span class="si">}</span><span class="s2">, e = </span><span class="si">{</span><span class="n">superpix_params</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">2.2f</span><span class="si">}</span><span class="s2">, phi = </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">rad2deg</span><span class="p">(</span><span class="n">superpix_params</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">])</span><span class="si">:</span><span class="s2">2.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                            <span class="n">color</span><span class="o">=</span><span class="n">colors</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+                        <span class="p">)</span>
+                        <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span>
+                            <span class="sa">f</span><span class="s2">&quot;super_y = </span><span class="si">{</span><span class="n">super_y</span><span class="si">}</span><span class="s2">, super_x = </span><span class="si">{</span><span class="n">super_x</span><span class="si">}</span><span class="s2">,&quot;</span>
+                        <span class="p">)</span>
+                        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Prepolarizer orientations [deg]&quot;</span><span class="p">)</span>
+                        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;signal / S&quot;</span><span class="p">)</span>
+
+                    <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+                    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">fit_success</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
+                        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
+                            <span class="n">m_ij</span><span class="p">[</span>
+                                <span class="p">:,</span> <span class="p">:,</span> <span class="n">super_y</span> <span class="o">+</span> <span class="n">i</span><span class="p">,</span> <span class="n">super_x</span> <span class="o">+</span> <span class="n">j</span>
+                            <span class="p">]</span> <span class="o">=</span> <span class="n">theo_demodulation_matrix</span>
+                    <span class="k">continue</span>
+
+                <span class="c1"># Compute modulation matrix and its inverse</span>
+                <span class="n">t</span> <span class="o">=</span> <span class="n">superpix_params</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
+                <span class="n">eff</span> <span class="o">=</span> <span class="n">superpix_params</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
+                <span class="n">phi</span> <span class="o">=</span> <span class="n">superpix_params</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span>
+
+                <span class="n">modulation_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+                    <span class="p">[</span>
+                        <span class="mf">0.5</span> <span class="o">*</span> <span class="n">t</span><span class="p">,</span>
+                        <span class="mf">0.5</span> <span class="o">*</span> <span class="n">t</span> <span class="o">*</span> <span class="n">eff</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">phi</span><span class="p">),</span>
+                        <span class="mf">0.5</span> <span class="o">*</span> <span class="n">t</span> <span class="o">*</span> <span class="n">eff</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">phi</span><span class="p">),</span>
+                    <span class="p">]</span>
+                <span class="p">)</span>
+                <span class="n">modulation_matrix</span> <span class="o">=</span> <span class="n">modulation_matrix</span><span class="o">.</span><span class="n">T</span>
+                <span class="n">demodulation_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">pinv</span><span class="p">(</span><span class="n">modulation_matrix</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">DEBUG</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">()</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;MOD&quot;</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="n">modulation_matrix</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="n">theo_modulation_matrix</span><span class="p">)</span>
+
+                    <span class="nb">print</span><span class="p">()</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;DEMOD&quot;</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="n">demodulation_matrix</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="n">theo_demodulation_matrix</span><span class="p">)</span>
+
+                    <span class="nb">print</span><span class="p">()</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;params&quot;</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="n">eff</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;---&quot;</span><span class="p">)</span>
+
+                <span class="c1"># Remove matrices with big numbers</span>
+                <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">demodulation_matrix</span> <span class="o">&gt;</span> <span class="mi">100</span><span class="p">)</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span>
+                    <span class="n">demodulation_matrix</span> <span class="o">&lt;</span> <span class="o">-</span><span class="mi">100</span>
+                <span class="p">):</span>
+                    <span class="n">demodulation_matrix</span> <span class="o">=</span> <span class="n">theo_demodulation_matrix</span>
+
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
+                    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
+                        <span class="n">m_ij</span><span class="p">[</span>
+                            <span class="p">:,</span> <span class="p">:,</span> <span class="n">super_y</span> <span class="o">+</span> <span class="n">i</span><span class="p">,</span> <span class="n">super_x</span> <span class="o">+</span> <span class="n">j</span>
+                        <span class="p">]</span> <span class="o">=</span> <span class="n">demodulation_matrix</span>
+
+                <span class="n">tk_data</span><span class="p">[</span>
+                    <span class="n">super_y</span> <span class="p">:</span> <span class="n">super_y</span> <span class="o">+</span> <span class="mi">2</span><span class="p">,</span> <span class="n">super_x</span> <span class="p">:</span> <span class="n">super_x</span> <span class="o">+</span> <span class="mi">2</span>
+                <span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">t</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+                <span class="n">eff_data</span><span class="p">[</span>
+                    <span class="n">super_y</span> <span class="p">:</span> <span class="n">super_y</span> <span class="o">+</span> <span class="mi">2</span><span class="p">,</span> <span class="n">super_x</span> <span class="p">:</span> <span class="n">super_x</span> <span class="o">+</span> <span class="mi">2</span>
+                <span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">eff</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+                <span class="n">phase_data</span><span class="p">[</span>
+                    <span class="n">super_y</span> <span class="p">:</span> <span class="n">super_y</span> <span class="o">+</span> <span class="mi">2</span><span class="p">,</span> <span class="n">super_x</span> <span class="p">:</span> <span class="n">super_x</span> <span class="o">+</span> <span class="mi">2</span>
+                <span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+
+            <span class="k">else</span><span class="p">:</span>  <span class="c1"># pixel is in occulter region</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
+                    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
+                        <span class="n">m_ij</span><span class="p">[</span>
+                            <span class="p">:,</span> <span class="p">:,</span> <span class="n">super_y</span> <span class="o">+</span> <span class="n">i</span><span class="p">,</span> <span class="n">super_x</span> <span class="o">+</span> <span class="n">j</span>
+                        <span class="p">]</span> <span class="o">=</span> <span class="n">theo_demodulation_matrix</span>
+                <span class="n">phase_data</span><span class="p">[</span>
+                    <span class="n">super_y</span> <span class="p">:</span> <span class="n">super_y</span> <span class="o">+</span> <span class="mi">2</span><span class="p">,</span> <span class="n">super_x</span> <span class="p">:</span> <span class="n">super_x</span> <span class="o">+</span> <span class="mi">2</span>
+                <span class="p">]</span> <span class="o">=</span> <span class="n">rad_micropol_phases_previsions</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+                <span class="n">tk_data</span><span class="p">[</span>
+                    <span class="n">super_y</span> <span class="p">:</span> <span class="n">super_y</span> <span class="o">+</span> <span class="mi">2</span><span class="p">,</span> <span class="n">super_x</span> <span class="p">:</span> <span class="n">super_x</span> <span class="o">+</span> <span class="mi">2</span>
+                <span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+                    <span class="p">[</span>
+                        <span class="p">[</span><span class="n">tk_prediction</span><span class="p">,</span> <span class="n">tk_prediction</span><span class="p">],</span>
+                        <span class="p">[</span><span class="n">tk_prediction</span><span class="p">,</span> <span class="n">tk_prediction</span><span class="p">],</span>
+                    <span class="p">]</span>
+                <span class="p">)</span>
+                <span class="n">eff_data</span><span class="p">[</span>
+                    <span class="n">super_y</span> <span class="p">:</span> <span class="n">super_y</span> <span class="o">+</span> <span class="mi">2</span><span class="p">,</span> <span class="n">super_x</span> <span class="p">:</span> <span class="n">super_x</span> <span class="o">+</span> <span class="mi">2</span>
+                <span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+                    <span class="p">[</span>
+                        <span class="p">[</span><span class="n">efficiency_prediction</span><span class="p">,</span> <span class="n">efficiency_prediction</span><span class="p">],</span>
+                        <span class="p">[</span><span class="n">efficiency_prediction</span><span class="p">,</span> <span class="n">efficiency_prediction</span><span class="p">],</span>
+                    <span class="p">]</span>
+                <span class="p">)</span>
+
+    <span class="n">m_ij_chunk</span> <span class="o">=</span> <span class="n">m_ij</span>
+
+    <span class="k">return</span> <span class="n">m_ij_chunk</span><span class="p">,</span> <span class="n">tk_data</span><span class="p">,</span> <span class="n">eff_data</span><span class="p">,</span> <span class="n">phase_data</span></div>
+
+
+<div class="viewcode-block" id="Malus"><a class="viewcode-back" href="../../../micropolarray.processing.html#micropolarray.processing.demodulation.Malus">[docs]</a><span class="k">def</span> <span class="nf">Malus</span><span class="p">(</span><span class="n">angle</span><span class="p">,</span> <span class="n">throughput</span><span class="p">,</span> <span class="n">efficiency</span><span class="p">,</span> <span class="n">phase</span><span class="p">):</span>
+    <span class="c1"># original</span>
+    <span class="n">modulated_efficiency</span> <span class="o">=</span> <span class="n">efficiency</span> <span class="o">*</span> <span class="p">(</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">phase</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">angle</span><span class="p">)</span>
+        <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">phase</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">angle</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">throughput</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="n">modulated_efficiency</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">micropolarray</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2023, Herve Haudemand.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 7.1.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.13</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
