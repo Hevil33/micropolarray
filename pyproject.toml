@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "micropolarray"
-version = "1.0.8"
+version = "1.0.9"
 description = "micropolarizer array data utilities"
 readme = "README.md"
 authors = [{ name ="Herve Haudemand", email = "herve.haudemand@inaf.it" }]
@@ -14,7 +14,7 @@ classifiers = [
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
 ]
-keywords = ["micropolarizer", "polarcam", "polarization"]
+keywords = ["micropolarizer", "polarcam", "polarization", "astronomy"]
 dependencies = [
     "numpy <1.24.0",
     "pandas",
@@ -35,3 +35,5 @@ dev = ["black", "bumpver", "isort", "pip-tools"]
 
 [project.urls]
 Homepage = "https://github.com/Hevil33/micropolarray_master"
+Source code = "https://github.com/Hevil33/micropolarray_master"
+Documentation = "https://micropolarray.readthedocs.io/en/latest/"
