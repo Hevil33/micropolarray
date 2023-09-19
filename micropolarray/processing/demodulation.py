@@ -1,28 +1,27 @@
-from micropolarray.processing.rebin import (
-    standard_rebin,
-    micropolarray_rebin,
-    trim_to_match_binning,
-)
+import glob
+import multiprocessing as mp
+import os
+import re
+import sys
+import time
+from logging import error, info, warning
+
+import matplotlib.pyplot as plt
+import numpy as np
+from astropy.io import fits
+from scipy.optimize import curve_fit
+from tqdm import tqdm
+
+from micropolarray.cameras import PolarCam
+from micropolarray.processing.chen_wan_liang_calibration import ifov_jitcorrect
 from micropolarray.processing.nrgf import (
     find_occulter_position,
     roi_from_polar,
 )
-from micropolarray.cameras import PolarCam
-
-from scipy.optimize import curve_fit
-import glob
-import os
-from astropy.io import fits
-import re
-import numpy as np
-import sys
-import matplotlib.pyplot as plt
-from tqdm import tqdm
-import multiprocessing as mp
-import time
-from logging import warning, info, error
-from micropolarray.processing.chen_wan_liang_calibration import (
-    ifov_jitcorrect,
+from micropolarray.processing.rebin import (
+    micropolarray_rebin,
+    standard_rebin,
+    trim_to_match_binning,
 )
 from micropolarray.utils import mean_plus_std
 
@@ -307,10 +306,10 @@ def calculate_demodulation_tensor(
                     all_data_arr[idx] >= 0, all_data_arr[idx], 0.0
                 )
             if flat_filename is not None:
-                all_data_arr[idx] = np.where(
-                    normalized_flat != 0,
-                    all_data_arr[idx] / normalized_flat,
+                all_data_arr[idx] = np.divide(
                     all_data_arr[idx],
+                    normalized_flat,
+                    where=normalized_flat != 0.0,
                 )
     all_data_arr = np.array(all_data_arr)
 

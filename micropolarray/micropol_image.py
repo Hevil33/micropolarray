@@ -16,13 +16,20 @@ from micropolarray.polarization_functions import AoLP, DoLP, pB
 from micropolarray.processing.chen_wan_liang_calibration import ifov_jitcorrect
 from micropolarray.processing.congrid import congrid
 from micropolarray.processing.demodulation import Demodulator
-from micropolarray.processing.demosaic import (demosaic, merge_polarizations,
-                                               split_polarizations)
+from micropolarray.processing.demosaic import (
+    demosaic,
+    merge_polarizations,
+    split_polarizations,
+)
 from micropolarray.processing.nrgf import roi_from_polar
 from micropolarray.processing.rebin import micropolarray_rebin
 from micropolarray.processing.shift import shift, shift_micropol
-from micropolarray.utils import (fix_data, make_abs_and_create_dir,
-                                 mean_minus_std, mean_plus_std, timer)
+from micropolarray.utils import (
+    fix_data,
+    make_abs_and_create_dir,
+    mean_minus_std,
+    mean_plus_std,
+)
 
 
 @dataclass
@@ -421,15 +428,11 @@ class MicropolImage(Image):
         """
         normalized_flat = flat.data / np.max(flat.data)
 
-        self.data = np.where(
-            normalized_flat != 0.0, self.data / normalized_flat, self.data
+        self.data = np.divide(
+            self.data,
+            normalized_flat,
+            where=normalized_flat != 0.0,
         )
-
-        coords = np.transpose(np.where(normalized_flat == 0, 1, 0).nonzero())
-        for coord in coords:
-            if normalized_flat[coord[0], coord[1]] != 0.0:
-                print(f"coords: {coord}")
-                print(normalized_flat[coord[0], coord[1]])
 
         # self.data = np.where(self.data >= 0, self.data, 0)
         # self.data = np.where(self.data < 4096, self.data, 4096)
@@ -1005,12 +1008,15 @@ class MicropolImage(Image):
 
     def __truediv__(self, second) -> MicropolImage:
         if type(self) is type(second):
-            newdata = np.where(second.data != 0, self.data / second.data, 4096)
+            newdata = np.divide(
+                self.data, second.data, where=second.data != 0.0
+            )
             newimage = MicropolImage(self)
             newimage._set_data_and_Stokes(newdata)
             return newimage
         else:
-            newdata = np.where(second != 0, self.data / second, 4096)
+            # newdata = np.where(second != 0, self.data / second, 4096)
+            newdata = np.divide(self.data, second, where=second != 0.0)
             return MicropolImage(newdata, angle_dic=self.angle_dic)
 
 

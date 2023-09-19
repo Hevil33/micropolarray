@@ -26,58 +26,52 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">from micropolarray.image import Image
-from micropolarray.micropol_image import (
-    MicropolImage,
-    set_default_angles,
-)
-from micropolarray.micropol_image import (
-    MicropolImage as PolarcamImage,
-)
+<pre><code class="python">import logging
+
+from micropolarray.cameras import Antarticor, Kasi, PolarCam
+from micropolarray.image import Image
+from micropolarray.micropol_image import MicropolImage
 from micropolarray.micropol_image import (
     MicropolImage as MicroPolarizerArrayImage,
 )
-from micropolarray.cameras import PolarCam, Kasi, Antarticor
-
-from micropolarray.processing.demodulation import Demodulator
-from micropolarray.processing.demodulation import (
-    calculate_demodulation_tensor,
+from micropolarray.micropol_image import MicropolImage as PolarcamImage
+from micropolarray.micropol_image import set_default_angles
+from micropolarray.processing.chen_wan_liang_calibration import (
+    chen_wan_liang_calibration,
+    ifov_jitcorrect,
 )
-from micropolarray.processing.nrgf import (
-    find_occulter_position,
-    roi_from_polar,
-    nrgf,
-)
+from micropolarray.processing.congrid import congrid
 from micropolarray.processing.convert import (
-    convert_set,
-    convert_rawfile_to_fits,
     average_rawfiles_to_fits,
+    convert_rawfile_to_fits,
+    convert_set,
+)
+from micropolarray.processing.demodulation import (
+    Demodulator,
+    calculate_demodulation_tensor,
 )
 from micropolarray.processing.demosaic import (
     demosaic,
     merge_polarizations,
     split_polarizations,
 )
+from micropolarray.processing.hotpix_cleaning import get_hot_pixels
+from micropolarray.processing.nrgf import (
+    find_occulter_position,
+    nrgf,
+    roi_from_polar,
+)
 from micropolarray.utils import (
-    sigma_DN,
+    align_keywords_and_data,
+    get_Bsun_units,
+    get_malus_normalization,
     mean_minus_std,
     mean_plus_std,
     median_minus_std,
     median_plus_std,
-    get_Bsun_units,
-    get_malus_normalization,
-)
-from micropolarray.processing.chen_wan_liang_calibration import (
-    chen_wan_liang_calibration,
-    ifov_jitcorrect,
-)
-from micropolarray.processing.congrid import congrid
-from micropolarray.utils import (
     normalize2pi,
-    align_keywords_and_data,
+    sigma_DN,
 )
-
-import logging
 
 logging.basicConfig(
     level=logging.INFO, format=&#34;%(levelname)s - %(asctime)s - %(message)s&#34;
@@ -115,7 +109,7 @@ __all__ = (
 <dd>
 <div class="desc"></div>
 </dd>
-<dt><code class="name"><a title="micropolarray.tests" href="tests/index.html">micropolarray.tests</a></code></dt>
+<dt><code class="name"><a title="micropolarray.test_v2" href="test_v2.html">micropolarray.test_v2</a></code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
@@ -146,7 +140,7 @@ __all__ = (
 <li><code><a title="micropolarray.parallelize" href="parallelize.html">micropolarray.parallelize</a></code></li>
 <li><code><a title="micropolarray.polarization_functions" href="polarization_functions.html">micropolarray.polarization_functions</a></code></li>
 <li><code><a title="micropolarray.processing" href="processing/index.html">micropolarray.processing</a></code></li>
-<li><code><a title="micropolarray.tests" href="tests/index.html">micropolarray.tests</a></code></li>
+<li><code><a title="micropolarray.test_v2" href="test_v2.html">micropolarray.test_v2</a></code></li>
 <li><code><a title="micropolarray.utils" href="utils.html">micropolarray.utils</a></code></li>
 </ul>
 </li>

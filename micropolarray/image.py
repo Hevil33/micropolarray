@@ -1,14 +1,16 @@
 from __future__ import annotations
-from astropy.io import fits
-import numpy as np
-import matplotlib.pyplot as plt
-import sys
-import os
-from micropolarray.utils import make_abs_and_create_dir
-from logging import warning, info
-from micropolarray.utils import make_abs_and_create_dir, fix_data
+
 import datetime
+import os
+import sys
+from logging import info, warning
 from pathlib import Path
+
+import matplotlib.pyplot as plt
+import numpy as np
+from astropy.io import fits
+
+from micropolarray.utils import fix_data, make_abs_and_create_dir
 
 
 class Image:
@@ -177,7 +179,7 @@ class Image:
             ValueError: filename does not end with ".raw"
         """
         print(self.data.shape)
-        if Path(filename).suffix is not ".raw":
+        if Path(filename).suffix != ".raw":
             raise ValueError("Filename must have .raw extension")
         self.data.astype("int16").tofile(filename)
 
@@ -258,7 +260,7 @@ class Image:
 
     def __truediv__(self, second) -> Image:
         if type(self) is type(second):
-            newdata = np.where(second.data != 0, self.data / second.data, 4096)
+            newdata = np.divide(self.data, second.data, where=second.data != 0)
         else:
-            newdata = np.where(second != 0, self.data / second, 4096)
+            newdata = np.divide(self.data, second, where=second != 0)
         return Image(newdata)

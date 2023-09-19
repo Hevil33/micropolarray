@@ -27,33 +27,37 @@
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">from __future__ import annotations
+
 from dataclasses import dataclass
-from astropy.io import fits
-import numpy as np
+from logging import debug, error, info, warning
+from pathlib import Path
+
 import matplotlib.pyplot as plt
-from micropolarray.polarization_functions import AoLP, DoLP, pB
+import numpy as np
+import scipy
+from astropy.io import fits
+from PIL import Image as PILImage
+
+from micropolarray.cameras import Camera, PolarCam
 from micropolarray.image import Image
+from micropolarray.polarization_functions import AoLP, DoLP, pB
+from micropolarray.processing.chen_wan_liang_calibration import ifov_jitcorrect
+from micropolarray.processing.congrid import congrid
+from micropolarray.processing.demodulation import Demodulator
 from micropolarray.processing.demosaic import (
     demosaic,
-    split_polarizations,
     merge_polarizations,
-)
-from micropolarray.processing.rebin import (
-    micropolarray_rebin,
-)
-from micropolarray.cameras import PolarCam, Camera
-from micropolarray.processing.demodulation import Demodulator
-from micropolarray.utils import make_abs_and_create_dir, fix_data
-from micropolarray.processing.congrid import congrid
-from PIL import Image as PILImage
-from pathlib import Path
-from logging import warning, debug, info, error
-from micropolarray.processing.chen_wan_liang_calibration import (
-    ifov_jitcorrect,
+    split_polarizations,
 )
 from micropolarray.processing.nrgf import roi_from_polar
-from micropolarray.utils import mean_minus_std, mean_plus_std, timer
+from micropolarray.processing.rebin import micropolarray_rebin
 from micropolarray.processing.shift import shift, shift_micropol
+from micropolarray.utils import (
+    fix_data,
+    make_abs_and_create_dir,
+    mean_minus_std,
+    mean_plus_std,
+)
 
 
 @dataclass
@@ -451,9 +455,13 @@ class MicropolImage(Image):
             MicropolImage: copy of input image corrected by flat
         &#34;&#34;&#34;
         normalized_flat = flat.data / np.max(flat.data)
-        self.data = np.where(
-            normalized_flat != 0, self.data / normalized_flat, self.data
+
+        self.data = np.divide(
+            self.data,
+            normalized_flat,
+            where=normalized_flat != 0.0,
         )
+
         # self.data = np.where(self.data &gt;= 0, self.data, 0)
         # self.data = np.where(self.data &lt; 4096, self.data, 4096)
         self._set_data_and_Stokes()
@@ -600,7 +608,9 @@ class MicropolImage(Image):
             )
         return fig, ax
 
-    def show_pol_param(self, polparam: PolParam, cmap=&#34;Greys_r&#34;):
+    def show_pol_param(
+        self, polparam: PolParam, cmap=&#34;Greys_r&#34;, vmin=None, vmax=None
+    ):
         &#34;&#34;&#34;Plots a single polarization parameter given as input
 
         Args:
@@ -612,11 +622,15 @@ class MicropolImage(Image):
         &#34;&#34;&#34;
         data_ratio = self.data.shape[0] / self.data.shape[1]
         fig, ax = plt.subplots(dpi=200)
+        if vmin is None:
+            vmin = mean_minus_std(polparam.data)
+        if vmax is None:
+            vmax = mean_plus_std(polparam.data)
         mappable = ax.imshow(
             polparam.data,
             cmap=cmap,
-            vmin=mean_minus_std(polparam.data),
-            vmax=mean_plus_std(polparam.data),
+            vmin=vmin,
+            vmax=vmax,
         )
         ax.set_title(polparam.title)
         ax.set_xlabel(&#34;x [px]&#34;)
@@ -888,7 +902,6 @@ class MicropolImage(Image):
         x: int = PolarCam().occulter_pos_last[1],
         r: int = PolarCam().occulter_pos_last[2],
         overoccult: int = 0,
-        camera=PolarCam(),
     ) -&gt; None:
         &#34;&#34;&#34;Masks occulter for all image parameters
 
@@ -904,25 +917,19 @@ class MicropolImage(Image):
         &#34;&#34;&#34;
         # y, x, r = camera.occulter_pos_last
 
-        relative_y = y / camera.h_image
-        relative_x = x / camera.w_image
-        relative_r = (r + overoccult) / camera.h_image
-
-        abs_y = int(relative_y * self.height)
-        abs_x = int(relative_x * self.width)
-        abs_r = int(relative_r * self.height)
+        r = r + overoccult
 
         self.data = roi_from_polar(
             self.data,
-            (abs_y, abs_x),
-            [abs_r, 2 * np.max((self.height, self.width))],
+            (y, x),
+            [r, 2 * np.max((self.height, self.width))],
         )
         self.single_pol_subimages = [
             roi_from_polar(
                 data,
-                (int(abs_y / 2), int(abs_x / 2)),
+                (int(y / 2), int(x / 2)),
                 [
-                    int(abs_r / 2),
+                    int(r / 2),
                     2 * np.max((int(self.height / 2), int(self.width / 2))),
                 ],
             )
@@ -933,24 +940,21 @@ class MicropolImage(Image):
             self.demosaiced_images = [
                 roi_from_polar(
                     data,
-                    (abs_y, abs_x),
-                    (abs_r, 2 * np.max([self.height, self.width])),
+                    (y, x),
+                    (r, 2 * np.max([self.height, self.width])),
                 )
                 for data in self.demosaiced_images
             ]
         for param in self.polparam_list:
+            ratio = param.data.shape[0] / self.data.shape[0]
             param.data = roi_from_polar(
                 param.data,
                 (
-                    int(relative_y * param.data.shape[0]),
-                    int(relative_x * param.data.shape[1]),
+                    int(y * ratio),
+                    int(x * ratio),
                 ),
                 [
-                    int(
-                        relative_r
-                        * (param.data.shape[0] + param.data.shape[1])
-                        / 2
-                    ),
+                    int(r * ratio),
                     2 * np.max((param.data.shape[0], param.data.shape[0])),
                 ],
             )
@@ -970,6 +974,31 @@ class MicropolImage(Image):
         newimage = MicropolImage(self)
         newimage._set_data_and_Stokes(newdata)
 
+        return newimage
+
+    def clean_hot_pixels(self, flagged_hot_pix_map: MicropolImage):
+        &#34;&#34;&#34;Returns a copy of the image with gaussian smeared pixels where flagged_hot_pix_map == 1.
+
+        Args:
+            flagged_hot_pix_map (MicropolImage): hot pixels map.
+
+        Returns:
+            MicropolImage: copy of the original image, gaussian smeared where flagged_hot_pix_map == 1
+        &#34;&#34;&#34;
+        subimages = self.single_pol_subimages
+        blurred_subimages = np.array(
+            [
+                scipy.ndimage.median_filter(subimage, size=2)
+                for subimage in subimages
+            ]
+        )
+        flagged_subimages = flagged_hot_pix_map.single_pol_subimages
+        subimages = np.where(
+            flagged_subimages == 1, blurred_subimages, subimages
+        )
+
+        newimage = MicropolImage(self)
+        newimage._set_data_and_Stokes(merge_polarizations(subimages))
         return newimage
 
     # ----------------------------------------------------------------
@@ -1007,12 +1036,15 @@ class MicropolImage(Image):
 
     def __truediv__(self, second) -&gt; MicropolImage:
         if type(self) is type(second):
-            newdata = np.where(second.data != 0, self.data / second.data, 4096)
+            newdata = np.divide(
+                self.data, second.data, where=second.data != 0.0
+            )
             newimage = MicropolImage(self)
             newimage._set_data_and_Stokes(newdata)
             return newimage
         else:
-            newdata = np.where(second != 0, self.data / second, 4096)
+            # newdata = np.where(second != 0, self.data / second, 4096)
+            newdata = np.divide(self.data, second, where=second != 0.0)
             return MicropolImage(newdata, angle_dic=self.angle_dic)
 
 
@@ -1430,9 +1462,13 @@ class MicropolImage(Image):
             MicropolImage: copy of input image corrected by flat
         &#34;&#34;&#34;
         normalized_flat = flat.data / np.max(flat.data)
-        self.data = np.where(
-            normalized_flat != 0, self.data / normalized_flat, self.data
+
+        self.data = np.divide(
+            self.data,
+            normalized_flat,
+            where=normalized_flat != 0.0,
         )
+
         # self.data = np.where(self.data &gt;= 0, self.data, 0)
         # self.data = np.where(self.data &lt; 4096, self.data, 4096)
         self._set_data_and_Stokes()
@@ -1579,7 +1615,9 @@ class MicropolImage(Image):
             )
         return fig, ax
 
-    def show_pol_param(self, polparam: PolParam, cmap=&#34;Greys_r&#34;):
+    def show_pol_param(
+        self, polparam: PolParam, cmap=&#34;Greys_r&#34;, vmin=None, vmax=None
+    ):
         &#34;&#34;&#34;Plots a single polarization parameter given as input
 
         Args:
@@ -1591,11 +1629,15 @@ class MicropolImage(Image):
         &#34;&#34;&#34;
         data_ratio = self.data.shape[0] / self.data.shape[1]
         fig, ax = plt.subplots(dpi=200)
+        if vmin is None:
+            vmin = mean_minus_std(polparam.data)
+        if vmax is None:
+            vmax = mean_plus_std(polparam.data)
         mappable = ax.imshow(
             polparam.data,
             cmap=cmap,
-            vmin=mean_minus_std(polparam.data),
-            vmax=mean_plus_std(polparam.data),
+            vmin=vmin,
+            vmax=vmax,
         )
         ax.set_title(polparam.title)
         ax.set_xlabel(&#34;x [px]&#34;)
@@ -1867,7 +1909,6 @@ class MicropolImage(Image):
         x: int = PolarCam().occulter_pos_last[1],
         r: int = PolarCam().occulter_pos_last[2],
         overoccult: int = 0,
-        camera=PolarCam(),
     ) -&gt; None:
         &#34;&#34;&#34;Masks occulter for all image parameters
 
@@ -1883,25 +1924,19 @@ class MicropolImage(Image):
         &#34;&#34;&#34;
         # y, x, r = camera.occulter_pos_last
 
-        relative_y = y / camera.h_image
-        relative_x = x / camera.w_image
-        relative_r = (r + overoccult) / camera.h_image
-
-        abs_y = int(relative_y * self.height)
-        abs_x = int(relative_x * self.width)
-        abs_r = int(relative_r * self.height)
+        r = r + overoccult
 
         self.data = roi_from_polar(
             self.data,
-            (abs_y, abs_x),
-            [abs_r, 2 * np.max((self.height, self.width))],
+            (y, x),
+            [r, 2 * np.max((self.height, self.width))],
         )
         self.single_pol_subimages = [
             roi_from_polar(
                 data,
-                (int(abs_y / 2), int(abs_x / 2)),
+                (int(y / 2), int(x / 2)),
                 [
-                    int(abs_r / 2),
+                    int(r / 2),
                     2 * np.max((int(self.height / 2), int(self.width / 2))),
                 ],
             )
@@ -1912,24 +1947,21 @@ class MicropolImage(Image):
             self.demosaiced_images = [
                 roi_from_polar(
                     data,
-                    (abs_y, abs_x),
-                    (abs_r, 2 * np.max([self.height, self.width])),
+                    (y, x),
+                    (r, 2 * np.max([self.height, self.width])),
                 )
                 for data in self.demosaiced_images
             ]
         for param in self.polparam_list:
+            ratio = param.data.shape[0] / self.data.shape[0]
             param.data = roi_from_polar(
                 param.data,
                 (
-                    int(relative_y * param.data.shape[0]),
-                    int(relative_x * param.data.shape[1]),
+                    int(y * ratio),
+                    int(x * ratio),
                 ),
                 [
-                    int(
-                        relative_r
-                        * (param.data.shape[0] + param.data.shape[1])
-                        / 2
-                    ),
+                    int(r * ratio),
                     2 * np.max((param.data.shape[0], param.data.shape[0])),
                 ],
             )
@@ -1949,6 +1981,31 @@ class MicropolImage(Image):
         newimage = MicropolImage(self)
         newimage._set_data_and_Stokes(newdata)
 
+        return newimage
+
+    def clean_hot_pixels(self, flagged_hot_pix_map: MicropolImage):
+        &#34;&#34;&#34;Returns a copy of the image with gaussian smeared pixels where flagged_hot_pix_map == 1.
+
+        Args:
+            flagged_hot_pix_map (MicropolImage): hot pixels map.
+
+        Returns:
+            MicropolImage: copy of the original image, gaussian smeared where flagged_hot_pix_map == 1
+        &#34;&#34;&#34;
+        subimages = self.single_pol_subimages
+        blurred_subimages = np.array(
+            [
+                scipy.ndimage.median_filter(subimage, size=2)
+                for subimage in subimages
+            ]
+        )
+        flagged_subimages = flagged_hot_pix_map.single_pol_subimages
+        subimages = np.where(
+            flagged_subimages == 1, blurred_subimages, subimages
+        )
+
+        newimage = MicropolImage(self)
+        newimage._set_data_and_Stokes(merge_polarizations(subimages))
         return newimage
 
     # ----------------------------------------------------------------
@@ -1986,12 +2043,15 @@ class MicropolImage(Image):
 
     def __truediv__(self, second) -&gt; MicropolImage:
         if type(self) is type(second):
-            newdata = np.where(second.data != 0, self.data / second.data, 4096)
+            newdata = np.divide(
+                self.data, second.data, where=second.data != 0.0
+            )
             newimage = MicropolImage(self)
             newimage._set_data_and_Stokes(newdata)
             return newimage
         else:
-            newdata = np.where(second != 0, self.data / second, 4096)
+            # newdata = np.where(second != 0, self.data / second, 4096)
+            newdata = np.divide(self.data, second, where=second != 0.0)
             return MicropolImage(newdata, angle_dic=self.angle_dic)</code></pre>
 </details>
 <h3>Ancestors</h3>
@@ -2007,6 +2067,51 @@ class MicropolImage(Image):
 </dl>
 <h3>Methods</h3>
 <dl>
+<dt id="micropolarray.micropol_image.MicropolImage.clean_hot_pixels"><code class="name flex">
+<span>def <span class="ident">clean_hot_pixels</span></span>(<span>self, flagged_hot_pix_map: <a title="micropolarray.micropol_image.MicropolImage" href="#micropolarray.micropol_image.MicropolImage">MicropolImage</a>)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Returns a copy of the image with gaussian smeared pixels where flagged_hot_pix_map == 1.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>flagged_hot_pix_map</code></strong> :&ensp;<code><a title="micropolarray.micropol_image.MicropolImage" href="#micropolarray.micropol_image.MicropolImage">MicropolImage</a></code></dt>
+<dd>hot pixels map.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code><a title="micropolarray.micropol_image.MicropolImage" href="#micropolarray.micropol_image.MicropolImage">MicropolImage</a></code></dt>
+<dd>copy of the original image, gaussian smeared where flagged_hot_pix_map == 1</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def clean_hot_pixels(self, flagged_hot_pix_map: MicropolImage):
+    &#34;&#34;&#34;Returns a copy of the image with gaussian smeared pixels where flagged_hot_pix_map == 1.
+
+    Args:
+        flagged_hot_pix_map (MicropolImage): hot pixels map.
+
+    Returns:
+        MicropolImage: copy of the original image, gaussian smeared where flagged_hot_pix_map == 1
+    &#34;&#34;&#34;
+    subimages = self.single_pol_subimages
+    blurred_subimages = np.array(
+        [
+            scipy.ndimage.median_filter(subimage, size=2)
+            for subimage in subimages
+        ]
+    )
+    flagged_subimages = flagged_hot_pix_map.single_pol_subimages
+    subimages = np.where(
+        flagged_subimages == 1, blurred_subimages, subimages
+    )
+
+    newimage = MicropolImage(self)
+    newimage._set_data_and_Stokes(merge_polarizations(subimages))
+    return newimage</code></pre>
+</details>
+</dd>
 <dt id="micropolarray.micropol_image.MicropolImage.congrid"><code class="name flex">
 <span>def <span class="ident">congrid</span></span>(<span>self, newdim_y: int, newdim_x: int) ‑> <a title="micropolarray.micropol_image.MicropolImage" href="#micropolarray.micropol_image.MicropolImage">MicropolImage</a></span>
 </code></dt>
@@ -2083,9 +2188,13 @@ class MicropolImage(Image):
         MicropolImage: copy of input image corrected by flat
     &#34;&#34;&#34;
     normalized_flat = flat.data / np.max(flat.data)
-    self.data = np.where(
-        normalized_flat != 0, self.data / normalized_flat, self.data
+
+    self.data = np.divide(
+        self.data,
+        normalized_flat,
+        where=normalized_flat != 0.0,
     )
+
     # self.data = np.where(self.data &gt;= 0, self.data, 0)
     # self.data = np.where(self.data &lt; 4096, self.data, 4096)
     self._set_data_and_Stokes()
@@ -2208,7 +2317,7 @@ class MicropolImage(Image):
 </details>
 </dd>
 <dt id="micropolarray.micropol_image.MicropolImage.mask_occulter"><code class="name flex">
-<span>def <span class="ident">mask_occulter</span></span>(<span>self, y: int = 919, x: int = 950, r: int = 531, overoccult: int = 0, camera=&lt;micropolarray.cameras.PolarCam object&gt;) ‑> None</span>
+<span>def <span class="ident">mask_occulter</span></span>(<span>self, y: int = 919, x: int = 950, r: int = 531, overoccult: int = 0) ‑> None</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Masks occulter for all image parameters</p>
@@ -2237,7 +2346,6 @@ class MicropolImage(Image):
     x: int = PolarCam().occulter_pos_last[1],
     r: int = PolarCam().occulter_pos_last[2],
     overoccult: int = 0,
-    camera=PolarCam(),
 ) -&gt; None:
     &#34;&#34;&#34;Masks occulter for all image parameters
 
@@ -2253,25 +2361,19 @@ class MicropolImage(Image):
     &#34;&#34;&#34;
     # y, x, r = camera.occulter_pos_last
 
-    relative_y = y / camera.h_image
-    relative_x = x / camera.w_image
-    relative_r = (r + overoccult) / camera.h_image
-
-    abs_y = int(relative_y * self.height)
-    abs_x = int(relative_x * self.width)
-    abs_r = int(relative_r * self.height)
+    r = r + overoccult
 
     self.data = roi_from_polar(
         self.data,
-        (abs_y, abs_x),
-        [abs_r, 2 * np.max((self.height, self.width))],
+        (y, x),
+        [r, 2 * np.max((self.height, self.width))],
     )
     self.single_pol_subimages = [
         roi_from_polar(
             data,
-            (int(abs_y / 2), int(abs_x / 2)),
+            (int(y / 2), int(x / 2)),
             [
-                int(abs_r / 2),
+                int(r / 2),
                 2 * np.max((int(self.height / 2), int(self.width / 2))),
             ],
         )
@@ -2282,24 +2384,21 @@ class MicropolImage(Image):
         self.demosaiced_images = [
             roi_from_polar(
                 data,
-                (abs_y, abs_x),
-                (abs_r, 2 * np.max([self.height, self.width])),
+                (y, x),
+                (r, 2 * np.max([self.height, self.width])),
             )
             for data in self.demosaiced_images
         ]
     for param in self.polparam_list:
+        ratio = param.data.shape[0] / self.data.shape[0]
         param.data = roi_from_polar(
             param.data,
             (
-                int(relative_y * param.data.shape[0]),
-                int(relative_x * param.data.shape[1]),
+                int(y * ratio),
+                int(x * ratio),
             ),
             [
-                int(
-                    relative_r
-                    * (param.data.shape[0] + param.data.shape[1])
-                    / 2
-                ),
+                int(r * ratio),
                 2 * np.max((param.data.shape[0], param.data.shape[0])),
             ],
         )</code></pre>
@@ -2750,7 +2849,7 @@ binningxbinning. Sum bins by default.</p>
 </details>
 </dd>
 <dt id="micropolarray.micropol_image.MicropolImage.show_pol_param"><code class="name flex">
-<span>def <span class="ident">show_pol_param</span></span>(<span>self, polparam: <a title="micropolarray.micropol_image.PolParam" href="#micropolarray.micropol_image.PolParam">PolParam</a>, cmap='Greys_r')</span>
+<span>def <span class="ident">show_pol_param</span></span>(<span>self, polparam: <a title="micropolarray.micropol_image.PolParam" href="#micropolarray.micropol_image.PolParam">PolParam</a>, cmap='Greys_r', vmin=None, vmax=None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Plots a single polarization parameter given as input</p>
@@ -2770,7 +2869,9 @@ binningxbinning. Sum bins by default.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def show_pol_param(self, polparam: PolParam, cmap=&#34;Greys_r&#34;):
+<pre><code class="python">def show_pol_param(
+    self, polparam: PolParam, cmap=&#34;Greys_r&#34;, vmin=None, vmax=None
+):
     &#34;&#34;&#34;Plots a single polarization parameter given as input
 
     Args:
@@ -2782,11 +2883,15 @@ binningxbinning. Sum bins by default.</p>
     &#34;&#34;&#34;
     data_ratio = self.data.shape[0] / self.data.shape[1]
     fig, ax = plt.subplots(dpi=200)
+    if vmin is None:
+        vmin = mean_minus_std(polparam.data)
+    if vmax is None:
+        vmax = mean_plus_std(polparam.data)
     mappable = ax.imshow(
         polparam.data,
         cmap=cmap,
-        vmin=mean_minus_std(polparam.data),
-        vmax=mean_plus_std(polparam.data),
+        vmin=vmin,
+        vmax=vmax,
     )
     ax.set_title(polparam.title)
     ax.set_xlabel(&#34;x [px]&#34;)
@@ -3063,6 +3168,7 @@ fix_data (bool): controls whether data has to be constrained to [0, 4096] interv
 <li>
 <h4><code><a title="micropolarray.micropol_image.MicropolImage" href="#micropolarray.micropol_image.MicropolImage">MicropolImage</a></code></h4>
 <ul class="">
+<li><code><a title="micropolarray.micropol_image.MicropolImage.clean_hot_pixels" href="#micropolarray.micropol_image.MicropolImage.clean_hot_pixels">clean_hot_pixels</a></code></li>
 <li><code><a title="micropolarray.micropol_image.MicropolImage.congrid" href="#micropolarray.micropol_image.MicropolImage.congrid">congrid</a></code></li>
 <li><code><a title="micropolarray.micropol_image.MicropolImage.correct_flat" href="#micropolarray.micropol_image.MicropolImage.correct_flat">correct_flat</a></code></li>
 <li><code><a title="micropolarray.micropol_image.MicropolImage.correct_ifov" href="#micropolarray.micropol_image.MicropolImage.correct_ifov">correct_ifov</a></code></li>
