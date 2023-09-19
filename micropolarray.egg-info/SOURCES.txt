@@ -37,6 +37,7 @@ micropolarray/processing/congrid.py
 micropolarray/processing/convert.py
 micropolarray/processing/demodulation.py
 micropolarray/processing/demosaic.py
+micropolarray/processing/hotpix_cleaning.py
 micropolarray/processing/nrgf.py
 micropolarray/processing/rebin.py
 micropolarray/processing/shift.py
