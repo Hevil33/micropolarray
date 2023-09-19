@@ -35,7 +35,9 @@ License: BSD 3-Clause License
         OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         
 Project-URL: Homepage, https://github.com/Hevil33/micropolarray_master
-Keywords: micropolarizer,polarcam,polarization
+Project-URL: Source code, https://github.com/Hevil33/micropolarray_master
+Project-URL: Documentation, https://micropolarray.readthedocs.io/en/latest/
+Keywords: micropolarizer,polarcam,polarization,astronomy
 Classifier: License :: OSI Approved :: BSD License
 Classifier: Programming Language :: Python
 Classifier: Programming Language :: Python :: 3
