@@ -52,6 +52,7 @@ Requires-Dist: scipy
 Requires-Dist: wheel
 Requires-Dist: tqdm
 Requires-Dist: pytest
+Requires-Dist: sphinx-rtd-theme
 Provides-Extra: dev
 Requires-Dist: black; extra == "dev"
 Requires-Dist: bumpver; extra == "dev"
