@@ -11,4 +11,8 @@ setup(
         "micropolarray.processing",
     ],  # name of the uppermost package directory
     # package_dir={"micropolarray": "./micropolarray"},
+    project_urls={
+        "Source Code": "https://github.com/Hevil33/micropolarray_master",
+        "Documentation": "https://micropolarray.readthedocs.io/en/latest/",
+    },
 )
