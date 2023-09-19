@@ -26,6 +26,7 @@ dependencies = [
     "wheel",
     "tqdm",
     "pytest",
+    "sphinx-rtd-theme",
 ]
 requires-python = ">=3.8"
 
