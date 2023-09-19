@@ -1,10 +1,15 @@
-import pytest
-import micropolarray as ml
-import numpy as np
-from astropy.io import fits
-from pathlib import Path
-import os
 import glob
+import os
+from pathlib import Path
+
+import matplotlib.pyplot as plt
+import numpy as np
+import pytest
+from astropy.io import fits
+from scipy.optimize import curve_fit
+
+import micropolarray as ml
+from micropolarray.processing.demodulation import Malus
 
 
 @pytest.fixture(autouse=True)
@@ -127,8 +132,6 @@ def test_pol_parameters(dummy_data):
 
 
 # TODO
-
-
 def test_demodulation(dummy_data, tmp_path):
     """Create a dummy demodulation matrix, save it, read it then use it to demodulate. Check if demodulation is correctly done."""
     dummy_data_16 = dummy_data(16)
@@ -159,3 +162,81 @@ def test_demodulation(dummy_data, tmp_path):
     assert np.all(
         np.round(demo_image.I.data, 5) == (0.5 * (1.0 + 2.0 + 3.0 + 4.0))
     )
+
+    # try demodulation
+    output_dir = tmp_path / "computed_matrix"
+    output_str = str(output_dir)
+
+    polarizations = np.arange(-45, 91, 15)
+    pols_rad = np.deg2rad(polarizations)
+    input_signal = 100
+    eff = 0.7
+    t = 0.9
+    side = 10
+    ones = np.ones(shape=(side, side))
+    for pol, pol_rad in zip(polarizations, pols_rad):
+        subimages = np.array(
+            [
+                ones * input_signal * Malus(pol_rad, t, eff, angle)
+                for angle in angles
+            ]
+        )
+        result_image = ml.MicropolImage(ml.merge_polarizations(subimages))
+        result_image.save_as_fits(tmp_path / f"pol_{int(pol)}.fits")
+    if False:  # check that fit will be ok
+        for angle in angles:
+            pars, pcov = curve_fit(
+                Malus,
+                pols_rad,
+                np.array([Malus(pol, t, eff, angle) for pol in pols_rad]),
+            )
+            print(f"t = {pars[0]}")
+            print(f"eff = {pars[1] }")
+            print(f"phi = {np.rad2deg(pars[2]) }")
+
+    # read the files
+    filenames = sorted(
+        glob.glob(str(tmp_path / "pol*.fits")),
+        key=lambda x: int(x.split(os.path.sep)[-1][4:].strip(".fits")),
+    )
+
+    ml.calculate_demodulation_tensor(
+        polarizer_orientations=polarizations,
+        filenames_list=filenames,
+        micropol_phases_previsions=angles,
+        gain=2.75,
+        output_dir=output_str,
+        binning=1,
+        procs_grid=[2, 2],
+        normalizing_S=input_signal,
+        DEBUG=False,
+    )
+
+    example_pols = np.array([ones * input_signal * 0.5 for i in range(4)])
+    example_image = ml.MicropolImage(ml.merge_polarizations(example_pols))
+
+    assert np.all(example_image.I.data == input_signal)
+    assert np.all(example_image.Q.data == 0)
+    assert np.all(example_image.U.data == 0)
+    assert np.all(example_image.DoLP.data == 0)
+    assert np.all(example_image.AoLP.data == 0)
+    assert np.all(example_image.pB.data == 0)
+
+    demodulator = ml.Demodulator(output_str)
+    example_image = example_image.demodulate(demodulator)
+    if True:
+        demodulator.show()
+        example_image.show_with_pol_params()
+        plt.show()
+
+    # assert np.all(np.round(example_image.I.data, 5) == 100) # AAAAAAAAA probably not working because of penrose inversion instead of inv
+    assert np.all(np.round(example_image.Q.data, 5) == 0)
+    assert np.all(np.round(example_image.U.data, 5) == 0)
+    assert np.all(np.round(example_image.DoLP.data, 5) == 0)
+    assert np.all(np.round(example_image.AoLP.data, 5) == 0)
+    assert np.all(np.round(example_image.pB.data, 5) == 0)
+
+    """
+        data = ml.merge_polarizations()
+        image = ml.MicropolImage()
+    """

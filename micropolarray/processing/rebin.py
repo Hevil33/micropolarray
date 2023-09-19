@@ -51,7 +51,7 @@ def micropolarray_jitrebin_old(data, height, width, binning=2):
     new_height, new_width = trim_to_match_2xbinning(height, width, binning)
     new_height = int(new_height / binning)
     new_width = int(new_width / binning)
-    new_data = np.zeros(shape=(new_height, new_width), dtype=np.double)
+    new_data = np.zeros(shape=(new_height, new_width), dtype=float)
     for new_y in range(new_height):
         for new_x in range(new_width):
             for y_scaler in range((new_y % 2), (new_y % 2) + 2 * binning, 2):
@@ -68,7 +68,7 @@ def micropolarray_jitrebin_old(data, height, width, binning=2):
 @njit
 def micropolarray_jitrebin(data, new_height, new_width, binning=2):
     """Fast rebinning function for the micropolarray image. Needs to be wrapped to print info."""
-    new_data = np.zeros(shape=(new_height, new_width), dtype=np.double)
+    new_data = np.zeros(shape=(new_height, new_width), dtype=float)
     for new_y in range(new_height):
         for new_x in range(new_width):
             for y_scaler in range((new_y % 2), (new_y % 2) + 2 * binning, 2):

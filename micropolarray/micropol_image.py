@@ -810,7 +810,7 @@ class MicropolImage(Image):
             raise ValueError(f"Negative binning {binning}x{binning}")
         rebinned_image = MicropolImage(self)
         rebinned_data = micropolarray_rebin(
-            np.array(rebinned_image.data, dtype=np.double),
+            np.array(rebinned_image.data, dtype=float),
             *rebinned_image.data.shape,
             binning,
         )

@@ -5,6 +5,7 @@ import re
 import sys
 import time
 from logging import error, info, warning
+from pathlib import Path
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -205,7 +206,11 @@ def calculate_demodulation_tensor(
         In the binning process the sum of values is considered, which is ok because data is normalized over the maximum S before being fitted.
     """
 
-    correct_ifov = True
+    correct_ifov = False
+
+    output_path = Path(output_dir)
+    if not output_path.is_dir():  # create the path if it doesnt exist
+        output_path.mkdir(parents=True)
 
     # polarizations = array of polarizer orientations
     # filenames_list = list of filenames
@@ -228,7 +233,6 @@ def calculate_demodulation_tensor(
     with fits.open(filenames_list[0]) as file:
         data = file[0].data  # get data dimension
 
-    print("qui")
     # Count binning before dimensions
     data = np.array(data, dtype=float)
     data = micropolarray_rebin(data, *data.shape, binning=binning)
@@ -379,6 +383,7 @@ def calculate_demodulation_tensor(
         xvalues = np.array(histo[1])[index - hist_roi : index + hist_roi]
         yvalues = np.array(histo[0])[index - hist_roi : index + hist_roi]
         yvalues_sum = np.sum(yvalues)
+
         yvalues = yvalues / yvalues_sum
         xvalues = np.array(
             [value + (xvalues[1] - xvalues[0]) / 2 for value in xvalues]
@@ -470,7 +475,7 @@ def calculate_demodulation_tensor(
     ending_time = time.perf_counter()
     info(f"Elapsed : {(ending_time - starting_time)/60:3.2f} mins")
 
-    result = np.array(result)
+    result = np.array(result, dtype=object)
     m_ij = np.zeros(
         shape=(N_MALUS_PARAMS, N_PIXELS_IN_SUPERPIX, height, width)
     )
@@ -517,17 +522,21 @@ def calculate_demodulation_tensor(
         sys.exit()
 
     if not os.path.exists(output_dir):
+        p = Path(output_dir)
+        # p.mkdir(parent=True, exist_ok=True)
         os.makedirs(output_dir)
+
+    output_str = str(output_path)
     for i in range(N_MALUS_PARAMS):
         for j in range(N_PIXELS_IN_SUPERPIX):
             hdu = fits.PrimaryHDU(data=m_ij[i, j])
-            hdu.writeto(output_dir + f"M{i}{j}.fits", overwrite=True)
+            hdu.writeto(output_str + f"/M{i}{j}.fits", overwrite=True)
     hdu = fits.PrimaryHDU(data=tks)
-    hdu.writeto(output_dir + "transmittancies.fits", overwrite=True)
+    hdu.writeto(output_str + "/transmittancies.fits", overwrite=True)
     hdu = fits.PrimaryHDU(data=efficiences)
-    hdu.writeto(output_dir + "efficiences.fits", overwrite=True)
+    hdu.writeto(output_str + "/efficiences.fits", overwrite=True)
     hdu = fits.PrimaryHDU(data=phases)
-    hdu.writeto(output_dir + "phases.fits", overwrite=True)
+    hdu.writeto(output_str + "/phases.fits", overwrite=True)
 
     info("Demodulation matrices and fit data successfully saved!")
 
@@ -558,16 +567,22 @@ def compute_demodulation_by_chunk(
                 0.5 * np.sin(2.0 * rad_micropol_phases_previsions[i])
                 for i in range(N_PIXELS_IN_SUPERPIX)
             ],
-        ]
+        ],
+        dtype=float,
     )
     theo_modulation_matrix = theo_modulation_matrix.T
     theo_demodulation_matrix = np.linalg.pinv(theo_modulation_matrix)
 
     num_of_points, height, width = splitted_dara_arr.shape
-    rad_micropol_phases_previsions = np.array(rad_micropol_phases_previsions)
+    rad_micropol_phases_previsions = np.array(
+        rad_micropol_phases_previsions, dtype=float
+    )
     polarizations_rad = np.deg2rad(polarizer_orientations)
     tk_prediction = 0.5
     efficiency_prediction = 0.4
+
+    normalized_splitted_data = splitted_dara_arr / normalizing_S
+    all_zeros = np.zeros(shape=(num_of_points))
 
     # Checked errors
     sigma_S2 = np.sqrt(0.5 * normalizing_S / gain)
@@ -581,9 +596,7 @@ def compute_demodulation_by_chunk(
     pix_DN_sigma = (
         np.sqrt(splitted_dara_arr / gain) / normalizing_S
     )  # poisson error on the photoelectrons
-
-    normalized_splitted_data = splitted_dara_arr / normalizing_S
-    all_zeros = np.zeros(shape=(num_of_points))
+    # pix_DN_sigma = np.sqrt(normalized_splitted_data / gain)
 
     m_ij = np.zeros(
         shape=(N_MALUS_PARAMS, N_PIXELS_IN_SUPERPIX, height, width)
@@ -613,7 +626,9 @@ def compute_demodulation_by_chunk(
     # occulter if present.
     if DEBUG:
         x_start, x_end = 100, 110
+        x_start, x_end = 0, 2
         y_start, y_end = 100, 110
+        y_start, y_end = 0, 2
     else:
         y_start, y_end = 0, height
         x_start, x_end = 0, width
@@ -723,7 +738,8 @@ def compute_demodulation_by_chunk(
                         0.5 * t,
                         0.5 * t * eff * np.cos(2.0 * phi),
                         0.5 * t * eff * np.sin(2.0 * phi),
-                    ]
+                    ],
+                    dtype=float,
                 )
                 modulation_matrix = modulation_matrix.T
                 demodulation_matrix = np.linalg.pinv(modulation_matrix)
@@ -760,13 +776,13 @@ def compute_demodulation_by_chunk(
 
                 tk_data[
                     super_y : super_y + 2, super_x : super_x + 2
-                ] = np.array(t).reshape(2, 2)
+                ] = np.array(t, dtype=float).reshape(2, 2)
                 eff_data[
                     super_y : super_y + 2, super_x : super_x + 2
-                ] = np.array(eff).reshape(2, 2)
+                ] = np.array(eff, dtype=float).reshape(2, 2)
                 phase_data[
                     super_y : super_y + 2, super_x : super_x + 2
-                ] = np.array(phi).reshape(2, 2)
+                ] = np.array(phi, dtype=float).reshape(2, 2)
 
             else:  # pixel is in occulter region
                 for i in range(2):
@@ -783,7 +799,8 @@ def compute_demodulation_by_chunk(
                     [
                         [tk_prediction, tk_prediction],
                         [tk_prediction, tk_prediction],
-                    ]
+                    ],
+                    dtype=float,
                 )
                 eff_data[
                     super_y : super_y + 2, super_x : super_x + 2
@@ -791,7 +808,8 @@ def compute_demodulation_by_chunk(
                     [
                         [efficiency_prediction, efficiency_prediction],
                         [efficiency_prediction, efficiency_prediction],
-                    ]
+                    ],
+                    dtype=float,
                 )
 
     m_ij_chunk = m_ij
