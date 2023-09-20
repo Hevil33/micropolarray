@@ -1,6 +1,5 @@
 import numpy as np
 
-
 """----------------------------------------------------------------------"""
 """ 
     Functions to compute Angle of Linear Polarization (AoLP), Degree of
@@ -15,10 +14,11 @@ import numpy as np
 def AoLP(Stokes_vec_components):
     """Angle of linear polarization in [rad]"""
     I, Q, U = Stokes_vec_components
-    angle = 0.5 * np.arctan(
-        np.divide(1.0 * U, 1.0 * Q, out=np.zeros_like(U), where=Q != 0),
-        dtype=float,
-    )  # avoids warning when dividing by 0
+    # angle = 0.5 * np.arctan(
+    #    np.divide(1.0 * U, 1.0 * Q, out=np.zeros_like(U), where=Q != 0),
+    #    dtype=float,
+    # )  # avoids warning when dividing by 0
+    angle = 0.5 * np.arctan2(1.0 * U, 1.0 * Q, dtype=float)  # , where=Q != 0)
     return angle
 
     angle = np.where(

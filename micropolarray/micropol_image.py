@@ -699,6 +699,7 @@ class MicropolImage(Image):
         # filename_with_ID = (
         #    filename.split(".")[-2] + "_" + polparam.ID + ".fits"
         # )
+
         hdu.writeto(filename_with_ID, overwrite=True)
         info(f'"{filename_with_ID}" {polparam.ID} successfully saved')
 

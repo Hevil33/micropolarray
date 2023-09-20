@@ -1,6 +1,6 @@
-test per tutte le classi con testing (assert fatto bene)
-compressione dei files necessari (o temp_dir in cui poi cancellarli?)
+riorganizzare i test in classi, stampare dove arriva con logging
 
+refactor della demodulazione con pulizia dark e flat da un'altra parte magari
 
 cambiare operazioni su flattened arrays se possibile per risparmiare tempo
 implementare lettura di tipi di files diversi dal fits
@@ -9,5 +9,4 @@ implementare lettura di tipi di files diversi dal fits
 METTERE A POSTO I FIXTO
 faster nrgf filter
 
-passare tutti i dati a float
-
+flag dei pixel per cui fallisce il fit
