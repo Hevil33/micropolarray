@@ -1,16 +1,18 @@
 import os
+import sys
+import time
+from pathlib import Path
+
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from scipy import constants
-from pathlib import Path
-import time
-from micropolarray.cameras import PolarCam
 from scipy.optimize import curve_fit
-import matplotlib.pyplot as plt
-import sys
+
+from micropolarray.cameras import PolarCam
 from micropolarray.processing.demosaic import (
-    split_polarizations,
     merge_polarizations,
+    split_polarizations,
 )
 
 

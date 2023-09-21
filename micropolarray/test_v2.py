@@ -28,6 +28,17 @@ def dummy_data():
     return _make_dummy_data
 
 
+def generate_polarized_image(
+    shape, S, angle_rad=0, t=1, eff=1, angles_list=[0, 45, -45, 90]
+):
+    ones = np.ones(shape=shape)
+    angles = np.array([np.deg2rad(angle) for angle in angles_list])
+    subimages = np.array(
+        [ones * S * Malus(angle_rad, t, eff, angle) for angle in angles]
+    )
+    return ml.MicropolImage(ml.merge_polarizations(subimages))
+
+
 class TestMicropolImage:
     def write_temp_image(self, tmp_path, data):
         """Writes images to the temp folder for testing"""
@@ -40,14 +51,14 @@ class TestMicropolImage:
         """Tests the initialization of both Image and MicroPolArrayImage"""
         dummy_data_16 = dummy_data(16)
         self.write_temp_image(tmp_path, dummy_data_16)
-        for image_type in [ml.Image, ml.MicropolImage]:
-            image = image_type(dummy_data_16)
+        for ImageClass in [ml.Image, ml.MicropolImage]:
+            image = ImageClass(dummy_data_16)
             assert np.all(image.data == dummy_data_16)
 
-            image = image_type(str(tmp_path / "sample_image.fits"))
+            image = ImageClass(str(tmp_path / "sample_image.fits"))
             assert np.all(image.data == dummy_data_16)
 
-            image = image_type(image)
+            image = ImageClass(image)
             assert np.all(image.data == dummy_data_16)
 
     def test_image_writing(self, dummy_data, tmp_path):
@@ -56,6 +67,21 @@ class TestMicropolImage:
         for image_type in [ml.Image, ml.MicropolImage]:
             image = image_type(dummy_data_16)
             image.save_as_fits(str(tmp_path / "image.fits"))
+
+    def test_dark_and_flat_correction(self, dummy_data, tmp_path):
+        # test dark
+        dummy_data_16 = dummy_data(16)
+        dark_data = dummy_data(16)
+        dark_image = ml.MicropolImage(dark_data)
+        dummy_image = ml.MicropolImage(dummy_data_16, dark=dark_image)
+        assert np.all(dummy_image.data == 0.0)
+        assert np.all(dummy_image.DoLP.data == 0.0)
+        # test flat
+        signal = 4.0
+        dummy_data_16 = np.ones(shape=(16, 16)) * signal
+        flat_image = ml.MicropolImage(dummy_data_16 * np.random.random(1))
+        dummy_image = ml.MicropolImage(dummy_data_16, flat=flat_image)
+        assert np.all(dummy_image.data == signal)
 
     def test_demosaic(self, dummy_data, tmp_path):
         """Tests demosaic operation and demosaic writing"""
@@ -131,17 +157,6 @@ class TestMicropolImage:
         Q = 2.0 - 3.0
         U = 1.0 - 4.0
         test_theo_stokes(image, I, Q, U)
-
-
-def generate_polarized_image(
-    shape, S, angle_rad, t=1, eff=1, angles_list=[0, 45, -45, 90]
-):
-    ones = np.ones(shape=shape)
-    angles = np.array([np.deg2rad(angle) for angle in angles_list])
-    subimages = np.array(
-        [ones * S * Malus(angle_rad, t, eff, angle) for angle in angles]
-    )
-    return ml.MicropolImage(ml.merge_polarizations(subimages))
 
 
 class TestDemodulation:

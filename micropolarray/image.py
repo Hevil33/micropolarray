@@ -26,11 +26,12 @@ class Image:
             self._init_image_from_file(initializer, averageimages)
         elif type(initializer) is np.ndarray:
             self._init_image_from_data(initializer)
+            self.new_data = initializer
         elif type(initializer) is Image:
             self._init_image_from_image(initializer)
 
-    def _init_image_from_data(self, data: np.array) -> None:
-        self._set_data(np.array(data))
+    def _init_image_from_data(self, input_data: np.array) -> None:
+        self.data = np.array(input_data)
         self.filename = "image.fits"
 
     def _init_image_from_file(self, filenames, averageimages) -> None:
@@ -87,7 +88,7 @@ class Image:
         datetimes = [datetime for datetime in datetimes if datetime != 0]
         if len(datetimes) == 0:
             datetimes = [0]
-        self._set_data(np.array(combined_data))
+        self.data = np.array(combined_data)
 
         if filenames_len > 1:
             self.header["SUMOF"] = (
@@ -111,18 +112,24 @@ class Image:
             self.filename = filenames[0]
 
     def _init_image_from_image(self, image: Image):
-        self._set_data(image.data.copy())
+        self.data = image.data.copy()
         self.filename = image.filename
 
-    def _set_data(self, data: np.array):
+    @property
+    def data(self) -> np.ndarray:
+        return self._data
+
+    @data.setter
+    # def data(self, input_data = np.array):
+    def data(self, input_data: np.array):
         """Set image data and derived polarization informations, and
         consequently change header."""
-        self.data = data
-        self.height, self.width = data.shape
+        self._data = input_data
+        self.height, self.width = input_data.shape
         if self.header is None:
-            self.header = self._set_default_header(data)
+            self.header = self._set_default_header(input_data)
         else:
-            self._update_dims_in_header(self.data)
+            self._update_dims_in_header(self._data)
 
     def _set_default_header(self, data: np.array):
         """Set a default header when initializing image with data instead of

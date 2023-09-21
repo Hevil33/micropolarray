@@ -131,7 +131,7 @@ class MicropolImage(Image):
     def _init_micropolimage_from_data(self, data: np.array):
         self._set_data_and_Stokes(self.data)
         if self.header is None:
-            self.header = self.set_default_header(data)
+            self.header = self._set_default_header(data)
         else:
             self._update_dims_in_header(self.data)
 
