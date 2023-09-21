@@ -1,4 +1,4 @@
-stampare dove arriva con logging
+stampare dove arriva con logging, usare fixtures per test su piu dati
 
 refactor della demodulazione con pulizia dark e flat da un'altra parte magari
 
@@ -14,3 +14,5 @@ flag dei pixel per cui fallisce il fit
 atributi per polparams in modo da legarli a dati e ridurre memoria usata
 
 passare da classi di polarizzatori a json
+
+aggiungere colorbar a return dei plot
