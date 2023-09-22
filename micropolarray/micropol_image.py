@@ -414,7 +414,7 @@ class MicropolImage(Image):
             MicropolImage: image with data corrected for field of view differences
         """
         corrected_data = self.data.copy()
-        corrected_data = ifov_jitcorrect(self.data, self.height, self.width)
+        corrected_data = _ifov_jitcorrect(self.data, self.height, self.width)
         self._update_data_and_Stokes(corrected_data)
         return self
 

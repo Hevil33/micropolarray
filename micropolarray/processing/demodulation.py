@@ -279,7 +279,7 @@ def calculate_demodulation_tensor(
         with fits.open(flat_filename) as file:
             flat = np.array(file[0].data, dtype=np.float)
         if correct_ifov:
-            flat = ifov_jitcorrect(flat, *flat.shape)
+            flat = _ifov_jitcorrect(flat, *flat.shape)
         flat = micropolarray_rebin(flat, *flat.shape, binning)
         # flat_max = np.max(flat, axis=(0, 1))
         flat_max = mean_plus_std(flat, stds_n=1)
@@ -300,7 +300,7 @@ def calculate_demodulation_tensor(
         with fits.open(filename) as file:
             all_data_arr[idx] = np.array(file[0].data, dtype=float)
             if correct_ifov:
-                all_data_arr[idx] = ifov_jitcorrect(
+                all_data_arr[idx] = _ifov_jitcorrect(
                     all_data_arr[idx], *all_data_arr[idx].shape
                 )
             all_data_arr[idx] = micropolarray_rebin(
