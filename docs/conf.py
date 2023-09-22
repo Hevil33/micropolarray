@@ -65,7 +65,7 @@ author = "Herve Haudemand"
 # built documents.
 #
 # The short X.Y version.
-version = "1.0.6"
+# version = "1.0.6"
 # The full version, including alpha/beta/rc tags.
 # release = "test"
 
@@ -338,10 +338,7 @@ import os
 import sys
 
 sys.path.insert(0, os.path.abspath("."))
-exclude_patterns = ["zzz"]
 
-numfig = True
-# language = 'ja'
 
 # extensions.append("sphinx.ext.todo")
 # extensions.append("sphinx.ext.autodoc")
@@ -352,7 +349,7 @@ numfig = True
 # extensions.append("sphinx.ext.graphviz")
 
 
-autosummary_generate = True
+# autosummary_generate = True
 # html_theme = "default"
 html_theme = "sphinx_rtd_theme"
 # source_suffix = ['.rst', '.txt']
