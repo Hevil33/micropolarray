@@ -20,5 +20,6 @@
 \contentsline {section}{\numberline {1.6}micropolarray.polarization\_functions module}{16}{section.1.6}%
 \contentsline {section}{\numberline {1.7}micropolarray.utils module}{16}{section.1.7}%
 \contentsline {section}{\numberline {1.8}Module contents}{18}{section.1.8}%
-\contentsline {chapter}{Python Module Index}{19}{section*.116}%
-\contentsline {chapter}{Index}{21}{section*.117}%
+\contentsline {chapter}{\numberline {2}Indices and tables}{19}{chapter.2}%
+\contentsline {chapter}{Python Module Index}{21}{section*.116}%
+\contentsline {chapter}{Index}{23}{section*.117}%
