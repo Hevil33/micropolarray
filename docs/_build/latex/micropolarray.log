@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019/Debian) (preloaded format=pdflatex 2023.5.31)  22 SEP 2023 11:20
+This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019/Debian) (preloaded format=pdflatex 2023.5.31)  22 SEP 2023 11:34
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -709,25 +709,25 @@ File: l3backend-pdfmode.def 2020-02-03 L3 backend support: PDF mode
 (./micropolarray.aux)
 \openout1 = `micropolarray.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 73.
-LaTeX Font Info:    ... okay on input line 73.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 73.
-LaTeX Font Info:    ... okay on input line 73.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 73.
-LaTeX Font Info:    ... okay on input line 73.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 73.
-LaTeX Font Info:    ... okay on input line 73.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 73.
-LaTeX Font Info:    ... okay on input line 73.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 73.
-LaTeX Font Info:    ... okay on input line 73.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 73.
-LaTeX Font Info:    ... okay on input line 73.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 73.
-LaTeX Font Info:    ... okay on input line 73.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 73.
-LaTeX Font Info:    ... okay on input line 73.
-LaTeX Font Info:    Trying to load font information for T1+qtm on input line 73
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 72.
+LaTeX Font Info:    ... okay on input line 72.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 72.
+LaTeX Font Info:    ... okay on input line 72.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 72.
+LaTeX Font Info:    ... okay on input line 72.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 72.
+LaTeX Font Info:    ... okay on input line 72.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 72.
+LaTeX Font Info:    ... okay on input line 72.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 72.
+LaTeX Font Info:    ... okay on input line 72.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 72.
+LaTeX Font Info:    ... okay on input line 72.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 72.
+LaTeX Font Info:    ... okay on input line 72.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 72.
+LaTeX Font Info:    ... okay on input line 72.
+LaTeX Font Info:    Trying to load font information for T1+qtm on input line 72
 .
  (/usr/share/texmf/tex/latex/tex-gyre/t1qtm.fd
 File: t1qtm.fd 2009/09/25 v1.2 font definition file for T1/qtm
@@ -791,7 +791,7 @@ e
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
 \AtBeginShipoutBox=\box115
-Package hyperref Info: Link coloring ON on input line 73.
+Package hyperref Info: Link coloring ON on input line 72.
 (/usr/share/texlive/texmf-dist/tex/latex/hyperref/nameref.sty
 Package: nameref 2019/09/16 v2.46 Cross-referencing by name of section
 
@@ -803,27 +803,27 @@ Package: gettitlestring 2019/12/15 v1.6 Cleanup title references (HO)
 )
 \c@section@level=\count309
 )
-LaTeX Info: Redefining \ref on input line 73.
-LaTeX Info: Redefining \pageref on input line 73.
-LaTeX Info: Redefining \nameref on input line 73.
+LaTeX Info: Redefining \ref on input line 72.
+LaTeX Info: Redefining \pageref on input line 72.
+LaTeX Info: Redefining \nameref on input line 72.
 
 (./micropolarray.out) (./micropolarray.out)
 \@outlinefile=\write5
 \openout5 = `micropolarray.out'.
 
-Package hyperref Info: Option `pageanchor' set `false' on input line 81.
-LaTeX Font Info:    Trying to load font information for T1+qhv on input line 81
+Package hyperref Info: Option `pageanchor' set `false' on input line 80.
+LaTeX Font Info:    Trying to load font information for T1+qhv on input line 80
 .
 
 (/usr/share/texmf/tex/latex/tex-gyre/t1qhv.fd
 File: t1qhv.fd 2009/09/25 v1.2 font definition file for T1/qhv
 )<<ot1.cmap>><<oml.cmap>><<oms.cmap>><<omx.cmap>>
-LaTeX Font Info:    Trying to load font information for U+msa on input line 81.
+LaTeX Font Info:    Trying to load font information for U+msa on input line 80.
 
  (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 81.
+LaTeX Font Info:    Trying to load font information for U+msb on input line 80.
 
 
 (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsb.fd
@@ -844,93 +844,93 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 ]
 Chapter 1.
 LaTeX Font Info:    Trying to load font information for T1+txtt on input line 1
-11.
+10.
 (/usr/share/texlive/texmf-dist/tex/latex/txfonts/t1txtt.fd
 File: t1txtt.fd 2000/12/15 v3.1
 )
 LaTeX Font Info:    Font shape `T1/txtt/b/n' in size <10> not available
-(Font)              Font shape `T1/txtt/bx/n' tried instead on input line 111.
+(Font)              Font shape `T1/txtt/bx/n' tried instead on input line 110.
 
-Overfull \hbox (84.8486pt too wide) in paragraph at lines 120--120
+Overfull \hbox (84.8486pt too wide) in paragraph at lines 119--119
 []\T1/qtm/m/it/10 polarizer_orientations\T1/qtm/m/n/10 , 
  []
 
 
-Overfull \hbox (7.83363pt too wide) in paragraph at lines 120--120
+Overfull \hbox (7.83363pt too wide) in paragraph at lines 119--119
 \T1/qtm/m/it/10 file- 
  []
 
 
-Overfull \hbox (37.92361pt too wide) in paragraph at lines 120--120
+Overfull \hbox (37.92361pt too wide) in paragraph at lines 119--119
 \T1/qtm/m/it/10 names_list\T1/qtm/m/n/10 , 
  []
 
 
-Overfull \hbox (5.61363pt too wide) in paragraph at lines 120--120
+Overfull \hbox (5.61363pt too wide) in paragraph at lines 119--119
 \T1/qtm/m/it/10 mi- 
  []
 
 
-Overfull \hbox (98.72859pt too wide) in paragraph at lines 120--120
+Overfull \hbox (98.72859pt too wide) in paragraph at lines 119--119
 \T1/qtm/m/it/10 cropol_phases_previsions\T1/qtm/m/n/10 , 
  []
 
 
-Overfull \hbox (8.39363pt too wide) in paragraph at lines 120--120
+Overfull \hbox (8.39363pt too wide) in paragraph at lines 119--119
 \T1/qtm/m/it/10 out- 
  []
 
 
-Overfull \hbox (24.74362pt too wide) in paragraph at lines 120--120
+Overfull \hbox (24.74362pt too wide) in paragraph at lines 119--119
 \T1/qtm/m/it/10 put_dir\T1/qtm/m/n/10 , 
  []
 
 
-Overfull \hbox (5.05363pt too wide) in paragraph at lines 120--120
+Overfull \hbox (5.05363pt too wide) in paragraph at lines 119--119
 \T1/qtm/m/it/10 oc- 
  []
 
 
-Overfull \hbox (7.83363pt too wide) in paragraph at lines 120--120
+Overfull \hbox (7.83363pt too wide) in paragraph at lines 119--119
 \T1/qtm/m/it/10 cul- 
  []
 
 
-Overfull \hbox (30.6336pt too wide) in paragraph at lines 120--120
+Overfull \hbox (30.6336pt too wide) in paragraph at lines 119--119
 \T1/qtm/m/it/10 ter=True\T1/qtm/m/n/10 , 
  []
 
 
-Overfull \hbox (79.45364pt too wide) in paragraph at lines 120--120
+Overfull \hbox (79.45364pt too wide) in paragraph at lines 119--119
 \T1/qtm/m/it/10 dark_filename=None\T1/qtm/m/n/10 , 
  []
 
 
-Overfull \hbox (76.80362pt too wide) in paragraph at lines 120--120
+Overfull \hbox (76.80362pt too wide) in paragraph at lines 119--119
 \T1/qtm/m/it/10 flat_filename=None\T1/txtt/m/n/10 )|  
  []
 
 LaTeX Font Info:    Trying to load font information for TS1+qtm on input line 1
-26.
+25.
 (/usr/share/texmf/tex/latex/tex-gyre/ts1qtm.fd
 File: ts1qtm.fd 2009/09/25 v1.2 font definition file for TS1/qtm
 )
 LaTeX Font Info:    Font shape `T1/txtt/m/it' in size <10> not available
-(Font)              Font shape `T1/txtt/m/sl' tried instead on input line 128.
+(Font)              Font shape `T1/txtt/m/sl' tried instead on input line 127.
  [1
 
 ]
-Overfull \hbox (19.73375pt too wide) in paragraph at lines 176--176
+Overfull \hbox (19.73375pt too wide) in paragraph at lines 175--175
 \T1/qtm/m/it/10 tion_matrices_dir: 
  []
 
 [2] [3] [4]
-Overfull \hbox (22.3289pt too wide) in paragraph at lines 611--611
+Overfull \hbox (22.3289pt too wide) in paragraph at lines 610--610
 \T1/qtm/m/it/10 rad_micropol_phases_previsions\T1/qtm/m/n/10 , 
  []
 
 [5] [6] [7] [8]
-Underfull \hbox (badness 5681) in paragraph at lines 1170--1173
+Underfull \hbox (badness 5681) in paragraph at lines 1169--1172
 \T1/qtm/m/n/10 Re-turns an ar-ray of True in-side the roi, False else-where. Us
 e-ful for mean/std op-er-a-tions
  []
@@ -941,21 +941,16 @@ LaTeX Font Info:    Font shape `T1/txtt/b/it' in size <10> not available
 LaTeX Font Info:    Font shape `T1/txtt/bx/it' in size <10> not available
 (Font)              Font shape `T1/txtt/bx/sl' tried instead on input line 1.
  [11] [12] [13] [14] [15] [16] [17] [18]
-Chapter 2.
-[19
-
-] [20
-
-]
-Overfull \hbox (40.37172pt too wide) in paragraph at lines 2519--2520
+Overfull \hbox (40.37172pt too wide) in paragraph at lines 2501--2502
 []\T1/txtt/m/n/10 micropolarray.processing.chen_wan_liang_calibration\T1/qtm/m/
 n/10 ,
  []
 
-[21
+[19
 
 
-] (./micropolarray.ind [22
+
+] (./micropolarray.ind [20
 
 
 ]
@@ -1139,7 +1134,7 @@ Overfull \hbox (23.0124pt too wide) in paragraph at lines 75--77
 essing.demodulation.Demodulator
  []
 
-[23
+[21
 
 ]
 Underfull \hbox (badness 10000) in paragraph at lines 81--83
@@ -1231,7 +1226,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 180--182
 crop-o-lar-
  []
 
-[24]
+[22]
 Underfull \hbox (badness 10000) in paragraph at lines 183--185
 []\T1/txtt/m/n/10 nparr_from_binary() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 in mod-ul
 e mi-crop-o-lar-
@@ -1460,7 +1455,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 272--274
 i-crop-o-lar-
  []
 
-[25]
+[23]
 Underfull \hbox (badness 10000) in paragraph at lines 274--276
 []\T1/txtt/m/n/10 subtract_dark() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 mi-crop-o-lar
 -
@@ -1483,24 +1478,24 @@ Underfull \hbox (badness 10000) in paragraph at lines 283--284
 pol_image.PolParam at-
  []
 
-[26
+[24
 
 ])
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 2533.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 2533.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 2515.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 2515.
  (./micropolarray.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 2533.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 2533.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 2515.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 2515.
 
 Package rerunfilecheck Info: File `micropolarray.out' has not changed.
-(rerunfilecheck)             Checksum: BC488DD08119A4170769FE047312A199;5008.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 2533.
+(rerunfilecheck)             Checksum: C8415E22A338CDD55F3A6BBB45EEACF5;4868.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 2515.
  ) 
 Here is how much of TeX's memory you used:
- 15379 strings out of 481239
- 239698 string characters out of 5920377
- 508855 words of memory out of 5000000
- 30089 multiletter control sequences out of 15000+600000
+ 15374 strings out of 481239
+ 239626 string characters out of 5920377
+ 508797 words of memory out of 5000000
+ 30087 multiletter control sequences out of 15000+600000
  584084 words of font info for 66 fonts, out of 8000000 for 9000
  1142 hyphenation exceptions out of 8191
  38i,12n,51p,1548b,697s stack positions out of 5000i,500n,10000p,200000b,80000s
@@ -1514,10 +1509,10 @@ e/texmf-dist/fonts/type1/public/txfonts/t1xbtt.pfb></usr/share/texlive/texmf-di
 st/fonts/type1/public/txfonts/t1xbtt.pfb></usr/share/texlive/texmf-dist/fonts/t
 ype1/public/txfonts/t1xtt.pfb></usr/share/texlive/texmf-dist/fonts/type1/public
 /txfonts/t1xtt.pfb>
-Output written on micropolarray.pdf (30 pages, 221325 bytes).
+Output written on micropolarray.pdf (28 pages, 219612 bytes).
 PDF statistics:
- 665 PDF objects out of 1000 (max. 8388607)
- 611 compressed objects within 7 object streams
- 168 named destinations out of 1000 (max. 500000)
- 213 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 651 PDF objects out of 1000 (max. 8388607)
+ 600 compressed objects within 6 object streams
+ 165 named destinations out of 1000 (max. 500000)
+ 205 words of extra memory for PDF output out of 10000 (max. 10000000)
 

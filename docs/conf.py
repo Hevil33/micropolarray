@@ -50,6 +50,7 @@ source_suffix = ".rst"
 
 # The master toctree document.
 # root_doc = "index"
+root_doc = "modules"
 
 # General information about the project.
 # project = 'test'
