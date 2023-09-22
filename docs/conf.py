@@ -49,7 +49,7 @@ source_suffix = ".rst"
 # source_encoding = 'utf-8-sig'
 
 # The master toctree document.
-root_doc = "index"
+# root_doc = "index"
 
 # General information about the project.
 # project = 'test'
@@ -235,7 +235,7 @@ html_static_path = ["_static"]
 # html_search_scorer = 'scorer.js'
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = "testdoc"
+# htmlhelp_basename = "testdoc"
 
 # -- Options for LaTeX output ---------------------------------------------
 
@@ -287,7 +287,7 @@ latex_elements = {
 
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
-man_pages = [(root_doc, "test", "test Documentation", [author], 1)]
+# man_pages = [(root_doc, "test", "test Documentation", [author], 1)]
 
 # If true, show URL addresses after external links.
 #
@@ -299,17 +299,17 @@ man_pages = [(root_doc, "test", "test Documentation", [author], 1)]
 # Grouping the document tree into Texinfo files. List of tuples
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
-texinfo_documents = [
-    (
-        root_doc,
-        "test",
-        "test Documentation",
-        author,
-        "test",
-        "One line description of project.",
-        "Miscellaneous",
-    ),
-]
+# texinfo_documents = [
+#    (
+#        root_doc,
+#        "test",
+#        "test Documentation",
+#        author,
+#        "test",
+#        "One line description of project.",
+#        "Miscellaneous",
+#    ),
+# ]
 
 # Documents to append as an appendix to all manuals.
 #
