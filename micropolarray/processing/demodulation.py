@@ -14,7 +14,9 @@ from scipy.optimize import curve_fit
 from tqdm import tqdm
 
 from micropolarray.cameras import PolarCam
-from micropolarray.processing.chen_wan_liang_calibration import ifov_jitcorrect
+from micropolarray.processing.chen_wan_liang_calibration import (
+    _ifov_jitcorrect,
+)
 from micropolarray.processing.nrgf import (
     find_occulter_position,
     roi_from_polar,

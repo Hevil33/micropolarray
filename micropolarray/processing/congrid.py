@@ -24,8 +24,8 @@ def micropolarray_jitcongrid(data, width, height, scale):
     return centers
 
 
-def interpolate(x, x_0, y_0, x_1, y_1):
-    return (x - x_0) * ((y_1 - y_0) / (x_1 - x_0)) + y_0
+# def interpolate(x, x_0, y_0, x_1, y_1):
+#    return (x - x_0) * ((y_1 - y_0) / (x_1 - x_0)) + y_0
 
 
 # Copied from IDL congrid, arbitrary reshape

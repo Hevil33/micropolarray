@@ -13,7 +13,9 @@ from PIL import Image as PILImage
 from micropolarray.cameras import Camera, PolarCam
 from micropolarray.image import Image
 from micropolarray.polarization_functions import AoLP, DoLP, pB
-from micropolarray.processing.chen_wan_liang_calibration import ifov_jitcorrect
+from micropolarray.processing.chen_wan_liang_calibration import (
+    _ifov_jitcorrect,
+)
 from micropolarray.processing.congrid import congrid
 from micropolarray.processing.demodulation import Demodulator
 from micropolarray.processing.demosaic import (

@@ -1,13 +1,15 @@
+import sys
+from logging import info, warning
+from pathlib import Path
+
 import numpy as np
 from astropy.io import fits
-from micropolarray.cameras import PolarCam
-from micropolarray.processing.nrgf import roi_from_polar
-import sys
 from numba import njit
 from tqdm import tqdm
-from pathlib import Path
+
+from micropolarray.cameras import PolarCam
+from micropolarray.processing.nrgf import roi_from_polar
 from micropolarray.utils import make_abs_and_create_dir
-from logging import warning, info
 
 
 def calculate_chen_wan_lian_calibration(
@@ -152,7 +154,7 @@ def calculate_chen_wan_lian_calibration(
         :, angle_dic[90], :, :
     ]
 
-    build_S_input(sorted_single_pol_images, S_input)  # speeds up A LOT
+    _build_S_input(sorted_single_pol_images, S_input)  # speeds up A LOT
 
     W_ideal = np.array(
         [
@@ -218,7 +220,7 @@ def calculate_chen_wan_lian_calibration(
 
 
 @njit
-def build_S_input(single_pol_images, S_input):
+def _build_S_input(single_pol_images, S_input):
     # ANGLES_LIST positions:
     #    0 <==> 0
     #    1 <==> 45
@@ -298,13 +300,13 @@ def chen_wan_liang_calibration(data, calibration_matrices_dir: str):
                 super_y : super_y + 2, super_x : super_x + 2
             ] = mult.reshape(2, 2)
 
-    ifov_corrected_data = ifov_jitcorrect(corrected_data, height, width)
+    ifov_corrected_data = _ifov_jitcorrect(corrected_data, height, width)
 
     return ifov_corrected_data
 
 
 @njit
-def ifov_jitcorrect(data, height, width):
+def _ifov_jitcorrect(data, height, width):
     corrected_data = np.zeros(shape=(height, width))
     # correct IFOV error, skip first rows/cols
     for super_y in range(2, height, 2):

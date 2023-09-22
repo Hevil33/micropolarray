@@ -9,8 +9,8 @@ from micropolarray.micropol_image import (
 from micropolarray.micropol_image import MicropolImage as PolarcamImage
 from micropolarray.micropol_image import set_default_angles
 from micropolarray.processing.chen_wan_liang_calibration import (
+    _ifov_jitcorrect,
     chen_wan_liang_calibration,
-    ifov_jitcorrect,
 )
 from micropolarray.processing.congrid import congrid
 from micropolarray.processing.convert import (
