@@ -29,18 +29,21 @@ def main():
         def param(self, input):
             self._param = input
 
-    test_data = np.ones(shape=(2, 2))
+    test_data = np.ones(shape=(12, 12))
     test_class = test(test_data)
-    print(test_class.data)
-    print(test_class.param)
-    test_class.param = 3
-    print(test_class.param)
+    test_class.param = 2
+
+    image = ml.MicropolImage(test_data)
+
+    print(image.data)
+
     sys.exit()
-    image = ml.Image(test_data)
-    print(image.new_data)
-    image.new_data = 3
-    print(image.new_data)
-    test(test_data)
+    image.data = np.ones(shape=(5, 5))
+    print(image.height)
+    print(image.width)
+    print(image.header["NAXIS1"])
+
+    print(image.I)
 
 
 if __name__ == "__main__":

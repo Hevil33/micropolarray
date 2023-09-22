@@ -1,8 +1,8 @@
-from numba import njit
 import numpy as np
-from scipy.interpolate import griddata
 import scipy.interpolate
 import scipy.ndimage
+from numba import njit
+from scipy.interpolate import griddata
 
 
 # not working
@@ -40,8 +40,7 @@ def congrid(a, newdims, kind="linear") -> np.ndarray:
     Returns:
         ndarray: numpy array of congridded image
     """
-    if not a.dtype in [np.float64, np.float32]:
-        a = np.cast[float](a)
+    a = np.cast[float](a)
 
     m1 = np.cast[int](True)
     old = np.array(a.shape)
@@ -54,7 +53,7 @@ def congrid(a, newdims, kind="linear") -> np.ndarray:
         base = np.arange(newdims[i])
         dimlist.append((old[i] - m1) / (newdims[i] - m1) * base)
 
-    olddims = [np.arange(i, dtype=np.float) for i in list(a.shape)]
+    olddims = [np.arange(i, dtype=float) for i in list(a.shape)]
     mint = scipy.interpolate.interp1d(
         olddims[-1], a, kind=kind, fill_value="extrapolate"
     )

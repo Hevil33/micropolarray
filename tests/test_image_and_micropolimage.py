@@ -20,6 +20,7 @@ class TestMicropolImage:
         image = fits.PrimaryHDU(
             data=data, do_not_scale_image_data=True, uint=False
         )
+        image.header["FROMFILE"] = True
         image.writeto(tmp_path / "sample_image.fits")
 
     def test_image_initialization(self, dummy_data, tmp_path):
@@ -32,6 +33,7 @@ class TestMicropolImage:
 
             image = ImageClass(str(tmp_path / "sample_image.fits"))
             assert np.all(image.data == dummy_data_16)
+            assert image.header["FROMFILE"] == True
 
             image = ImageClass(image)
             assert np.all(image.data == dummy_data_16)
@@ -62,14 +64,20 @@ class TestMicropolImage:
         """Tests demosaic operation and demosaic writing"""
         dummy_data_16 = dummy_data(16)
         # test mean
-        image = ml.MicropolImage(dummy_data_16, demosaic_mode="mean")
-        image = image.demosaic()
+        image = ml.MicropolImage(dummy_data_16)
+        assert image.data.shape == (16, 16)
+        assert image.I.data.shape == (8, 8)
+        image = image.demosaic(demosaic_mode="mean")
+
         for idx, demo_image in enumerate(image.demosaiced_images):
             assert np.all(demo_image == np.full((16, 16), (idx + 1) / 4.0))
+        assert np.all(
+            image.I.data == np.full((16, 16), 0.25 * 0.5 * (1 + 2 + 3 + 4))
+        )
 
         # test adjacent
-        image = ml.MicropolImage(dummy_data_16, demosaic_mode="adjacent")
-        image = image.demosaic()
+        image = ml.MicropolImage(dummy_data_16)
+        image = image.demosaic(demosaic_mode="adjacent")
         for idx, demo_image in enumerate(image.demosaiced_images):
             assert np.all(demo_image == np.full((16, 16), (idx + 1)))
 
@@ -132,3 +140,24 @@ class TestMicropolImage:
         Q = 2.0 - 3.0
         U = 1.0 - 4.0
         test_theo_stokes(image, I, Q, U)
+
+    def test_congrid(self, dummy_data):
+        dummy_data_40 = dummy_data(40)
+        dummy_data_16 = dummy_data(16)
+        image = ml.MicropolImage(dummy_data_40)
+        congridded_image = image.congrid(16, 16)
+        assert np.all(congridded_image.data == dummy_data_16)
+
+    def test_operations(self, dummy_data):
+        data = np.ones(shape=(16, 16))
+        for image_type in [ml.Image, ml.MicropolImage]:
+            image1 = image_type(7 * data)
+            image2 = image_type(2.0 * data)
+            result = image1 + image2
+            assert np.all(result.data == 9.0)
+            result = image1 - image2
+            assert np.all(result.data == 5.0)
+            result = image1 * image2
+            assert np.all(result.data == 14.0)
+            result = image1 / image2
+            assert np.all(result.data == 3.5)

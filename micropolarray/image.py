@@ -127,19 +127,10 @@ class Image:
         self._data = input_data
         self.height, self.width = input_data.shape
         if self.header is None:
-            self.header = self._set_default_header(input_data)
+            self.header = fits.PrimaryHDU(data=input_data).header
         else:
-            self._update_dims_in_header(self._data)
-
-    def _set_default_header(self, data: np.array):
-        """Set a default header when initializing image with data instead of
-        .fits filename."""
-        header = fits.PrimaryHDU(data=data).header
-        return header
-
-    def _update_dims_in_header(self, data: np.array):
-        self.header["NAXIS1"] = data.shape[1]
-        self.header["NAXIS2"] = data.shape[0]
+            self.header["NAXIS1"] = input_data.shape[1]
+            self.header["NAXIS2"] = input_data.shape[0]
 
     # ----------------------------------------------------------------
     # -------------------------- SAVING ------------------------------

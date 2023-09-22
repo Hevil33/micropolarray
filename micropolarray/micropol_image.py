@@ -23,7 +23,7 @@ from micropolarray.processing.demosaic import (
 )
 from micropolarray.processing.nrgf import roi_from_polar
 from micropolarray.processing.rebin import micropolarray_rebin
-from micropolarray.processing.shift import shift, shift_micropol
+from micropolarray.processing.shift import shift_micropol
 from micropolarray.utils import (
     fix_data,
     make_abs_and_create_dir,
@@ -48,7 +48,7 @@ class PolParam:
     data: np.ndarray
     title: str
     measure_unit: str
-    fix_data: bool
+    fix_data: bool = False
 
 
 DEFAULT_ANGLES_DIC = None  # sets the micropolarizer orientations with a dictionary {angle : position in superpix 1->3}
@@ -73,16 +73,11 @@ class MicropolImage(Image):
         self,
         initializer: str | np.ndarray | list | MicropolImage,
         angle_dic: dict = None,
-        demosaic_mode: str = "adjacent",
         dark: MicropolImage = None,
         flat: MicropolImage = None,
         averageimages: bool = True,
     ):
-        self._is_demodulated = False
-        self._is_demosaiced = False
-        self._binning = 1
-        self._flat_subtracted = False
-        self._dark_subtracted = False
+        self._initialize_internal_variables()
         if angle_dic is None:
             global DEFAULT_ANGLES_DIC
             if DEFAULT_ANGLES_DIC is None:
@@ -94,8 +89,6 @@ class MicropolImage(Image):
                 DEFAULT_ANGLES_DIC = PolarCam().angle_dic
             angle_dic = DEFAULT_ANGLES_DIC
         self.angle_dic = angle_dic
-        self.demosaic_mode = demosaic_mode
-        self.demosaiced_images = None
 
         if type(initializer) is str and len(initializer) > 1:
             self._num_of_images = len(initializer)
@@ -105,14 +98,8 @@ class MicropolImage(Image):
             initializer=initializer, averageimages=averageimages
         )  # Call generic Image() constructor
 
-        if (type(initializer) is list) or (type(initializer) is str):
-            self._init_micropolimage_from_file(initializer)
-        elif type(initializer) is np.ndarray:
-            self._init_micropolimage_from_data(initializer)
-        elif type(initializer) is MicropolImage:
-            self._init_micropolimage_from_image(initializer)
-
-        self._update_stokes_derived_internal_dataclasses()
+        if type(initializer) is MicropolImage:
+            self._import_image_parameters(initializer)
 
         # Apply corrections if needed
         if dark is not None:
@@ -123,37 +110,132 @@ class MicropolImage(Image):
             warning("Remember to set dark")
             MicropolImage.first_call = False
 
-        self.height, self.width = self.data.shape
+        self._update_Stokes_vec()
 
-    def _init_micropolimage_from_file(self, filenames: str):
-        self._set_data_and_Stokes(self.data)
+    def _initialize_internal_variables(self):
+        self._data = None
+        self._is_demodulated = False
+        self._is_demosaiced = False
+        self._binning = 1
+        self._flat_subtracted = False
+        self._dark_subtracted = False
+        self.demosaiced_images = None
 
-    def _init_micropolimage_from_data(self, data: np.array):
-        self._set_data_and_Stokes(self.data)
-        if self.header is None:
-            self.header = self._set_default_header(data)
-        else:
-            self._update_dims_in_header(self.data)
-
-    def _init_micropolimage_from_image(self, image: MicropolImage):
+    def _import_image_parameters(self, image: MicropolImage):
+        self.data = image.data
+        self.header = image.header
+        self.angle_dic = image.angle_dic
+        self.Stokes_vec = image.Stokes_vec
         self._is_demodulated = image._is_demodulated
         self._is_demosaiced = image._is_demosaiced
         self._binning = image._binning
         self._dark_subtracted = image._dark_subtracted
         self._flat_subtracted = image._flat_subtracted
-        self.angle_dic = image.angle_dic
-        self.demosaic_mode = image.demosaic_mode
-
-        self.data = image.data
-        self.header = image.header
-        self.single_pol_subimages = image.single_pol_subimages
         self.demosaiced_images = image.demosaiced_images
-        self.Stokes_vec = image.Stokes_vec
-        self.polparam_list = image.polparam_list
+
+    # ----------------------------------------------------------------
+    # -------------------- POLARIZATION PROPERTIES -------------------
+    # ----------------------------------------------------------------
+
+    @property
+    def I(self) -> PolParam:
+        return PolParam(
+            "I", self.Stokes_vec[0], "Stokes I", "DN", fix_data=False
+        )
+
+    @property
+    def Q(self) -> PolParam:
+        return PolParam(
+            "Q", self.Stokes_vec[1], "Stokes Q", "DN", fix_data=False
+        )
+
+    @property
+    def U(self) -> PolParam:
+        return PolParam(
+            "U", self.Stokes_vec[2], "Stokes U", "DN", fix_data=False
+        )
+
+    @property
+    def pB(self) -> PolParam:
+        return PolParam(
+            "pB",
+            pB(self.Stokes_vec),
+            "Polarized brightness",
+            "DN",
+            fix_data=False,
+        )
+
+    @property
+    def AoLP(self) -> PolParam:
+        return PolParam(
+            "AoLP",
+            AoLP(self.Stokes_vec),
+            "Angle of Linear Polarization",
+            "rad",
+            fix_data=False,
+        )
+
+    @property
+    def DoLP(self) -> PolParam:
+        return PolParam(
+            "DoLP",
+            DoLP(self.Stokes_vec),
+            "Degree of Linear Polarization",
+            "",
+            fix_data=False,
+        )
+
+    @property
+    def polparam_list(self) -> list:
+        return [self.I, self.Q, self.U, self.pB, self.AoLP, self.DoLP]
+
+    @property
+    def single_pol_subimages(self):
+        return split_polarizations(self.data)
+
+    @property
+    def pol0(self) -> PolParam:
+        return PolParam(
+            "0",
+            self.single_pol_subimages[self.angle_dic[0]],
+            "0 deg orientation pixels",
+            "DN",
+            fix_data=False,
+        )
+
+    @property
+    def pol45(self) -> PolParam:
+        return PolParam(
+            "45",
+            self.single_pol_subimages[self.angle_dic[45]],
+            "45 deg orientation pixels",
+            "DN",
+            fix_data=False,
+        )
+
+    @property
+    def pol_45(self) -> PolParam:
+        return PolParam(
+            "-45",
+            self.single_pol_subimages[self.angle_dic[-45]],
+            "-45 deg orientation pixels",
+            "DN",
+            fix_data=False,
+        )
+
+    @property
+    def pol90(self) -> PolParam:
+        return PolParam(
+            "90",
+            self.single_pol_subimages[self.angle_dic[90]],
+            "90 deg orientation pixels",
+            "DN",
+            fix_data=False,
+        )
 
     # ----------------------------------------------------------------
     # ---------------------- STOKES COMPONENTS -----------------------
-    # ----------------------------------------------------------------
+    # ----------------------------------update_dim------------------------------
 
     def _update_Stokes_vec(self) -> None:
         if not self._is_demosaiced:
@@ -165,58 +247,19 @@ class MicropolImage(Image):
                 self.demosaiced_images
             )
 
-    def _update_stokes_derived_internal_dataclasses(self) -> None:
-        self.I = PolParam(
-            "I", self.Stokes_vec[0], "Stokes I", "DN", fix_data=False
-        )
-        self.Q = PolParam(
-            "Q", self.Stokes_vec[1], "Stokes Q", "DN", fix_data=False
-        )
-        self.U = PolParam(
-            "U", self.Stokes_vec[2], "Stokes U", "DN", fix_data=False
-        )
-        self.pB = PolParam(
-            "pB",
-            pB(self.Stokes_vec),
-            "Polarized brightness",
-            "DN",
-            fix_data=False,
-        )
-        self.AoLP = PolParam(
-            "AoLP",
-            AoLP(self.Stokes_vec),
-            "Angle of linear polarization",
-            "rad",
-            fix_data=False,
-        )
-        self.DoLP = PolParam(
-            "DoLP",
-            DoLP(self.Stokes_vec),
-            "Degree of linear polarization",
-            "",
-            fix_data=False,
-        )
-        self.polparam_list = [
-            self.I,
-            self.Q,
-            self.U,
-            self.pB,
-            self.AoLP,
-            self.DoLP,
-        ]
+    def _update_data_and_Stokes(self, newdata: np.ndarray = None):
+        if newdata is not None:
+            self.data = newdata
+        self._update_Stokes_vec()
 
     def demodulate(self, demodulator: Demodulator) -> MicropolImage:
         """Returns a MicropolImage with polarization parameters calculated from the demodulation tensor provided.
 
-        Args:
-            demodulator (Demodulator): Demodulator object containing the demodulation tensor components (see processing.new_demodulation)
-
-        Raises:
-            ValueError: raised if image and demodulator do not have the same dimension, for example in case of different binning
-
-        Returns:
-            MicropolImage: copy of the input image with I, Q, U, pB, DoLP, AoLP calculated from the demodulation tensor.
+        :param Demodulator demodulator: Demodulator object containing the demodulation tensor components (see processing.new_demodulation)
+        :raises ValueError: raised if image and demodulator do not have the same dimension, for example in case of different binning
+        :return MicropolImage: copy of the input imagreturn e with I, Q, U, pB, DoLP, AoLP calculated from the demodulation tensor.
         """
+
         if (self.height, self.width) != (
             demodulator.mij.shape[2],
             demodulator.mij.shape[3],
@@ -231,91 +274,10 @@ class MicropolImage(Image):
         demodulated_image.Stokes_vec = (
             demodulated_image._get_Stokes_from_demodulator(demodulator)
         )
-        demodulated_image._update_single_pol_subimages()
-        demodulated_image._update_stokes_derived_internal_dataclasses()
         demodulated_image._is_demodulated = True
 
         info("Image correctly demodulated")
         return demodulated_image
-
-    def set_data_only(self, data: np.array = None) -> None:
-        if data is None:
-            data = self.data
-        self.data = data
-        self.height = data.shape[0]
-        self.width = data.shape[1]
-        if (data.shape[0] % 2) or (data.shape[1] % 2):
-            warning(
-                "Odd number of pixels is incompatible"
-                " with micropolarizer arrays operations."
-            )
-        self._update_single_pol_subimages()
-        if self._is_demosaiced:
-            self.demosaic()
-        self._update_Stokes_vec()
-        self._update_stokes_derived_internal_dataclasses()
-        if self.header is None:
-            self.header = self.set_default_header(data)
-        else:
-            self._update_dims_in_header(self.data)
-
-    def _set_data_and_Stokes(self, data: np.array = None) -> None:
-        """Set image data and derived polarization informations, and
-        consequently change header."""
-        if data is None:
-            data = self.data
-        self.data = data
-        if (data.shape[0] % 2) or (data.shape[1] % 2):
-            warning(
-                "Odd number of pixels is incompatible"
-                " with micropolarizer arrays operations."
-            )
-        self.height, self.width = data.shape
-        self._update_single_pol_subimages()
-
-        if not self._is_demosaiced:
-            self.Stokes_vec = self._get_theo_Stokes_vec_components(
-                self.single_pol_subimages
-            )
-            self._update_stokes_derived_internal_dataclasses()
-        else:
-            self.demosaic()
-            self.Stokes_vec = self._get_theo_Stokes_vec_components(
-                self.demosaiced_images
-            )
-
-    def _update_single_pol_subimages(self) -> None:
-        single_pol_subimages = split_polarizations(self.data)
-
-        self.single_pol_subimages = single_pol_subimages
-        self.pol0 = PolParam(
-            "0",
-            single_pol_subimages[self.angle_dic[0]],
-            "0 deg orientation pixels",
-            "DN",
-            fix_data=False,
-        )
-        self.pol45 = PolParam(
-            "45",
-            single_pol_subimages[self.angle_dic[45]],
-            "45 deg orientation pixels",
-            "DN",
-            fix_data=False,
-        )
-        self.pol_45 = PolParam(
-            "-45",
-            single_pol_subimages[self.angle_dic[-45]],
-            "-45 deg orientation pixels",
-            "DN",
-            fix_data=False,
-        )
-        self.pol90 = PolParam(
-            "90",
-            single_pol_subimages[self.angle_dic[90]],
-            "90 deg orientation pixels",
-            "DN",
-            fix_data=False,
-        )
 
     def _get_theo_Stokes_vec_components(self, single_pol_images) -> np.array:
         """
@@ -358,7 +320,6 @@ class MicropolImage(Image):
 
         self.demosaic()
         demosaiced_images = self.demosaiced_images
-        # demosaiced_images = demosaic(self.data, self.demosaic_mode)
 
         # IMG = np.array(
         #    [
@@ -413,7 +374,7 @@ class MicropolImage(Image):
         """
         self.data = self.data - dark.data
         self.data = np.where(self.data >= 0, self.data, 0)  # Fix data
-        self._set_data_and_Stokes()
+        self._update_Stokes_vec()
         self._dark_subtracted = True
         return self
 
@@ -436,7 +397,7 @@ class MicropolImage(Image):
 
         # self.data = np.where(self.data >= 0, self.data, 0)
         # self.data = np.where(self.data < 4096, self.data, 4096)
-        self._set_data_and_Stokes()
+        self._update_Stokes_vec()
         self._flat_subtracted = True
         return self
 
@@ -448,7 +409,7 @@ class MicropolImage(Image):
         """
         corrected_data = self.data.copy()
         corrected_data = ifov_jitcorrect(self.data, self.height, self.width)
-        self._set_data_and_Stokes(corrected_data)
+        self._update_data_and_Stokes(corrected_data)
         return self
 
     # ----------------------------------------------------------------
@@ -779,17 +740,20 @@ class MicropolImage(Image):
     # ----------------------------------------------------------------
     # -------------------- DATA MANIPULATION -------------------------
     # ----------------------------------------------------------------
-    def demosaic(self) -> MicropolImage:
-        """Returns a demosaiced copy of the image with updated polarization parameters.
+    def demosaic(self, demosaic_mode="adjacent") -> MicropolImage:
+        """Returns a demosaiced copy of the image with updated polarization parameters. Demoisacing is done IN PLACE.
+
+        Args:
+            demosaic_mode (str, optional): demosaicing mode (see processing.demosaic). Defaults to "adjacent".
 
         Returns:
             MicropolImage: demosaiced image
         """
-        self.demosaiced_images = demosaic(self.data, option=self.demosaic_mode)
+
+        self.demosaiced_images = demosaic(self.data, option=demosaic_mode)
         self.Stokes_vec = self._get_theo_Stokes_vec_components(
             self.demosaiced_images
         )
-        self._update_stokes_derived_internal_dataclasses()
         self._is_demosaiced = True
 
         return self
@@ -816,7 +780,7 @@ class MicropolImage(Image):
             binning,
         )
 
-        rebinned_image._set_data_and_Stokes(rebinned_data)
+        rebinned_image._update_data_and_Stokes(rebinned_data)
 
         return rebinned_image
 
@@ -832,29 +796,12 @@ class MicropolImage(Image):
             )
 
         new_subdims = [int(newdim_y / 2), int(newdim_x / 2)]
-        congridded_pol_images = [0.0] * 4
+        congridded_pol_images = np.zeros(shape=(4, *new_subdims), dtype=float)
         for subimage_i, pol_subimage in enumerate(self.single_pol_subimages):
             congridded_pol_images[subimage_i] = congrid(
                 pol_subimage, new_subdims
             )
-
-        newdata = np.zeros(shape=(newdim_y, newdim_x))
-        for pol_super_y in range(new_subdims[0]):
-            for pol_super_x in range(new_subdims[1]):
-                newdata[
-                    pol_super_y * 2 : pol_super_y * 2 + 2,
-                    pol_super_x * 2 : pol_super_x * 2 + 2,
-                ] = [
-                    [
-                        congridded_pol_images[0][pol_super_y, pol_super_x],
-                        congridded_pol_images[1][pol_super_y, pol_super_x],
-                    ],
-                    [
-                        congridded_pol_images[2][pol_super_y, pol_super_x],
-                        congridded_pol_images[3][pol_super_y, pol_super_x],
-                    ],
-                ]
-        newimage = MicropolImage(newdata)
+        newimage = MicropolImage(merge_polarizations(congridded_pol_images))
         return newimage
 
     def rotate(self, angle: float) -> MicropolImage:
@@ -897,18 +844,6 @@ class MicropolImage(Image):
             (y, x),
             [r, 2 * np.max((self.height, self.width))],
         )
-        self.single_pol_subimages = [
-            roi_from_polar(
-                data,
-                (int(y / 2), int(x / 2)),
-                [
-                    int(r / 2),
-                    2 * np.max((int(self.height / 2), int(self.width / 2))),
-                ],
-            )
-            for data in self.single_pol_subimages
-        ]
-        self._update_single_pol_subimages()  # Updates polparam-like
         if self._is_demosaiced:
             self.demosaiced_images = [
                 roi_from_polar(
@@ -918,19 +853,6 @@ class MicropolImage(Image):
                 )
                 for data in self.demosaiced_images
             ]
-        for param in self.polparam_list:
-            ratio = param.data.shape[0] / self.data.shape[0]
-            param.data = roi_from_polar(
-                param.data,
-                (
-                    int(y * ratio),
-                    int(x * ratio),
-                ),
-                [
-                    int(r * ratio),
-                    2 * np.max((param.data.shape[0], param.data.shape[0])),
-                ],
-            )
 
     def shift(self, y: int, x: int) -> MicropolImage:
         """Shifts image by y, x pixels and fills with 0 the remaining space. Positive numbers for up/right shift and negative for down/left shift. Image is split into polarizations, each one is shifted, then they are merged again.
@@ -945,7 +867,7 @@ class MicropolImage(Image):
         # newdata = shift(self.data, y, x)
         newdata = shift_micropol(self.data, y, x)
         newimage = MicropolImage(self)
-        newimage._set_data_and_Stokes(newdata)
+        newimage._update_data_and_Stokes(newdata)
 
         return newimage
 
@@ -971,7 +893,7 @@ class MicropolImage(Image):
         )
 
         newimage = MicropolImage(self)
-        newimage._set_data_and_Stokes(merge_polarizations(subimages))
+        newimage._update_data_and_Stokes(merge_polarizations(subimages))
         return newimage
 
     # ----------------------------------------------------------------
@@ -981,7 +903,7 @@ class MicropolImage(Image):
         if type(self) is type(second):
             newdata = self.data + second.data
             newimage = MicropolImage(self)
-            newimage._set_data_and_Stokes(newdata)
+            newimage._update_data_and_Stokes(newdata)
             return newimage
         else:
             newdata = self.data + second
@@ -991,7 +913,7 @@ class MicropolImage(Image):
         if type(self) is type(second):
             newdata = self.data - second.data
             newimage = MicropolImage(self)
-            newimage._set_data_and_Stokes(newdata)
+            newimage._update_data_and_Stokes(newdata)
             return newimage
         else:
             newdata = self.data - second
@@ -1001,7 +923,7 @@ class MicropolImage(Image):
         if type(self) is type(second):
             newdata = self.data * second.data
             newimage = MicropolImage(self)
-            newimage._set_data_and_Stokes(newdata)
+            newimage._update_data_and_Stokes(newdata)
             return newimage
         else:
             newdata = self.data * second
@@ -1013,7 +935,7 @@ class MicropolImage(Image):
                 self.data, second.data, where=second.data != 0.0
             )
             newimage = MicropolImage(self)
-            newimage._set_data_and_Stokes(newdata)
+            newimage._update_data_and_Stokes(newdata)
             return newimage
         else:
             # newdata = np.where(second != 0, self.data / second, 4096)
