@@ -4,21 +4,23 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>micropolarray.processing package &mdash; micropolarray 1.0.6 documentation</title>
+  <title>micropolarray.processing package &mdash; micropolarray  documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
         <script src="_static/jquery.js?v=5d32c60e"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=c0ddf5a4"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=b3ba4146"></script>
         <script src="_static/doctools.js?v=888ff710"></script>
         <script src="_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" /> 
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="micropolarray package" href="micropolarray.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -32,6 +34,9 @@
           <a href="index.html" class="icon icon-home">
             micropolarray
           </a>
+              <div class="version">
+                1.0.6
+              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
@@ -40,88 +45,37 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <!-- Local TOC -->
-              <div class="local-toc"><ul>
-<li><a class="reference internal" href="#">micropolarray.processing package</a><ul>
-<li><a class="reference internal" href="#submodules">Submodules</a></li>
-<li><a class="reference internal" href="#module-micropolarray.processing.chen_wan_liang_calibration">micropolarray.processing.chen_wan_liang_calibration module</a><ul>
-<li><a class="reference internal" href="#micropolarray.processing.chen_wan_liang_calibration.build_S_input"><code class="docutils literal notranslate"><span class="pre">build_S_input()</span></code></a></li>
-<li><a class="reference internal" href="#micropolarray.processing.chen_wan_liang_calibration.calculate_chen_wan_lian_calibration"><code class="docutils literal notranslate"><span class="pre">calculate_chen_wan_lian_calibration()</span></code></a></li>
-<li><a class="reference internal" href="#micropolarray.processing.chen_wan_liang_calibration.chen_wan_liang_calibration"><code class="docutils literal notranslate"><span class="pre">chen_wan_liang_calibration()</span></code></a></li>
-<li><a class="reference internal" href="#micropolarray.processing.chen_wan_liang_calibration.ifov_jitcorrect"><code class="docutils literal notranslate"><span class="pre">ifov_jitcorrect()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#module-micropolarray.processing.congrid">micropolarray.processing.congrid module</a><ul>
-<li><a class="reference internal" href="#micropolarray.processing.congrid.congrid"><code class="docutils literal notranslate"><span class="pre">congrid()</span></code></a></li>
-<li><a class="reference internal" href="#micropolarray.processing.congrid.interpolate"><code class="docutils literal notranslate"><span class="pre">interpolate()</span></code></a></li>
-<li><a class="reference internal" href="#micropolarray.processing.congrid.micropolarray_jitcongrid"><code class="docutils literal notranslate"><span class="pre">micropolarray_jitcongrid()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#module-micropolarray.processing.convert">micropolarray.processing.convert module</a><ul>
-<li><a class="reference internal" href="#micropolarray.processing.convert.average_rawfiles_to_fits"><code class="docutils literal notranslate"><span class="pre">average_rawfiles_to_fits()</span></code></a></li>
-<li><a class="reference internal" href="#micropolarray.processing.convert.convert_rawfile_to_fits"><code class="docutils literal notranslate"><span class="pre">convert_rawfile_to_fits()</span></code></a></li>
-<li><a class="reference internal" href="#micropolarray.processing.convert.convert_set"><code class="docutils literal notranslate"><span class="pre">convert_set()</span></code></a></li>
-<li><a class="reference internal" href="#micropolarray.processing.convert.nparr_from_binary"><code class="docutils literal notranslate"><span class="pre">nparr_from_binary()</span></code></a></li>
-<li><a class="reference internal" href="#micropolarray.processing.convert.three_bytes_to_two_ints"><code class="docutils literal notranslate"><span class="pre">three_bytes_to_two_ints()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#module-micropolarray.processing.demodulation">micropolarray.processing.demodulation module</a><ul>
-<li><a class="reference internal" href="#micropolarray.processing.demodulation.Demodulator"><code class="docutils literal notranslate"><span class="pre">Demodulator</span></code></a><ul>
-<li><a class="reference internal" href="#micropolarray.processing.demodulation.Demodulator.flip"><code class="docutils literal notranslate"><span class="pre">Demodulator.flip()</span></code></a></li>
-<li><a class="reference internal" href="#micropolarray.processing.demodulation.Demodulator.rebin"><code class="docutils literal notranslate"><span class="pre">Demodulator.rebin()</span></code></a></li>
-<li><a class="reference internal" href="#micropolarray.processing.demodulation.Demodulator.rot90"><code class="docutils literal notranslate"><span class="pre">Demodulator.rot90()</span></code></a></li>
-<li><a class="reference internal" href="#micropolarray.processing.demodulation.Demodulator.show"><code class="docutils literal notranslate"><span class="pre">Demodulator.show()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#micropolarray.processing.demodulation.Malus"><code class="docutils literal notranslate"><span class="pre">Malus()</span></code></a></li>
-<li><a class="reference internal" href="#micropolarray.processing.demodulation.calculate_demodulation_tensor"><code class="docutils literal notranslate"><span class="pre">calculate_demodulation_tensor()</span></code></a></li>
-<li><a class="reference internal" href="#micropolarray.processing.demodulation.compute_demodulation_by_chunk"><code class="docutils literal notranslate"><span class="pre">compute_demodulation_by_chunk()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#module-micropolarray.processing.demosaic">micropolarray.processing.demosaic module</a><ul>
-<li><a class="reference internal" href="#micropolarray.processing.demosaic.demosaic"><code class="docutils literal notranslate"><span class="pre">demosaic()</span></code></a></li>
-<li><a class="reference internal" href="#micropolarray.processing.demosaic.demosaicadjacent"><code class="docutils literal notranslate"><span class="pre">demosaicadjacent()</span></code></a></li>
-<li><a class="reference internal" href="#micropolarray.processing.demosaic.demosaicmean"><code class="docutils literal notranslate"><span class="pre">demosaicmean()</span></code></a></li>
-<li><a class="reference internal" href="#micropolarray.processing.demosaic.merge_polarizations"><code class="docutils literal notranslate"><span class="pre">merge_polarizations()</span></code></a></li>
-<li><a class="reference internal" href="#micropolarray.processing.demosaic.split_polarizations"><code class="docutils literal notranslate"><span class="pre">split_polarizations()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#module-micropolarray.processing.hotpix_cleaning">micropolarray.processing.hotpix_cleaning module</a><ul>
-<li><a class="reference internal" href="#micropolarray.processing.hotpix_cleaning.get_hot_pixels"><code class="docutils literal notranslate"><span class="pre">get_hot_pixels()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#module-micropolarray.processing.nrgf">micropolarray.processing.nrgf module</a><ul>
-<li><a class="reference internal" href="#micropolarray.processing.nrgf.find_occulter_position"><code class="docutils literal notranslate"><span class="pre">find_occulter_position()</span></code></a></li>
-<li><a class="reference internal" href="#micropolarray.processing.nrgf.map_polar_coordinates"><code class="docutils literal notranslate"><span class="pre">map_polar_coordinates()</span></code></a></li>
-<li><a class="reference internal" href="#micropolarray.processing.nrgf.nrgf"><code class="docutils literal notranslate"><span class="pre">nrgf()</span></code></a></li>
-<li><a class="reference internal" href="#micropolarray.processing.nrgf.reject_outliers"><code class="docutils literal notranslate"><span class="pre">reject_outliers()</span></code></a></li>
-<li><a class="reference internal" href="#micropolarray.processing.nrgf.remove_outliers_simple"><code class="docutils literal notranslate"><span class="pre">remove_outliers_simple()</span></code></a></li>
-<li><a class="reference internal" href="#micropolarray.processing.nrgf.roi_from_polar"><code class="docutils literal notranslate"><span class="pre">roi_from_polar()</span></code></a></li>
-<li><a class="reference internal" href="#micropolarray.processing.nrgf.sigmoid"><code class="docutils literal notranslate"><span class="pre">sigmoid()</span></code></a></li>
-<li><a class="reference internal" href="#micropolarray.processing.nrgf.tile_double"><code class="docutils literal notranslate"><span class="pre">tile_double()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#module-micropolarray.processing.rebin">micropolarray.processing.rebin module</a><ul>
-<li><a class="reference internal" href="#micropolarray.processing.rebin.micropolarray_jitrebin"><code class="docutils literal notranslate"><span class="pre">micropolarray_jitrebin()</span></code></a></li>
-<li><a class="reference internal" href="#micropolarray.processing.rebin.micropolarray_jitrebin_old"><code class="docutils literal notranslate"><span class="pre">micropolarray_jitrebin_old()</span></code></a></li>
-<li><a class="reference internal" href="#micropolarray.processing.rebin.micropolarray_rebin"><code class="docutils literal notranslate"><span class="pre">micropolarray_rebin()</span></code></a></li>
-<li><a class="reference internal" href="#micropolarray.processing.rebin.print_trimming_info"><code class="docutils literal notranslate"><span class="pre">print_trimming_info()</span></code></a></li>
-<li><a class="reference internal" href="#micropolarray.processing.rebin.standard_jitrebin"><code class="docutils literal notranslate"><span class="pre">standard_jitrebin()</span></code></a></li>
-<li><a class="reference internal" href="#micropolarray.processing.rebin.standard_rebin"><code class="docutils literal notranslate"><span class="pre">standard_rebin()</span></code></a></li>
-<li><a class="reference internal" href="#micropolarray.processing.rebin.trim_to_match_2xbinning"><code class="docutils literal notranslate"><span class="pre">trim_to_match_2xbinning()</span></code></a></li>
-<li><a class="reference internal" href="#micropolarray.processing.rebin.trim_to_match_binning"><code class="docutils literal notranslate"><span class="pre">trim_to_match_binning()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#module-micropolarray.processing.shift">micropolarray.processing.shift module</a><ul>
-<li><a class="reference internal" href="#micropolarray.processing.shift.shift"><code class="docutils literal notranslate"><span class="pre">shift()</span></code></a></li>
-<li><a class="reference internal" href="#micropolarray.processing.shift.shift_micropol"><code class="docutils literal notranslate"><span class="pre">shift_micropol()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#module-micropolarray.processing">Module contents</a></li>
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="micropolarray.html">micropolarray package</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="micropolarray.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">micropolarray.processing package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-micropolarray.processing.chen_wan_liang_calibration">micropolarray.processing.chen_wan_liang_calibration module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-micropolarray.processing.congrid">micropolarray.processing.congrid module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-micropolarray.processing.convert">micropolarray.processing.convert module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-micropolarray.processing.demodulation">micropolarray.processing.demodulation module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-micropolarray.processing.demosaic">micropolarray.processing.demosaic module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-micropolarray.processing.hotpix_cleaning">micropolarray.processing.hotpix_cleaning module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-micropolarray.processing.nrgf">micropolarray.processing.nrgf module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-micropolarray.processing.rebin">micropolarray.processing.rebin module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-micropolarray.processing.shift">micropolarray.processing.shift module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-micropolarray.processing">Module contents</a></li>
 </ul>
 </li>
 </ul>
-</div>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="micropolarray.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="micropolarray.html#module-micropolarray.cameras">micropolarray.cameras module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="micropolarray.html#module-micropolarray.image">micropolarray.image module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="micropolarray.html#module-micropolarray.micropol_image">micropolarray.micropol_image module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="micropolarray.html#module-micropolarray.polarization_functions">micropolarray.polarization_functions module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="micropolarray.html#module-micropolarray.utils">micropolarray.utils module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="micropolarray.html#module-micropolarray">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
         </div>
       </div>
     </nav>
@@ -136,6 +90,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="micropolarray.html">micropolarray package</a></li>
       <li class="breadcrumb-item active">micropolarray.processing package</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/micropolarray.processing.rst.txt" rel="nofollow"> View page source</a>
@@ -728,7 +683,9 @@ demo_images[3] = data[y=1, x=1]</p>
 
            </div>
           </div>
-          <footer>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="micropolarray.html" class="btn btn-neutral float-left" title="micropolarray package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
 
   <hr/>
 

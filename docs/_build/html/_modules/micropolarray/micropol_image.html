@@ -1,33 +1,77 @@
 <!DOCTYPE html>
-
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>micropolarray.micropol_image &#8212; micropolarray 1.0.6 documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b3523f8e" />
-    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=039e1c02" />
-    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=c0ddf5a4"></script>
-    <script src="../../_static/doctools.js?v=888ff710"></script>
-    <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>micropolarray.micropol_image &mdash; micropolarray  documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=b3ba4146"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
-    <link rel="search" title="Search" href="../../search.html" />
-   
-  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
-  
-  
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
 
-  </head><body>
-  
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
 
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
           
+          
+          <a href="../../index.html" class="icon icon-home">
+            micropolarray
+          </a>
+              <div class="version">
+                1.0.6
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../micropolarray.html">micropolarray package</a></li>
+</ul>
 
-          <div class="body" role="main">
-            
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">micropolarray</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">micropolarray.micropol_image</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
   <h1>Source code for micropolarray.micropol_image</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
 
@@ -54,7 +98,7 @@
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">micropolarray.processing.nrgf</span> <span class="kn">import</span> <span class="n">roi_from_polar</span>
 <span class="kn">from</span> <span class="nn">micropolarray.processing.rebin</span> <span class="kn">import</span> <span class="n">micropolarray_rebin</span>
-<span class="kn">from</span> <span class="nn">micropolarray.processing.shift</span> <span class="kn">import</span> <span class="n">shift</span><span class="p">,</span> <span class="n">shift_micropol</span>
+<span class="kn">from</span> <span class="nn">micropolarray.processing.shift</span> <span class="kn">import</span> <span class="n">shift_micropol</span>
 <span class="kn">from</span> <span class="nn">micropolarray.utils</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">fix_data</span><span class="p">,</span>
     <span class="n">make_abs_and_create_dir</span><span class="p">,</span>
@@ -79,7 +123,7 @@
     <span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
     <span class="n">title</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">measure_unit</span><span class="p">:</span> <span class="nb">str</span>
-    <span class="n">fix_data</span><span class="p">:</span> <span class="nb">bool</span></div>
+    <span class="n">fix_data</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span></div>
 
 
 <span class="n">DEFAULT_ANGLES_DIC</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># sets the micropolarizer orientations with a dictionary {angle : position in superpix 1-&gt;3}</span>
@@ -104,16 +148,11 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">initializer</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="nb">list</span> <span class="o">|</span> <span class="n">MicropolImage</span><span class="p">,</span>
         <span class="n">angle_dic</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">demosaic_mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;adjacent&quot;</span><span class="p">,</span>
         <span class="n">dark</span><span class="p">:</span> <span class="n">MicropolImage</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">flat</span><span class="p">:</span> <span class="n">MicropolImage</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">averageimages</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_is_demodulated</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_is_demosaiced</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_binning</span> <span class="o">=</span> <span class="mi">1</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_flat_subtracted</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_dark_subtracted</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_initialize_internal_variables</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">angle_dic</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">global</span> <span class="n">DEFAULT_ANGLES_DIC</span>
             <span class="k">if</span> <span class="n">DEFAULT_ANGLES_DIC</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -125,8 +164,6 @@
                 <span class="n">DEFAULT_ANGLES_DIC</span> <span class="o">=</span> <span class="n">PolarCam</span><span class="p">()</span><span class="o">.</span><span class="n">angle_dic</span>
             <span class="n">angle_dic</span> <span class="o">=</span> <span class="n">DEFAULT_ANGLES_DIC</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">angle_dic</span> <span class="o">=</span> <span class="n">angle_dic</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">demosaic_mode</span> <span class="o">=</span> <span class="n">demosaic_mode</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">demosaiced_images</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">initializer</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">initializer</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_num_of_images</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">initializer</span><span class="p">)</span>
@@ -136,14 +173,8 @@
             <span class="n">initializer</span><span class="o">=</span><span class="n">initializer</span><span class="p">,</span> <span class="n">averageimages</span><span class="o">=</span><span class="n">averageimages</span>
         <span class="p">)</span>  <span class="c1"># Call generic Image() constructor</span>
 
-        <span class="k">if</span> <span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">initializer</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">initializer</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_init_micropolimage_from_file</span><span class="p">(</span><span class="n">initializer</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">initializer</span><span class="p">)</span> <span class="ow">is</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_init_micropolimage_from_data</span><span class="p">(</span><span class="n">initializer</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">initializer</span><span class="p">)</span> <span class="ow">is</span> <span class="n">MicropolImage</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_init_micropolimage_from_image</span><span class="p">(</span><span class="n">initializer</span><span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">_update_stokes_derived_internal_dataclasses</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">initializer</span><span class="p">)</span> <span class="ow">is</span> <span class="n">MicropolImage</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_import_image_parameters</span><span class="p">(</span><span class="n">initializer</span><span class="p">)</span>
 
         <span class="c1"># Apply corrections if needed</span>
         <span class="k">if</span> <span class="n">dark</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -154,37 +185,132 @@
             <span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Remember to set dark&quot;</span><span class="p">)</span>
             <span class="n">MicropolImage</span><span class="o">.</span><span class="n">first_call</span> <span class="o">=</span> <span class="kc">False</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_Stokes_vec</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">_init_micropolimage_from_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filenames</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_set_data_and_Stokes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">_initialize_internal_variables</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_is_demodulated</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_is_demosaiced</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_binning</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_flat_subtracted</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dark_subtracted</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">demosaiced_images</span> <span class="o">=</span> <span class="kc">None</span>
 
-    <span class="k">def</span> <span class="nf">_init_micropolimage_from_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_set_data_and_Stokes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">header</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_default_header</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_update_dims_in_header</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">_init_micropolimage_from_image</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image</span><span class="p">:</span> <span class="n">MicropolImage</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_import_image_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image</span><span class="p">:</span> <span class="n">MicropolImage</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">header</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">header</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">angle_dic</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">angle_dic</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Stokes_vec</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">Stokes_vec</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_is_demodulated</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">_is_demodulated</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_is_demosaiced</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">_is_demosaiced</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_binning</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">_binning</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_dark_subtracted</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">_dark_subtracted</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_flat_subtracted</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">_flat_subtracted</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">angle_dic</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">angle_dic</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">demosaic_mode</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">demosaic_mode</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">data</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">header</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">header</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">single_pol_subimages</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">single_pol_subimages</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">demosaiced_images</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">demosaiced_images</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">Stokes_vec</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">Stokes_vec</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">polparam_list</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">polparam_list</span>
+
+    <span class="c1"># ----------------------------------------------------------------</span>
+    <span class="c1"># -------------------- POLARIZATION PROPERTIES -------------------</span>
+    <span class="c1"># ----------------------------------------------------------------</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">I</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PolParam</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">PolParam</span><span class="p">(</span>
+            <span class="s2">&quot;I&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Stokes_vec</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;Stokes I&quot;</span><span class="p">,</span> <span class="s2">&quot;DN&quot;</span><span class="p">,</span> <span class="n">fix_data</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">Q</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PolParam</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">PolParam</span><span class="p">(</span>
+            <span class="s2">&quot;Q&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Stokes_vec</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;Stokes Q&quot;</span><span class="p">,</span> <span class="s2">&quot;DN&quot;</span><span class="p">,</span> <span class="n">fix_data</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">U</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PolParam</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">PolParam</span><span class="p">(</span>
+            <span class="s2">&quot;U&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Stokes_vec</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="s2">&quot;Stokes U&quot;</span><span class="p">,</span> <span class="s2">&quot;DN&quot;</span><span class="p">,</span> <span class="n">fix_data</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">pB</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PolParam</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">PolParam</span><span class="p">(</span>
+            <span class="s2">&quot;pB&quot;</span><span class="p">,</span>
+            <span class="n">pB</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Stokes_vec</span><span class="p">),</span>
+            <span class="s2">&quot;Polarized brightness&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;DN&quot;</span><span class="p">,</span>
+            <span class="n">fix_data</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">AoLP</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PolParam</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">PolParam</span><span class="p">(</span>
+            <span class="s2">&quot;AoLP&quot;</span><span class="p">,</span>
+            <span class="n">AoLP</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Stokes_vec</span><span class="p">),</span>
+            <span class="s2">&quot;Angle of Linear Polarization&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;rad&quot;</span><span class="p">,</span>
+            <span class="n">fix_data</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">DoLP</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PolParam</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">PolParam</span><span class="p">(</span>
+            <span class="s2">&quot;DoLP&quot;</span><span class="p">,</span>
+            <span class="n">DoLP</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Stokes_vec</span><span class="p">),</span>
+            <span class="s2">&quot;Degree of Linear Polarization&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;&quot;</span><span class="p">,</span>
+            <span class="n">fix_data</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">polparam_list</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">I</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Q</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">U</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pB</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">AoLP</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">DoLP</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">single_pol_subimages</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">split_polarizations</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">pol0</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PolParam</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">PolParam</span><span class="p">(</span>
+            <span class="s2">&quot;0&quot;</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">single_pol_subimages</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">angle_dic</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span>
+            <span class="s2">&quot;0 deg orientation pixels&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;DN&quot;</span><span class="p">,</span>
+            <span class="n">fix_data</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">pol45</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PolParam</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">PolParam</span><span class="p">(</span>
+            <span class="s2">&quot;45&quot;</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">single_pol_subimages</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">angle_dic</span><span class="p">[</span><span class="mi">45</span><span class="p">]],</span>
+            <span class="s2">&quot;45 deg orientation pixels&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;DN&quot;</span><span class="p">,</span>
+            <span class="n">fix_data</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">pol_45</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PolParam</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">PolParam</span><span class="p">(</span>
+            <span class="s2">&quot;-45&quot;</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">single_pol_subimages</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">angle_dic</span><span class="p">[</span><span class="o">-</span><span class="mi">45</span><span class="p">]],</span>
+            <span class="s2">&quot;-45 deg orientation pixels&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;DN&quot;</span><span class="p">,</span>
+            <span class="n">fix_data</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">pol90</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PolParam</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">PolParam</span><span class="p">(</span>
+            <span class="s2">&quot;90&quot;</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">single_pol_subimages</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">angle_dic</span><span class="p">[</span><span class="mi">90</span><span class="p">]],</span>
+            <span class="s2">&quot;90 deg orientation pixels&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;DN&quot;</span><span class="p">,</span>
+            <span class="n">fix_data</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span>
 
     <span class="c1"># ----------------------------------------------------------------</span>
     <span class="c1"># ---------------------- STOKES COMPONENTS -----------------------</span>
-    <span class="c1"># ----------------------------------------------------------------</span>
+    <span class="c1"># ----------------------------------update_dim------------------------------</span>
 
     <span class="k">def</span> <span class="nf">_update_Stokes_vec</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_demosaiced</span><span class="p">:</span>
@@ -196,45 +322,10 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">demosaiced_images</span>
             <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_update_stokes_derived_internal_dataclasses</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">I</span> <span class="o">=</span> <span class="n">PolParam</span><span class="p">(</span>
-            <span class="s2">&quot;I&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Stokes_vec</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;Stokes I&quot;</span><span class="p">,</span> <span class="s2">&quot;DN&quot;</span><span class="p">,</span> <span class="n">fix_data</span><span class="o">=</span><span class="kc">False</span>
-        <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">Q</span> <span class="o">=</span> <span class="n">PolParam</span><span class="p">(</span>
-            <span class="s2">&quot;Q&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Stokes_vec</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;Stokes Q&quot;</span><span class="p">,</span> <span class="s2">&quot;DN&quot;</span><span class="p">,</span> <span class="n">fix_data</span><span class="o">=</span><span class="kc">False</span>
-        <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">U</span> <span class="o">=</span> <span class="n">PolParam</span><span class="p">(</span>
-            <span class="s2">&quot;U&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Stokes_vec</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="s2">&quot;Stokes U&quot;</span><span class="p">,</span> <span class="s2">&quot;DN&quot;</span><span class="p">,</span> <span class="n">fix_data</span><span class="o">=</span><span class="kc">False</span>
-        <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">pB</span> <span class="o">=</span> <span class="n">PolParam</span><span class="p">(</span>
-            <span class="s2">&quot;pB&quot;</span><span class="p">,</span>
-            <span class="n">pB</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Stokes_vec</span><span class="p">),</span>
-            <span class="s2">&quot;Polarized brightness&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;DN&quot;</span><span class="p">,</span>
-            <span class="n">fix_data</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">AoLP</span> <span class="o">=</span> <span class="n">PolParam</span><span class="p">(</span>
-            <span class="s2">&quot;AoLP&quot;</span><span class="p">,</span>
-            <span class="n">AoLP</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Stokes_vec</span><span class="p">),</span>
-            <span class="s2">&quot;Angle of linear polarization&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;rad&quot;</span><span class="p">,</span>
-            <span class="n">fix_data</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">DoLP</span> <span class="o">=</span> <span class="n">PolParam</span><span class="p">(</span>
-            <span class="s2">&quot;DoLP&quot;</span><span class="p">,</span>
-            <span class="n">DoLP</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Stokes_vec</span><span class="p">),</span>
-            <span class="s2">&quot;Degree of linear polarization&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;&quot;</span><span class="p">,</span>
-            <span class="n">fix_data</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">polparam_list</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">I</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">Q</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">U</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">pB</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">AoLP</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">DoLP</span><span class="p">,</span>
-        <span class="p">]</span>
+    <span class="k">def</span> <span class="nf">_update_data_and_Stokes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">newdata</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">newdata</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">newdata</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_Stokes_vec</span><span class="p">()</span>
 
 <div class="viewcode-block" id="MicropolImage.demodulate"><a class="viewcode-back" href="../../micropolarray.html#micropolarray.micropol_image.MicropolImage.demodulate">[docs]</a>    <span class="k">def</span> <span class="nf">demodulate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">demodulator</span><span class="p">:</span> <span class="n">Demodulator</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MicropolImage</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a MicropolImage with polarization parameters calculated from the demodulation tensor provided.</span>
@@ -246,7 +337,7 @@
 <span class="sd">            ValueError: raised if image and demodulator do not have the same dimension, for example in case of different binning</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            MicropolImage: copy of the input image with I, Q, U, pB, DoLP, AoLP calculated from the demodulation tensor.</span>
+<span class="sd">            MicropolImage: copy of the input imagreturn e with I, Q, U, pB, DoLP, AoLP calculated from the demodulation tensor.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">)</span> <span class="o">!=</span> <span class="p">(</span>
             <span class="n">demodulator</span><span class="o">.</span><span class="n">mij</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
@@ -262,91 +353,10 @@
         <span class="n">demodulated_image</span><span class="o">.</span><span class="n">Stokes_vec</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">demodulated_image</span><span class="o">.</span><span class="n">_get_Stokes_from_demodulator</span><span class="p">(</span><span class="n">demodulator</span><span class="p">)</span>
         <span class="p">)</span>
-        <span class="n">demodulated_image</span><span class="o">.</span><span class="n">_update_single_pol_subimages</span><span class="p">()</span>
-        <span class="n">demodulated_image</span><span class="o">.</span><span class="n">_update_stokes_derived_internal_dataclasses</span><span class="p">()</span>
         <span class="n">demodulated_image</span><span class="o">.</span><span class="n">_is_demodulated</span> <span class="o">=</span> <span class="kc">True</span>
 
         <span class="n">info</span><span class="p">(</span><span class="s2">&quot;Image correctly demodulated&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">demodulated_image</span></div>
-
-<div class="viewcode-block" id="MicropolImage.set_data_only"><a class="viewcode-back" href="../../micropolarray.html#micropolarray.micropol_image.MicropolImage.set_data_only">[docs]</a>    <span class="k">def</span> <span class="nf">set_data_only</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">data</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">height</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">width</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">%</span> <span class="mi">2</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">%</span> <span class="mi">2</span><span class="p">):</span>
-            <span class="n">warning</span><span class="p">(</span>
-                <span class="s2">&quot;Odd number of pixels is incompatible&quot;</span>
-                <span class="s2">&quot; with micropolarizer arrays operations.&quot;</span>
-            <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_update_single_pol_subimages</span><span class="p">()</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_demosaiced</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">demosaic</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_update_Stokes_vec</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_update_stokes_derived_internal_dataclasses</span><span class="p">()</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">header</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_default_header</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_update_dims_in_header</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span></div>
-
-    <span class="k">def</span> <span class="nf">_set_data_and_Stokes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set image data and derived polarization informations, and</span>
-<span class="sd">        consequently change header.&quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">data</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">%</span> <span class="mi">2</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">%</span> <span class="mi">2</span><span class="p">):</span>
-            <span class="n">warning</span><span class="p">(</span>
-                <span class="s2">&quot;Odd number of pixels is incompatible&quot;</span>
-                <span class="s2">&quot; with micropolarizer arrays operations.&quot;</span>
-            <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_update_single_pol_subimages</span><span class="p">()</span>
-
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_demosaiced</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">Stokes_vec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_theo_Stokes_vec_components</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">single_pol_subimages</span>
-            <span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_update_stokes_derived_internal_dataclasses</span><span class="p">()</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">demosaic</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">Stokes_vec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_theo_Stokes_vec_components</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">demosaiced_images</span>
-            <span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">_update_single_pol_subimages</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">single_pol_subimages</span> <span class="o">=</span> <span class="n">split_polarizations</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">single_pol_subimages</span> <span class="o">=</span> <span class="n">single_pol_subimages</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">pol0</span> <span class="o">=</span> <span class="n">PolParam</span><span class="p">(</span>
-            <span class="s2">&quot;0&quot;</span><span class="p">,</span>
-            <span class="n">single_pol_subimages</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">angle_dic</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span>
-            <span class="s2">&quot;0 deg orientation pixels&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;DN&quot;</span><span class="p">,</span>
-            <span class="n">fix_data</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">pol45</span> <span class="o">=</span> <span class="n">PolParam</span><span class="p">(</span>
-            <span class="s2">&quot;45&quot;</span><span class="p">,</span>
-            <span class="n">single_pol_subimages</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">angle_dic</span><span class="p">[</span><span class="mi">45</span><span class="p">]],</span>
-            <span class="s2">&quot;45 deg orientation pixels&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;DN&quot;</span><span class="p">,</span>
-            <span class="n">fix_data</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">pol_45</span> <span class="o">=</span> <span class="n">PolParam</span><span class="p">(</span>
-            <span class="s2">&quot;-45&quot;</span><span class="p">,</span>
-            <span class="n">single_pol_subimages</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">angle_dic</span><span class="p">[</span><span class="o">-</span><span class="mi">45</span><span class="p">]],</span>
-            <span class="s2">&quot;-45 deg orientation pixels&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;DN&quot;</span><span class="p">,</span>
-            <span class="n">fix_data</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">pol90</span> <span class="o">=</span> <span class="n">PolParam</span><span class="p">(</span>
-            <span class="s2">&quot;90&quot;</span><span class="p">,</span>
-            <span class="n">single_pol_subimages</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">angle_dic</span><span class="p">[</span><span class="mi">90</span><span class="p">]],</span>
-            <span class="s2">&quot;90 deg orientation pixels&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;DN&quot;</span><span class="p">,</span>
-            <span class="n">fix_data</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_get_theo_Stokes_vec_components</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">single_pol_images</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -389,7 +399,6 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">demosaic</span><span class="p">()</span>
         <span class="n">demosaiced_images</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">demosaiced_images</span>
-        <span class="c1"># demosaiced_images = demosaic(self.data, self.demosaic_mode)</span>
 
         <span class="c1"># IMG = np.array(</span>
         <span class="c1">#    [</span>
@@ -444,7 +453,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">-</span> <span class="n">dark</span><span class="o">.</span><span class="n">data</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>  <span class="c1"># Fix data</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_set_data_and_Stokes</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_Stokes_vec</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_dark_subtracted</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">return</span> <span class="bp">self</span></div>
 
@@ -467,7 +476,7 @@
 
         <span class="c1"># self.data = np.where(self.data &gt;= 0, self.data, 0)</span>
         <span class="c1"># self.data = np.where(self.data &lt; 4096, self.data, 4096)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_set_data_and_Stokes</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_Stokes_vec</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_flat_subtracted</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">return</span> <span class="bp">self</span></div>
 
@@ -479,7 +488,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">corrected_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
         <span class="n">corrected_data</span> <span class="o">=</span> <span class="n">ifov_jitcorrect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_set_data_and_Stokes</span><span class="p">(</span><span class="n">corrected_data</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_data_and_Stokes</span><span class="p">(</span><span class="n">corrected_data</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span></div>
 
     <span class="c1"># ----------------------------------------------------------------</span>
@@ -730,6 +739,7 @@
         <span class="c1"># filename_with_ID = (</span>
         <span class="c1">#    filename.split(&quot;.&quot;)[-2] + &quot;_&quot; + polparam.ID + &quot;.fits&quot;</span>
         <span class="c1"># )</span>
+
         <span class="n">hdu</span><span class="o">.</span><span class="n">writeto</span><span class="p">(</span><span class="n">filename_with_ID</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="n">filename_with_ID</span><span class="si">}</span><span class="s1">&quot; </span><span class="si">{</span><span class="n">polparam</span><span class="o">.</span><span class="n">ID</span><span class="si">}</span><span class="s1"> successfully saved&#39;</span><span class="p">)</span></div>
 
@@ -809,17 +819,20 @@
     <span class="c1"># ----------------------------------------------------------------</span>
     <span class="c1"># -------------------- DATA MANIPULATION -------------------------</span>
     <span class="c1"># ----------------------------------------------------------------</span>
-<div class="viewcode-block" id="MicropolImage.demosaic"><a class="viewcode-back" href="../../micropolarray.html#micropolarray.micropol_image.MicropolImage.demosaic">[docs]</a>    <span class="k">def</span> <span class="nf">demosaic</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MicropolImage</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a demosaiced copy of the image with updated polarization parameters.</span>
+<div class="viewcode-block" id="MicropolImage.demosaic"><a class="viewcode-back" href="../../micropolarray.html#micropolarray.micropol_image.MicropolImage.demosaic">[docs]</a>    <span class="k">def</span> <span class="nf">demosaic</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">demosaic_mode</span><span class="o">=</span><span class="s2">&quot;adjacent&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MicropolImage</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a demosaiced copy of the image with updated polarization parameters. Demoisacing is done IN PLACE.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            demosaic_mode (str, optional): demosaicing mode (see processing.demosaic). Defaults to &quot;adjacent&quot;.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            MicropolImage: demosaiced image</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">demosaiced_images</span> <span class="o">=</span> <span class="n">demosaic</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">option</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">demosaic_mode</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">demosaiced_images</span> <span class="o">=</span> <span class="n">demosaic</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">option</span><span class="o">=</span><span class="n">demosaic_mode</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">Stokes_vec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_theo_Stokes_vec_components</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">demosaiced_images</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_update_stokes_derived_internal_dataclasses</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_is_demosaiced</span> <span class="o">=</span> <span class="kc">True</span>
 
         <span class="k">return</span> <span class="bp">self</span></div>
@@ -841,12 +854,12 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Negative binning </span><span class="si">{</span><span class="n">binning</span><span class="si">}</span><span class="s2">x</span><span class="si">{</span><span class="n">binning</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="n">rebinned_image</span> <span class="o">=</span> <span class="n">MicropolImage</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="n">rebinned_data</span> <span class="o">=</span> <span class="n">micropolarray_rebin</span><span class="p">(</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">rebinned_image</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">double</span><span class="p">),</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">rebinned_image</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">),</span>
             <span class="o">*</span><span class="n">rebinned_image</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span>
             <span class="n">binning</span><span class="p">,</span>
         <span class="p">)</span>
 
-        <span class="n">rebinned_image</span><span class="o">.</span><span class="n">_set_data_and_Stokes</span><span class="p">(</span><span class="n">rebinned_data</span><span class="p">)</span>
+        <span class="n">rebinned_image</span><span class="o">.</span><span class="n">_update_data_and_Stokes</span><span class="p">(</span><span class="n">rebinned_data</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">rebinned_image</span></div>
 
@@ -862,29 +875,12 @@
             <span class="p">)</span>
 
         <span class="n">new_subdims</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">newdim_y</span> <span class="o">/</span> <span class="mi">2</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">newdim_x</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)]</span>
-        <span class="n">congridded_pol_images</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">]</span> <span class="o">*</span> <span class="mi">4</span>
+        <span class="n">congridded_pol_images</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="o">*</span><span class="n">new_subdims</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">subimage_i</span><span class="p">,</span> <span class="n">pol_subimage</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">single_pol_subimages</span><span class="p">):</span>
             <span class="n">congridded_pol_images</span><span class="p">[</span><span class="n">subimage_i</span><span class="p">]</span> <span class="o">=</span> <span class="n">congrid</span><span class="p">(</span>
                 <span class="n">pol_subimage</span><span class="p">,</span> <span class="n">new_subdims</span>
             <span class="p">)</span>
-
-        <span class="n">newdata</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">newdim_y</span><span class="p">,</span> <span class="n">newdim_x</span><span class="p">))</span>
-        <span class="k">for</span> <span class="n">pol_super_y</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">new_subdims</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
-            <span class="k">for</span> <span class="n">pol_super_x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">new_subdims</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
-                <span class="n">newdata</span><span class="p">[</span>
-                    <span class="n">pol_super_y</span> <span class="o">*</span> <span class="mi">2</span> <span class="p">:</span> <span class="n">pol_super_y</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">2</span><span class="p">,</span>
-                    <span class="n">pol_super_x</span> <span class="o">*</span> <span class="mi">2</span> <span class="p">:</span> <span class="n">pol_super_x</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">2</span><span class="p">,</span>
-                <span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
-                    <span class="p">[</span>
-                        <span class="n">congridded_pol_images</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">pol_super_y</span><span class="p">,</span> <span class="n">pol_super_x</span><span class="p">],</span>
-                        <span class="n">congridded_pol_images</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">pol_super_y</span><span class="p">,</span> <span class="n">pol_super_x</span><span class="p">],</span>
-                    <span class="p">],</span>
-                    <span class="p">[</span>
-                        <span class="n">congridded_pol_images</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="n">pol_super_y</span><span class="p">,</span> <span class="n">pol_super_x</span><span class="p">],</span>
-                        <span class="n">congridded_pol_images</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="n">pol_super_y</span><span class="p">,</span> <span class="n">pol_super_x</span><span class="p">],</span>
-                    <span class="p">],</span>
-                <span class="p">]</span>
-        <span class="n">newimage</span> <span class="o">=</span> <span class="n">MicropolImage</span><span class="p">(</span><span class="n">newdata</span><span class="p">)</span>
+        <span class="n">newimage</span> <span class="o">=</span> <span class="n">MicropolImage</span><span class="p">(</span><span class="n">merge_polarizations</span><span class="p">(</span><span class="n">congridded_pol_images</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">newimage</span></div>
 
 <div class="viewcode-block" id="MicropolImage.rotate"><a class="viewcode-back" href="../../micropolarray.html#micropolarray.micropol_image.MicropolImage.rotate">[docs]</a>    <span class="k">def</span> <span class="nf">rotate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">angle</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MicropolImage</span><span class="p">:</span>
@@ -927,18 +923,6 @@
             <span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">),</span>
             <span class="p">[</span><span class="n">r</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">))],</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">single_pol_subimages</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="n">roi_from_polar</span><span class="p">(</span>
-                <span class="n">data</span><span class="p">,</span>
-                <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">y</span> <span class="o">/</span> <span class="mi">2</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">x</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)),</span>
-                <span class="p">[</span>
-                    <span class="nb">int</span><span class="p">(</span><span class="n">r</span> <span class="o">/</span> <span class="mi">2</span><span class="p">),</span>
-                    <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">((</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">height</span> <span class="o">/</span> <span class="mi">2</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">width</span> <span class="o">/</span> <span class="mi">2</span><span class="p">))),</span>
-                <span class="p">],</span>
-            <span class="p">)</span>
-            <span class="k">for</span> <span class="n">data</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">single_pol_subimages</span>
-        <span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_update_single_pol_subimages</span><span class="p">()</span>  <span class="c1"># Updates polparam-like</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_demosaiced</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">demosaiced_images</span> <span class="o">=</span> <span class="p">[</span>
                 <span class="n">roi_from_polar</span><span class="p">(</span>
@@ -947,20 +931,7 @@
                     <span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">])),</span>
                 <span class="p">)</span>
                 <span class="k">for</span> <span class="n">data</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">demosaiced_images</span>
-            <span class="p">]</span>
-        <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">polparam_list</span><span class="p">:</span>
-            <span class="n">ratio</span> <span class="o">=</span> <span class="n">param</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="n">param</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">roi_from_polar</span><span class="p">(</span>
-                <span class="n">param</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
-                <span class="p">(</span>
-                    <span class="nb">int</span><span class="p">(</span><span class="n">y</span> <span class="o">*</span> <span class="n">ratio</span><span class="p">),</span>
-                    <span class="nb">int</span><span class="p">(</span><span class="n">x</span> <span class="o">*</span> <span class="n">ratio</span><span class="p">),</span>
-                <span class="p">),</span>
-                <span class="p">[</span>
-                    <span class="nb">int</span><span class="p">(</span><span class="n">r</span> <span class="o">*</span> <span class="n">ratio</span><span class="p">),</span>
-                    <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">((</span><span class="n">param</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">param</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])),</span>
-                <span class="p">],</span>
-            <span class="p">)</span></div>
+            <span class="p">]</span></div>
 
 <div class="viewcode-block" id="MicropolImage.shift"><a class="viewcode-back" href="../../micropolarray.html#micropolarray.micropol_image.MicropolImage.shift">[docs]</a>    <span class="k">def</span> <span class="nf">shift</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MicropolImage</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Shifts image by y, x pixels and fills with 0 the remaining space. Positive numbers for up/right shift and negative for down/left shift. Image is split into polarizations, each one is shifted, then they are merged again.</span>
@@ -975,7 +946,7 @@
         <span class="c1"># newdata = shift(self.data, y, x)</span>
         <span class="n">newdata</span> <span class="o">=</span> <span class="n">shift_micropol</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
         <span class="n">newimage</span> <span class="o">=</span> <span class="n">MicropolImage</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-        <span class="n">newimage</span><span class="o">.</span><span class="n">_set_data_and_Stokes</span><span class="p">(</span><span class="n">newdata</span><span class="p">)</span>
+        <span class="n">newimage</span><span class="o">.</span><span class="n">_update_data_and_Stokes</span><span class="p">(</span><span class="n">newdata</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">newimage</span></div>
 
@@ -1001,7 +972,7 @@
         <span class="p">)</span>
 
         <span class="n">newimage</span> <span class="o">=</span> <span class="n">MicropolImage</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-        <span class="n">newimage</span><span class="o">.</span><span class="n">_set_data_and_Stokes</span><span class="p">(</span><span class="n">merge_polarizations</span><span class="p">(</span><span class="n">subimages</span><span class="p">))</span>
+        <span class="n">newimage</span><span class="o">.</span><span class="n">_update_data_and_Stokes</span><span class="p">(</span><span class="n">merge_polarizations</span><span class="p">(</span><span class="n">subimages</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">newimage</span></div>
 
     <span class="c1"># ----------------------------------------------------------------</span>
@@ -1011,7 +982,7 @@
         <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">type</span><span class="p">(</span><span class="n">second</span><span class="p">):</span>
             <span class="n">newdata</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">+</span> <span class="n">second</span><span class="o">.</span><span class="n">data</span>
             <span class="n">newimage</span> <span class="o">=</span> <span class="n">MicropolImage</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-            <span class="n">newimage</span><span class="o">.</span><span class="n">_set_data_and_Stokes</span><span class="p">(</span><span class="n">newdata</span><span class="p">)</span>
+            <span class="n">newimage</span><span class="o">.</span><span class="n">_update_data_and_Stokes</span><span class="p">(</span><span class="n">newdata</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">newimage</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">newdata</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">+</span> <span class="n">second</span>
@@ -1021,7 +992,7 @@
         <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">type</span><span class="p">(</span><span class="n">second</span><span class="p">):</span>
             <span class="n">newdata</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">-</span> <span class="n">second</span><span class="o">.</span><span class="n">data</span>
             <span class="n">newimage</span> <span class="o">=</span> <span class="n">MicropolImage</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-            <span class="n">newimage</span><span class="o">.</span><span class="n">_set_data_and_Stokes</span><span class="p">(</span><span class="n">newdata</span><span class="p">)</span>
+            <span class="n">newimage</span><span class="o">.</span><span class="n">_update_data_and_Stokes</span><span class="p">(</span><span class="n">newdata</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">newimage</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">newdata</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">-</span> <span class="n">second</span>
@@ -1031,7 +1002,7 @@
         <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">type</span><span class="p">(</span><span class="n">second</span><span class="p">):</span>
             <span class="n">newdata</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">*</span> <span class="n">second</span><span class="o">.</span><span class="n">data</span>
             <span class="n">newimage</span> <span class="o">=</span> <span class="n">MicropolImage</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-            <span class="n">newimage</span><span class="o">.</span><span class="n">_set_data_and_Stokes</span><span class="p">(</span><span class="n">newdata</span><span class="p">)</span>
+            <span class="n">newimage</span><span class="o">.</span><span class="n">_update_data_and_Stokes</span><span class="p">(</span><span class="n">newdata</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">newimage</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">newdata</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">*</span> <span class="n">second</span>
@@ -1043,7 +1014,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">second</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="n">second</span><span class="o">.</span><span class="n">data</span> <span class="o">!=</span> <span class="mf">0.0</span>
             <span class="p">)</span>
             <span class="n">newimage</span> <span class="o">=</span> <span class="n">MicropolImage</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-            <span class="n">newimage</span><span class="o">.</span><span class="n">_set_data_and_Stokes</span><span class="p">(</span><span class="n">newdata</span><span class="p">)</span>
+            <span class="n">newimage</span><span class="o">.</span><span class="n">_update_data_and_Stokes</span><span class="p">(</span><span class="n">newdata</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">newimage</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># newdata = np.where(second != 0, self.data / second, 4096)</span>
@@ -1056,65 +1027,31 @@
 <span class="c1"># MicropolImage = MicropolImage</span>
 </pre></div>
 
+           </div>
           </div>
-          
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Herve Haudemand.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="../../index.html">micropolarray</a></h1>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
 
-
-
-
-
-
-
-
-<h3>Navigation</h3>
-
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="../../index.html">Documentation overview</a><ul>
-  <li><a href="../index.html">Module code</a><ul>
-  </ul></li>
-  </ul></li>
-</ul>
-</div>
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="Go" />
-    </form>
-    </div>
-</div>
-<script>document.getElementById('searchbox').style.display = "block"</script>
-
-
-
-
-
-
-
-
-        </div>
-      </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="footer">
-      &copy;2023, Herve Haudemand.
-      
-      |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 7.1.2</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.13</a>
-      
-    </div>
-
-    
-
-    
-  </body>
+</body>
 </html>

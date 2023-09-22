@@ -1,0 +1,25 @@
+\babel@toc {english}{}
+\contentsline {chapter}{\numberline {1}micropolarray package}{1}{chapter.1}%
+\contentsline {section}{\numberline {1.1}Subpackages}{1}{section.1.1}%
+\contentsline {subsection}{\numberline {1.1.1}micropolarray.processing package}{1}{subsection.1.1.1}%
+\contentsline {subsubsection}{\numberline {1.1.1.1}Submodules}{1}{subsubsection.1.1.1.1}%
+\contentsline {subsubsection}{\numberline {1.1.1.2}micropolarray.processing.chen\_wan\_liang\_calibration module}{1}{subsubsection.1.1.1.2}%
+\contentsline {subsubsection}{\numberline {1.1.1.3}micropolarray.processing.congrid module}{2}{subsubsection.1.1.1.3}%
+\contentsline {subsubsection}{\numberline {1.1.1.4}micropolarray.processing.convert module}{2}{subsubsection.1.1.1.4}%
+\contentsline {subsubsection}{\numberline {1.1.1.5}micropolarray.processing.demodulation module}{4}{subsubsection.1.1.1.5}%
+\contentsline {subsubsection}{\numberline {1.1.1.6}micropolarray.processing.demosaic module}{5}{subsubsection.1.1.1.6}%
+\contentsline {subsubsection}{\numberline {1.1.1.7}micropolarray.processing.hotpix\_cleaning module}{6}{subsubsection.1.1.1.7}%
+\contentsline {subsubsection}{\numberline {1.1.1.8}micropolarray.processing.nrgf module}{6}{subsubsection.1.1.1.8}%
+\contentsline {subsubsection}{\numberline {1.1.1.9}micropolarray.processing.rebin module}{7}{subsubsection.1.1.1.9}%
+\contentsline {subsubsection}{\numberline {1.1.1.10}micropolarray.processing.shift module}{9}{subsubsection.1.1.1.10}%
+\contentsline {subsubsection}{\numberline {1.1.1.11}Module contents}{9}{subsubsection.1.1.1.11}%
+\contentsline {section}{\numberline {1.2}Submodules}{9}{section.1.2}%
+\contentsline {section}{\numberline {1.3}micropolarray.cameras module}{9}{section.1.3}%
+\contentsline {section}{\numberline {1.4}micropolarray.image module}{10}{section.1.4}%
+\contentsline {section}{\numberline {1.5}micropolarray.micropol\_image module}{11}{section.1.5}%
+\contentsline {section}{\numberline {1.6}micropolarray.polarization\_functions module}{16}{section.1.6}%
+\contentsline {section}{\numberline {1.7}micropolarray.utils module}{16}{section.1.7}%
+\contentsline {section}{\numberline {1.8}Module contents}{18}{section.1.8}%
+\contentsline {chapter}{\numberline {2}Indices and tables}{19}{chapter.2}%
+\contentsline {chapter}{Python Module Index}{21}{section*.116}%
+\contentsline {chapter}{Index}{23}{section*.117}%

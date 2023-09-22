@@ -4,21 +4,24 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>micropolarray package &mdash; micropolarray 1.0.6 documentation</title>
+  <title>micropolarray package &mdash; micropolarray  documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
         <script src="_static/jquery.js?v=5d32c60e"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=c0ddf5a4"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=b3ba4146"></script>
         <script src="_static/doctools.js?v=888ff710"></script>
         <script src="_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" /> 
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="micropolarray.processing package" href="micropolarray.processing.html" />
+    <link rel="prev" title="Welcome to micropolarray’s documentation!" href="index.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -32,6 +35,9 @@
           <a href="index.html" class="icon icon-home">
             micropolarray
           </a>
+              <div class="version">
+                1.0.6
+              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
@@ -40,112 +46,111 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <!-- Local TOC -->
-              <div class="local-toc"><ul>
-<li><a class="reference internal" href="#">micropolarray package</a><ul>
-<li><a class="reference internal" href="#subpackages">Subpackages</a></li>
-<li><a class="reference internal" href="#submodules">Submodules</a></li>
-<li><a class="reference internal" href="#module-micropolarray.cameras">micropolarray.cameras module</a><ul>
-<li><a class="reference internal" href="#micropolarray.cameras.Antarticor"><code class="docutils literal notranslate"><span class="pre">Antarticor</span></code></a></li>
-<li><a class="reference internal" href="#micropolarray.cameras.Camera"><code class="docutils literal notranslate"><span class="pre">Camera</span></code></a><ul>
-<li><a class="reference internal" href="#micropolarray.cameras.Camera.occulter_mask"><code class="docutils literal notranslate"><span class="pre">Camera.occulter_mask()</span></code></a></li>
-<li><a class="reference internal" href="#micropolarray.cameras.Camera.occulter_roi"><code class="docutils literal notranslate"><span class="pre">Camera.occulter_roi()</span></code></a></li>
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">micropolarray package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#subpackages">Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="micropolarray.processing.html">micropolarray.processing package</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#micropolarray.cameras.Kasi"><code class="docutils literal notranslate"><span class="pre">Kasi</span></code></a></li>
-<li><a class="reference internal" href="#micropolarray.cameras.PolarCam"><code class="docutils literal notranslate"><span class="pre">PolarCam</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-micropolarray.cameras">micropolarray.cameras module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#micropolarray.cameras.Antarticor"><code class="docutils literal notranslate"><span class="pre">Antarticor</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#micropolarray.cameras.Camera"><code class="docutils literal notranslate"><span class="pre">Camera</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#micropolarray.cameras.Camera.occulter_mask"><code class="docutils literal notranslate"><span class="pre">Camera.occulter_mask()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#micropolarray.cameras.Camera.occulter_roi"><code class="docutils literal notranslate"><span class="pre">Camera.occulter_roi()</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#module-micropolarray.image">micropolarray.image module</a><ul>
-<li><a class="reference internal" href="#micropolarray.image.Image"><code class="docutils literal notranslate"><span class="pre">Image</span></code></a><ul>
-<li><a class="reference internal" href="#micropolarray.image.Image.save_as_fits"><code class="docutils literal notranslate"><span class="pre">Image.save_as_fits()</span></code></a></li>
-<li><a class="reference internal" href="#micropolarray.image.Image.save_as_raw"><code class="docutils literal notranslate"><span class="pre">Image.save_as_raw()</span></code></a></li>
-<li><a class="reference internal" href="#micropolarray.image.Image.show"><code class="docutils literal notranslate"><span class="pre">Image.show()</span></code></a></li>
-<li><a class="reference internal" href="#micropolarray.image.Image.show_histogram"><code class="docutils literal notranslate"><span class="pre">Image.show_histogram()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#micropolarray.cameras.Kasi"><code class="docutils literal notranslate"><span class="pre">Kasi</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#micropolarray.cameras.PolarCam"><code class="docutils literal notranslate"><span class="pre">PolarCam</span></code></a></li>
 </ul>
 </li>
-</ul>
-</li>
-<li><a class="reference internal" href="#module-micropolarray.micropol_image">micropolarray.micropol_image module</a><ul>
-<li><a class="reference internal" href="#micropolarray.micropol_image.MicropolImage"><code class="docutils literal notranslate"><span class="pre">MicropolImage</span></code></a><ul>
-<li><a class="reference internal" href="#micropolarray.micropol_image.MicropolImage.clean_hot_pixels"><code class="docutils literal notranslate"><span class="pre">MicropolImage.clean_hot_pixels()</span></code></a></li>
-<li><a class="reference internal" href="#micropolarray.micropol_image.MicropolImage.congrid"><code class="docutils literal notranslate"><span class="pre">MicropolImage.congrid()</span></code></a></li>
-<li><a class="reference internal" href="#micropolarray.micropol_image.MicropolImage.correct_flat"><code class="docutils literal notranslate"><span class="pre">MicropolImage.correct_flat()</span></code></a></li>
-<li><a class="reference internal" href="#micropolarray.micropol_image.MicropolImage.correct_ifov"><code class="docutils literal notranslate"><span class="pre">MicropolImage.correct_ifov()</span></code></a></li>
-<li><a class="reference internal" href="#micropolarray.micropol_image.MicropolImage.demodulate"><code class="docutils literal notranslate"><span class="pre">MicropolImage.demodulate()</span></code></a></li>
-<li><a class="reference internal" href="#micropolarray.micropol_image.MicropolImage.demosaic"><code class="docutils literal notranslate"><span class="pre">MicropolImage.demosaic()</span></code></a></li>
-<li><a class="reference internal" href="#micropolarray.micropol_image.MicropolImage.first_call"><code class="docutils literal notranslate"><span class="pre">MicropolImage.first_call</span></code></a></li>
-<li><a class="reference internal" href="#micropolarray.micropol_image.MicropolImage.mask_occulter"><code class="docutils literal notranslate"><span class="pre">MicropolImage.mask_occulter()</span></code></a></li>
-<li><a class="reference internal" href="#micropolarray.micropol_image.MicropolImage.rebin"><code class="docutils literal notranslate"><span class="pre">MicropolImage.rebin()</span></code></a></li>
-<li><a class="reference internal" href="#micropolarray.micropol_image.MicropolImage.rotate"><code class="docutils literal notranslate"><span class="pre">MicropolImage.rotate()</span></code></a></li>
-<li><a class="reference internal" href="#micropolarray.micropol_image.MicropolImage.save_all_pol_params_as_fits"><code class="docutils literal notranslate"><span class="pre">MicropolImage.save_all_pol_params_as_fits()</span></code></a></li>
-<li><a class="reference internal" href="#micropolarray.micropol_image.MicropolImage.save_demosaiced_images_as_fits"><code class="docutils literal notranslate"><span class="pre">MicropolImage.save_demosaiced_images_as_fits()</span></code></a></li>
-<li><a class="reference internal" href="#micropolarray.micropol_image.MicropolImage.save_param_as_fits"><code class="docutils literal notranslate"><span class="pre">MicropolImage.save_param_as_fits()</span></code></a></li>
-<li><a class="reference internal" href="#micropolarray.micropol_image.MicropolImage.save_single_pol_images"><code class="docutils literal notranslate"><span class="pre">MicropolImage.save_single_pol_images()</span></code></a></li>
-<li><a class="reference internal" href="#micropolarray.micropol_image.MicropolImage.set_data_only"><code class="docutils literal notranslate"><span class="pre">MicropolImage.set_data_only()</span></code></a></li>
-<li><a class="reference internal" href="#micropolarray.micropol_image.MicropolImage.shift"><code class="docutils literal notranslate"><span class="pre">MicropolImage.shift()</span></code></a></li>
-<li><a class="reference internal" href="#micropolarray.micropol_image.MicropolImage.show_demo_images"><code class="docutils literal notranslate"><span class="pre">MicropolImage.show_demo_images()</span></code></a></li>
-<li><a class="reference internal" href="#micropolarray.micropol_image.MicropolImage.show_pol_param"><code class="docutils literal notranslate"><span class="pre">MicropolImage.show_pol_param()</span></code></a></li>
-<li><a class="reference internal" href="#micropolarray.micropol_image.MicropolImage.show_single_pol_images"><code class="docutils literal notranslate"><span class="pre">MicropolImage.show_single_pol_images()</span></code></a></li>
-<li><a class="reference internal" href="#micropolarray.micropol_image.MicropolImage.show_with_pol_params"><code class="docutils literal notranslate"><span class="pre">MicropolImage.show_with_pol_params()</span></code></a></li>
-<li><a class="reference internal" href="#micropolarray.micropol_image.MicropolImage.subtract_dark"><code class="docutils literal notranslate"><span class="pre">MicropolImage.subtract_dark()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#micropolarray.micropol_image.PolParam"><code class="docutils literal notranslate"><span class="pre">PolParam</span></code></a><ul>
-<li><a class="reference internal" href="#micropolarray.micropol_image.PolParam.ID"><code class="docutils literal notranslate"><span class="pre">PolParam.ID</span></code></a></li>
-<li><a class="reference internal" href="#micropolarray.micropol_image.PolParam.data"><code class="docutils literal notranslate"><span class="pre">PolParam.data</span></code></a></li>
-<li><a class="reference internal" href="#micropolarray.micropol_image.PolParam.fix_data"><code class="docutils literal notranslate"><span class="pre">PolParam.fix_data</span></code></a></li>
-<li><a class="reference internal" href="#micropolarray.micropol_image.PolParam.measure_unit"><code class="docutils literal notranslate"><span class="pre">PolParam.measure_unit</span></code></a></li>
-<li><a class="reference internal" href="#micropolarray.micropol_image.PolParam.title"><code class="docutils literal notranslate"><span class="pre">PolParam.title</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#micropolarray.micropol_image.set_default_angles"><code class="docutils literal notranslate"><span class="pre">set_default_angles()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#module-micropolarray.parallelize">micropolarray.parallelize module</a><ul>
-<li><a class="reference internal" href="#micropolarray.parallelize.decompose_2d"><code class="docutils literal notranslate"><span class="pre">decompose_2d()</span></code></a></li>
-<li><a class="reference internal" href="#micropolarray.parallelize.recompose_2d"><code class="docutils literal notranslate"><span class="pre">recompose_2d()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#module-micropolarray.polarization_functions">micropolarray.polarization_functions module</a><ul>
-<li><a class="reference internal" href="#micropolarray.polarization_functions.AoLP"><code class="docutils literal notranslate"><span class="pre">AoLP()</span></code></a></li>
-<li><a class="reference internal" href="#micropolarray.polarization_functions.DoLP"><code class="docutils literal notranslate"><span class="pre">DoLP()</span></code></a></li>
-<li><a class="reference internal" href="#micropolarray.polarization_functions.normalize2pi"><code class="docutils literal notranslate"><span class="pre">normalize2pi()</span></code></a></li>
-<li><a class="reference internal" href="#micropolarray.polarization_functions.pB"><code class="docutils literal notranslate"><span class="pre">pB()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#module-micropolarray.test_v2">micropolarray.test_v2 module</a><ul>
-<li><a class="reference internal" href="#micropolarray.test_v2.dummy_data"><code class="docutils literal notranslate"><span class="pre">dummy_data()</span></code></a></li>
-<li><a class="reference internal" href="#micropolarray.test_v2.test_demodulation"><code class="docutils literal notranslate"><span class="pre">test_demodulation()</span></code></a></li>
-<li><a class="reference internal" href="#micropolarray.test_v2.test_demosaic"><code class="docutils literal notranslate"><span class="pre">test_demosaic()</span></code></a></li>
-<li><a class="reference internal" href="#micropolarray.test_v2.test_image_initialization"><code class="docutils literal notranslate"><span class="pre">test_image_initialization()</span></code></a></li>
-<li><a class="reference internal" href="#micropolarray.test_v2.test_image_writing"><code class="docutils literal notranslate"><span class="pre">test_image_writing()</span></code></a></li>
-<li><a class="reference internal" href="#micropolarray.test_v2.test_pol_parameters"><code class="docutils literal notranslate"><span class="pre">test_pol_parameters()</span></code></a></li>
-<li><a class="reference internal" href="#micropolarray.test_v2.test_rebinning"><code class="docutils literal notranslate"><span class="pre">test_rebinning()</span></code></a></li>
-<li><a class="reference internal" href="#micropolarray.test_v2.write_temp_image"><code class="docutils literal notranslate"><span class="pre">write_temp_image()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#module-micropolarray.utils">micropolarray.utils module</a><ul>
-<li><a class="reference internal" href="#micropolarray.utils.align_keywords_and_data"><code class="docutils literal notranslate"><span class="pre">align_keywords_and_data()</span></code></a></li>
-<li><a class="reference internal" href="#micropolarray.utils.fix_data"><code class="docutils literal notranslate"><span class="pre">fix_data()</span></code></a></li>
-<li><a class="reference internal" href="#micropolarray.utils.get_Bsun_units"><code class="docutils literal notranslate"><span class="pre">get_Bsun_units()</span></code></a></li>
-<li><a class="reference internal" href="#micropolarray.utils.get_malus_normalization"><code class="docutils literal notranslate"><span class="pre">get_malus_normalization()</span></code></a></li>
-<li><a class="reference internal" href="#micropolarray.utils.make_abs_and_create_dir"><code class="docutils literal notranslate"><span class="pre">make_abs_and_create_dir()</span></code></a></li>
-<li><a class="reference internal" href="#micropolarray.utils.make_abs_and_create_dir_old"><code class="docutils literal notranslate"><span class="pre">make_abs_and_create_dir_old()</span></code></a></li>
-<li><a class="reference internal" href="#micropolarray.utils.mean_minus_std"><code class="docutils literal notranslate"><span class="pre">mean_minus_std()</span></code></a></li>
-<li><a class="reference internal" href="#micropolarray.utils.mean_plus_std"><code class="docutils literal notranslate"><span class="pre">mean_plus_std()</span></code></a></li>
-<li><a class="reference internal" href="#micropolarray.utils.median_minus_std"><code class="docutils literal notranslate"><span class="pre">median_minus_std()</span></code></a></li>
-<li><a class="reference internal" href="#micropolarray.utils.median_plus_std"><code class="docutils literal notranslate"><span class="pre">median_plus_std()</span></code></a></li>
-<li><a class="reference internal" href="#micropolarray.utils.normalize2pi"><code class="docutils literal notranslate"><span class="pre">normalize2pi()</span></code></a></li>
-<li><a class="reference internal" href="#micropolarray.utils.sigma_DN"><code class="docutils literal notranslate"><span class="pre">sigma_DN()</span></code></a></li>
-<li><a class="reference internal" href="#micropolarray.utils.timer"><code class="docutils literal notranslate"><span class="pre">timer()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#module-micropolarray">Module contents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-micropolarray.image">micropolarray.image module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#micropolarray.image.Image"><code class="docutils literal notranslate"><span class="pre">Image</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#micropolarray.image.Image.data"><code class="docutils literal notranslate"><span class="pre">Image.data</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#micropolarray.image.Image.save_as_fits"><code class="docutils literal notranslate"><span class="pre">Image.save_as_fits()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#micropolarray.image.Image.save_as_raw"><code class="docutils literal notranslate"><span class="pre">Image.save_as_raw()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#micropolarray.image.Image.show"><code class="docutils literal notranslate"><span class="pre">Image.show()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#micropolarray.image.Image.show_histogram"><code class="docutils literal notranslate"><span class="pre">Image.show_histogram()</span></code></a></li>
 </ul>
 </li>
 </ul>
-</div>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-micropolarray.micropol_image">micropolarray.micropol_image module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#micropolarray.micropol_image.MicropolImage"><code class="docutils literal notranslate"><span class="pre">MicropolImage</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#micropolarray.micropol_image.MicropolImage.AoLP"><code class="docutils literal notranslate"><span class="pre">MicropolImage.AoLP</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#micropolarray.micropol_image.MicropolImage.DoLP"><code class="docutils literal notranslate"><span class="pre">MicropolImage.DoLP</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#micropolarray.micropol_image.MicropolImage.I"><code class="docutils literal notranslate"><span class="pre">MicropolImage.I</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#micropolarray.micropol_image.MicropolImage.Q"><code class="docutils literal notranslate"><span class="pre">MicropolImage.Q</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#micropolarray.micropol_image.MicropolImage.U"><code class="docutils literal notranslate"><span class="pre">MicropolImage.U</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#micropolarray.micropol_image.MicropolImage.clean_hot_pixels"><code class="docutils literal notranslate"><span class="pre">MicropolImage.clean_hot_pixels()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#micropolarray.micropol_image.MicropolImage.congrid"><code class="docutils literal notranslate"><span class="pre">MicropolImage.congrid()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#micropolarray.micropol_image.MicropolImage.correct_flat"><code class="docutils literal notranslate"><span class="pre">MicropolImage.correct_flat()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#micropolarray.micropol_image.MicropolImage.correct_ifov"><code class="docutils literal notranslate"><span class="pre">MicropolImage.correct_ifov()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#micropolarray.micropol_image.MicropolImage.demodulate"><code class="docutils literal notranslate"><span class="pre">MicropolImage.demodulate()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#micropolarray.micropol_image.MicropolImage.demosaic"><code class="docutils literal notranslate"><span class="pre">MicropolImage.demosaic()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#micropolarray.micropol_image.MicropolImage.first_call"><code class="docutils literal notranslate"><span class="pre">MicropolImage.first_call</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#micropolarray.micropol_image.MicropolImage.mask_occulter"><code class="docutils literal notranslate"><span class="pre">MicropolImage.mask_occulter()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#micropolarray.micropol_image.MicropolImage.pB"><code class="docutils literal notranslate"><span class="pre">MicropolImage.pB</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#micropolarray.micropol_image.MicropolImage.pol0"><code class="docutils literal notranslate"><span class="pre">MicropolImage.pol0</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#micropolarray.micropol_image.MicropolImage.pol45"><code class="docutils literal notranslate"><span class="pre">MicropolImage.pol45</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#micropolarray.micropol_image.MicropolImage.pol90"><code class="docutils literal notranslate"><span class="pre">MicropolImage.pol90</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#micropolarray.micropol_image.MicropolImage.pol_45"><code class="docutils literal notranslate"><span class="pre">MicropolImage.pol_45</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#micropolarray.micropol_image.MicropolImage.polparam_list"><code class="docutils literal notranslate"><span class="pre">MicropolImage.polparam_list</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#micropolarray.micropol_image.MicropolImage.rebin"><code class="docutils literal notranslate"><span class="pre">MicropolImage.rebin()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#micropolarray.micropol_image.MicropolImage.rotate"><code class="docutils literal notranslate"><span class="pre">MicropolImage.rotate()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#micropolarray.micropol_image.MicropolImage.save_all_pol_params_as_fits"><code class="docutils literal notranslate"><span class="pre">MicropolImage.save_all_pol_params_as_fits()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#micropolarray.micropol_image.MicropolImage.save_demosaiced_images_as_fits"><code class="docutils literal notranslate"><span class="pre">MicropolImage.save_demosaiced_images_as_fits()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#micropolarray.micropol_image.MicropolImage.save_param_as_fits"><code class="docutils literal notranslate"><span class="pre">MicropolImage.save_param_as_fits()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#micropolarray.micropol_image.MicropolImage.save_single_pol_images"><code class="docutils literal notranslate"><span class="pre">MicropolImage.save_single_pol_images()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#micropolarray.micropol_image.MicropolImage.shift"><code class="docutils literal notranslate"><span class="pre">MicropolImage.shift()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#micropolarray.micropol_image.MicropolImage.show_demo_images"><code class="docutils literal notranslate"><span class="pre">MicropolImage.show_demo_images()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#micropolarray.micropol_image.MicropolImage.show_pol_param"><code class="docutils literal notranslate"><span class="pre">MicropolImage.show_pol_param()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#micropolarray.micropol_image.MicropolImage.show_single_pol_images"><code class="docutils literal notranslate"><span class="pre">MicropolImage.show_single_pol_images()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#micropolarray.micropol_image.MicropolImage.show_with_pol_params"><code class="docutils literal notranslate"><span class="pre">MicropolImage.show_with_pol_params()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#micropolarray.micropol_image.MicropolImage.single_pol_subimages"><code class="docutils literal notranslate"><span class="pre">MicropolImage.single_pol_subimages</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#micropolarray.micropol_image.MicropolImage.subtract_dark"><code class="docutils literal notranslate"><span class="pre">MicropolImage.subtract_dark()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#micropolarray.micropol_image.PolParam"><code class="docutils literal notranslate"><span class="pre">PolParam</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#micropolarray.micropol_image.PolParam.ID"><code class="docutils literal notranslate"><span class="pre">PolParam.ID</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#micropolarray.micropol_image.PolParam.data"><code class="docutils literal notranslate"><span class="pre">PolParam.data</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#micropolarray.micropol_image.PolParam.fix_data"><code class="docutils literal notranslate"><span class="pre">PolParam.fix_data</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#micropolarray.micropol_image.PolParam.measure_unit"><code class="docutils literal notranslate"><span class="pre">PolParam.measure_unit</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#micropolarray.micropol_image.PolParam.title"><code class="docutils literal notranslate"><span class="pre">PolParam.title</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#micropolarray.micropol_image.set_default_angles"><code class="docutils literal notranslate"><span class="pre">set_default_angles()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-micropolarray.polarization_functions">micropolarray.polarization_functions module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#micropolarray.polarization_functions.AoLP"><code class="docutils literal notranslate"><span class="pre">AoLP()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#micropolarray.polarization_functions.DoLP"><code class="docutils literal notranslate"><span class="pre">DoLP()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#micropolarray.polarization_functions.normalize2pi"><code class="docutils literal notranslate"><span class="pre">normalize2pi()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#micropolarray.polarization_functions.pB"><code class="docutils literal notranslate"><span class="pre">pB()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-micropolarray.utils">micropolarray.utils module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#micropolarray.utils.align_keywords_and_data"><code class="docutils literal notranslate"><span class="pre">align_keywords_and_data()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#micropolarray.utils.fix_data"><code class="docutils literal notranslate"><span class="pre">fix_data()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#micropolarray.utils.get_Bsun_units"><code class="docutils literal notranslate"><span class="pre">get_Bsun_units()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#micropolarray.utils.get_malus_normalization"><code class="docutils literal notranslate"><span class="pre">get_malus_normalization()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#micropolarray.utils.make_abs_and_create_dir"><code class="docutils literal notranslate"><span class="pre">make_abs_and_create_dir()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#micropolarray.utils.make_abs_and_create_dir_old"><code class="docutils literal notranslate"><span class="pre">make_abs_and_create_dir_old()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#micropolarray.utils.mean_minus_std"><code class="docutils literal notranslate"><span class="pre">mean_minus_std()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#micropolarray.utils.mean_plus_std"><code class="docutils literal notranslate"><span class="pre">mean_plus_std()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#micropolarray.utils.median_minus_std"><code class="docutils literal notranslate"><span class="pre">median_minus_std()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#micropolarray.utils.median_plus_std"><code class="docutils literal notranslate"><span class="pre">median_plus_std()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#micropolarray.utils.normalize2pi"><code class="docutils literal notranslate"><span class="pre">normalize2pi()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#micropolarray.utils.sigma_DN"><code class="docutils literal notranslate"><span class="pre">sigma_DN()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#micropolarray.utils.timer"><code class="docutils literal notranslate"><span class="pre">timer()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-micropolarray">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
         </div>
       </div>
     </nav>
@@ -335,6 +340,11 @@
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">micropolarray.image.</span></span><span class="sig-name descname"><span class="pre">Image</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">initializer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">np.ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#micropolarray.image.Image" title="micropolarray.image.Image"><span class="pre">Image</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">averageimages</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/micropolarray/image.html#Image"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#micropolarray.image.Image" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Basic image class. Can be initialized from a filename, a filenames list, a numpy array or another Image instance. If multiple filenames are provided, will perform the mean of them unless averageimages is False.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="micropolarray.image.Image.data">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">data</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ndarray</span></em><a class="headerlink" href="#micropolarray.image.Image.data" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="micropolarray.image.Image.save_as_fits">
 <span class="sig-name descname"><span class="pre">save_as_fits</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fixto</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/micropolarray/image.html#Image.save_as_fits"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#micropolarray.image.Image.save_as_fits" title="Permalink to this definition"></a></dt>
@@ -411,9 +421,34 @@
 <span id="micropolarray-micropol-image-module"></span><h2>micropolarray.micropol_image module<a class="headerlink" href="#module-micropolarray.micropol_image" title="Permalink to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="micropolarray.micropol_image.MicropolImage">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">micropolarray.micropol_image.</span></span><span class="sig-name descname"><span class="pre">MicropolImage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">initializer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">np.ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#micropolarray.micropol_image.MicropolImage" title="micropolarray.micropol_image.MicropolImage"><span class="pre">MicropolImage</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">angle_dic</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">demosaic_mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'adjacent'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dark</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#micropolarray.micropol_image.MicropolImage" title="micropolarray.micropol_image.MicropolImage"><span class="pre">MicropolImage</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flat</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#micropolarray.micropol_image.MicropolImage" title="micropolarray.micropol_image.MicropolImage"><span class="pre">MicropolImage</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">averageimages</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/micropolarray/micropol_image.html#MicropolImage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#micropolarray.micropol_image.MicropolImage" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">micropolarray.micropol_image.</span></span><span class="sig-name descname"><span class="pre">MicropolImage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">initializer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">np.ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#micropolarray.micropol_image.MicropolImage" title="micropolarray.micropol_image.MicropolImage"><span class="pre">MicropolImage</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">angle_dic</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dark</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#micropolarray.micropol_image.MicropolImage" title="micropolarray.micropol_image.MicropolImage"><span class="pre">MicropolImage</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flat</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#micropolarray.micropol_image.MicropolImage" title="micropolarray.micropol_image.MicropolImage"><span class="pre">MicropolImage</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">averageimages</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/micropolarray/micropol_image.html#MicropolImage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#micropolarray.micropol_image.MicropolImage" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#micropolarray.image.Image" title="micropolarray.image.Image"><code class="xref py py-class docutils literal notranslate"><span class="pre">Image</span></code></a></p>
 <p>Micro-polarizer array image class. Can be initialized from a 2d array, a list of 1 or more file names (use the boolean keyword averageimages to select if sum or average is taken) or another MicropolImage. Dark and flat micropolarray images can also be provided to automatically correct the result.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="micropolarray.micropol_image.MicropolImage.AoLP">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">AoLP</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#micropolarray.micropol_image.PolParam" title="micropolarray.micropol_image.PolParam"><span class="pre">PolParam</span></a></em><a class="headerlink" href="#micropolarray.micropol_image.MicropolImage.AoLP" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="micropolarray.micropol_image.MicropolImage.DoLP">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DoLP</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#micropolarray.micropol_image.PolParam" title="micropolarray.micropol_image.PolParam"><span class="pre">PolParam</span></a></em><a class="headerlink" href="#micropolarray.micropol_image.MicropolImage.DoLP" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="micropolarray.micropol_image.MicropolImage.I">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">I</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#micropolarray.micropol_image.PolParam" title="micropolarray.micropol_image.PolParam"><span class="pre">PolParam</span></a></em><a class="headerlink" href="#micropolarray.micropol_image.MicropolImage.I" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="micropolarray.micropol_image.MicropolImage.Q">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Q</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#micropolarray.micropol_image.PolParam" title="micropolarray.micropol_image.PolParam"><span class="pre">PolParam</span></a></em><a class="headerlink" href="#micropolarray.micropol_image.MicropolImage.Q" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="micropolarray.micropol_image.MicropolImage.U">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">U</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#micropolarray.micropol_image.PolParam" title="micropolarray.micropol_image.PolParam"><span class="pre">PolParam</span></a></em><a class="headerlink" href="#micropolarray.micropol_image.MicropolImage.U" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="micropolarray.micropol_image.MicropolImage.clean_hot_pixels">
 <span class="sig-name descname"><span class="pre">clean_hot_pixels</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flagged_hot_pix_map</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#micropolarray.micropol_image.MicropolImage" title="micropolarray.micropol_image.MicropolImage"><span class="pre">MicropolImage</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/micropolarray/micropol_image.html#MicropolImage.clean_hot_pixels"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#micropolarray.micropol_image.MicropolImage.clean_hot_pixels" title="Permalink to this definition"></a></dt>
@@ -479,7 +514,7 @@
 <dd class="field-even"><p><strong>ValueError</strong> – raised if image and demodulator do not have the same dimension, for example in case of different binning</p>
 </dd>
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>copy of the input image with I, Q, U, pB, DoLP, AoLP calculated from the demodulation tensor.</p>
+<dd class="field-odd"><p>copy of the input imagreturn e with I, Q, U, pB, DoLP, AoLP calculated from the demodulation tensor.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference internal" href="#micropolarray.micropol_image.MicropolImage" title="micropolarray.micropol_image.MicropolImage">MicropolImage</a></p>
@@ -489,14 +524,17 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="micropolarray.micropol_image.MicropolImage.demosaic">
-<span class="sig-name descname"><span class="pre">demosaic</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#micropolarray.micropol_image.MicropolImage" title="micropolarray.micropol_image.MicropolImage"><span class="pre">MicropolImage</span></a></span></span><a class="reference internal" href="_modules/micropolarray/micropol_image.html#MicropolImage.demosaic"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#micropolarray.micropol_image.MicropolImage.demosaic" title="Permalink to this definition"></a></dt>
-<dd><p>Returns a demosaiced copy of the image with updated polarization parameters.</p>
+<span class="sig-name descname"><span class="pre">demosaic</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">demosaic_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'adjacent'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#micropolarray.micropol_image.MicropolImage" title="micropolarray.micropol_image.MicropolImage"><span class="pre">MicropolImage</span></a></span></span><a class="reference internal" href="_modules/micropolarray/micropol_image.html#MicropolImage.demosaic"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#micropolarray.micropol_image.MicropolImage.demosaic" title="Permalink to this definition"></a></dt>
+<dd><p>Returns a demosaiced copy of the image with updated polarization parameters. Demoisacing is done IN PLACE.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>demosaiced image</p>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>demosaic_mode</strong> (<em>str</em><em>, </em><em>optional</em>) – demosaicing mode (see processing.demosaic). Defaults to “adjacent”.</p>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="#micropolarray.micropol_image.MicropolImage" title="micropolarray.micropol_image.MicropolImage">MicropolImage</a></p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>demosaiced image</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#micropolarray.micropol_image.MicropolImage" title="micropolarray.micropol_image.MicropolImage">MicropolImage</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -525,6 +563,36 @@
 </dd>
 </dl>
 </dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="micropolarray.micropol_image.MicropolImage.pB">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pB</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#micropolarray.micropol_image.PolParam" title="micropolarray.micropol_image.PolParam"><span class="pre">PolParam</span></a></em><a class="headerlink" href="#micropolarray.micropol_image.MicropolImage.pB" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="micropolarray.micropol_image.MicropolImage.pol0">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pol0</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#micropolarray.micropol_image.PolParam" title="micropolarray.micropol_image.PolParam"><span class="pre">PolParam</span></a></em><a class="headerlink" href="#micropolarray.micropol_image.MicropolImage.pol0" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="micropolarray.micropol_image.MicropolImage.pol45">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pol45</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#micropolarray.micropol_image.PolParam" title="micropolarray.micropol_image.PolParam"><span class="pre">PolParam</span></a></em><a class="headerlink" href="#micropolarray.micropol_image.MicropolImage.pol45" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="micropolarray.micropol_image.MicropolImage.pol90">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pol90</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#micropolarray.micropol_image.PolParam" title="micropolarray.micropol_image.PolParam"><span class="pre">PolParam</span></a></em><a class="headerlink" href="#micropolarray.micropol_image.MicropolImage.pol90" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="micropolarray.micropol_image.MicropolImage.pol_45">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pol_45</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#micropolarray.micropol_image.PolParam" title="micropolarray.micropol_image.PolParam"><span class="pre">PolParam</span></a></em><a class="headerlink" href="#micropolarray.micropol_image.MicropolImage.pol_45" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="micropolarray.micropol_image.MicropolImage.polparam_list">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">polparam_list</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span></em><a class="headerlink" href="#micropolarray.micropol_image.MicropolImage.polparam_list" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="micropolarray.micropol_image.MicropolImage.rebin">
@@ -618,11 +686,6 @@ binningxbinning. Sum bins by default.</p>
 </dd>
 </dl>
 </dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="micropolarray.micropol_image.MicropolImage.set_data_only">
-<span class="sig-name descname"><span class="pre">set_data_only</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/micropolarray/micropol_image.html#MicropolImage.set_data_only"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#micropolarray.micropol_image.MicropolImage.set_data_only" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="micropolarray.micropol_image.MicropolImage.shift">
@@ -720,6 +783,11 @@ Returned parameters:
 </dl>
 </dd></dl>
 
+<dl class="py property">
+<dt class="sig sig-object py" id="micropolarray.micropol_image.MicropolImage.single_pol_subimages">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">single_pol_subimages</span></span><a class="headerlink" href="#micropolarray.micropol_image.MicropolImage.single_pol_subimages" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="micropolarray.micropol_image.MicropolImage.subtract_dark">
 <span class="sig-name descname"><span class="pre">subtract_dark</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dark</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#micropolarray.micropol_image.MicropolImage" title="micropolarray.micropol_image.MicropolImage"><span class="pre">MicropolImage</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#micropolarray.micropol_image.MicropolImage" title="micropolarray.micropol_image.MicropolImage"><span class="pre">MicropolImage</span></a></span></span><a class="reference internal" href="_modules/micropolarray/micropol_image.html#MicropolImage.subtract_dark"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#micropolarray.micropol_image.MicropolImage.subtract_dark" title="Permalink to this definition"></a></dt>
@@ -741,7 +809,7 @@ Returned parameters:
 
 <dl class="py class">
 <dt class="sig sig-object py" id="micropolarray.micropol_image.PolParam">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">micropolarray.micropol_image.</span></span><span class="sig-name descname"><span class="pre">PolParam</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ID</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">measure_unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fix_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/micropolarray/micropol_image.html#PolParam"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#micropolarray.micropol_image.PolParam" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">micropolarray.micropol_image.</span></span><span class="sig-name descname"><span class="pre">PolParam</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ID</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">measure_unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fix_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/micropolarray/micropol_image.html#PolParam"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#micropolarray.micropol_image.PolParam" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Auxiliary class for polarization parameters.</p>
 <dl class="simple">
@@ -764,7 +832,7 @@ fix_data (bool): controls whether data has to be constrained to [0, 4096] interv
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="micropolarray.micropol_image.PolParam.fix_data">
-<span class="sig-name descname"><span class="pre">fix_data</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#micropolarray.micropol_image.PolParam.fix_data" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">fix_data</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#micropolarray.micropol_image.PolParam.fix_data" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -789,19 +857,6 @@ fix_data (bool): controls whether data has to be constrained to [0, 4096] interv
 </dd>
 </dl>
 </dd></dl>
-
-</section>
-<section id="module-micropolarray.parallelize">
-<span id="micropolarray-parallelize-module"></span><h2>micropolarray.parallelize module<a class="headerlink" href="#module-micropolarray.parallelize" title="Permalink to this heading"></a></h2>
-<dl class="py function">
-<dt class="sig sig-object py" id="micropolarray.parallelize.decompose_2d">
-<span class="sig-prename descclassname"><span class="pre">micropolarray.parallelize.</span></span><span class="sig-name descname"><span class="pre">decompose_2d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_of_chunks</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/micropolarray/parallelize.html#decompose_2d"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#micropolarray.parallelize.decompose_2d" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="micropolarray.parallelize.recompose_2d">
-<span class="sig-prename descclassname"><span class="pre">micropolarray.parallelize.</span></span><span class="sig-name descname"><span class="pre">recompose_2d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">splitted_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_of_chunks</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/micropolarray/parallelize.html#recompose_2d"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#micropolarray.parallelize.recompose_2d" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
 
 </section>
 <section id="module-micropolarray.polarization_functions">
@@ -839,57 +894,6 @@ fix_data (bool): controls whether data has to be constrained to [0, 4096] interv
 <dt class="sig sig-object py" id="micropolarray.polarization_functions.pB">
 <span class="sig-prename descclassname"><span class="pre">micropolarray.polarization_functions.</span></span><span class="sig-name descname"><span class="pre">pB</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Stokes_vec_components</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/micropolarray/polarization_functions.html#pB"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#micropolarray.polarization_functions.pB" title="Permalink to this definition"></a></dt>
 <dd><p>Polarized brighness in [%]</p>
-</dd></dl>
-
-</section>
-<section id="module-micropolarray.test_v2">
-<span id="micropolarray-test-v2-module"></span><h2>micropolarray.test_v2 module<a class="headerlink" href="#module-micropolarray.test_v2" title="Permalink to this heading"></a></h2>
-<dl class="py function">
-<dt class="sig sig-object py" id="micropolarray.test_v2.dummy_data">
-<span class="sig-prename descclassname"><span class="pre">micropolarray.test_v2.</span></span><span class="sig-name descname"><span class="pre">dummy_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/micropolarray/test_v2.html#dummy_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#micropolarray.test_v2.dummy_data" title="Permalink to this definition"></a></dt>
-<dd><p>Dummy data factory</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="micropolarray.test_v2.test_demodulation">
-<span class="sig-prename descclassname"><span class="pre">micropolarray.test_v2.</span></span><span class="sig-name descname"><span class="pre">test_demodulation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dummy_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tmp_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/micropolarray/test_v2.html#test_demodulation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#micropolarray.test_v2.test_demodulation" title="Permalink to this definition"></a></dt>
-<dd><p>Create a dummy demodulation matrix, save it, read it then use it to demodulate. Check if demodulation is correctly done.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="micropolarray.test_v2.test_demosaic">
-<span class="sig-prename descclassname"><span class="pre">micropolarray.test_v2.</span></span><span class="sig-name descname"><span class="pre">test_demosaic</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dummy_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tmp_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/micropolarray/test_v2.html#test_demosaic"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#micropolarray.test_v2.test_demosaic" title="Permalink to this definition"></a></dt>
-<dd><p>Tests demosaic operation and demosaic writing</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="micropolarray.test_v2.test_image_initialization">
-<span class="sig-prename descclassname"><span class="pre">micropolarray.test_v2.</span></span><span class="sig-name descname"><span class="pre">test_image_initialization</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dummy_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tmp_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/micropolarray/test_v2.html#test_image_initialization"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#micropolarray.test_v2.test_image_initialization" title="Permalink to this definition"></a></dt>
-<dd><p>Tests the initialization of both Image and MicroPolArrayImage</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="micropolarray.test_v2.test_image_writing">
-<span class="sig-prename descclassname"><span class="pre">micropolarray.test_v2.</span></span><span class="sig-name descname"><span class="pre">test_image_writing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dummy_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tmp_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/micropolarray/test_v2.html#test_image_writing"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#micropolarray.test_v2.test_image_writing" title="Permalink to this definition"></a></dt>
-<dd><p>Tests the saving of both Image and MicroPolArrayImage</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="micropolarray.test_v2.test_pol_parameters">
-<span class="sig-prename descclassname"><span class="pre">micropolarray.test_v2.</span></span><span class="sig-name descname"><span class="pre">test_pol_parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dummy_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/micropolarray/test_v2.html#test_pol_parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#micropolarray.test_v2.test_pol_parameters" title="Permalink to this definition"></a></dt>
-<dd><p>Test if polarization parameters are correcly computed</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="micropolarray.test_v2.test_rebinning">
-<span class="sig-prename descclassname"><span class="pre">micropolarray.test_v2.</span></span><span class="sig-name descname"><span class="pre">test_rebinning</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dummy_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/micropolarray/test_v2.html#test_rebinning"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#micropolarray.test_v2.test_rebinning" title="Permalink to this definition"></a></dt>
-<dd><p>Tests 2x2 and 4x4 binning (the other will be supposedly fine)</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="micropolarray.test_v2.write_temp_image">
-<span class="sig-prename descclassname"><span class="pre">micropolarray.test_v2.</span></span><span class="sig-name descname"><span class="pre">write_temp_image</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tmp_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/micropolarray/test_v2.html#write_temp_image"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#micropolarray.test_v2.write_temp_image" title="Permalink to this definition"></a></dt>
-<dd><p>Writes images to the temp folder for testing</p>
 </dd></dl>
 
 </section>
@@ -1069,7 +1073,10 @@ data [units of B_sun] = data[DN] * get_Bsun_units(mean_Bsun_brightness, texp_ima
 
            </div>
           </div>
-          <footer>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Welcome to micropolarray’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="micropolarray.processing.html" class="btn btn-neutral float-right" title="micropolarray.processing package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
 
   <hr/>
 

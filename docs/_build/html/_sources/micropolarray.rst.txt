@@ -36,26 +36,10 @@ micropolarray.micropol\_image module
    :undoc-members:
    :show-inheritance:
 
-micropolarray.parallelize module
---------------------------------
-
-.. automodule:: micropolarray.parallelize
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 micropolarray.polarization\_functions module
 --------------------------------------------
 
 .. automodule:: micropolarray.polarization_functions
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-micropolarray.test\_v2 module
------------------------------
-
-.. automodule:: micropolarray.test_v2
    :members:
    :undoc-members:
    :show-inheritance:

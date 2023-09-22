@@ -255,11 +255,15 @@ class MicropolImage(Image):
     def demodulate(self, demodulator: Demodulator) -> MicropolImage:
         """Returns a MicropolImage with polarization parameters calculated from the demodulation tensor provided.
 
-        :param Demodulator demodulator: Demodulator object containing the demodulation tensor components (see processing.new_demodulation)
-        :raises ValueError: raised if image and demodulator do not have the same dimension, for example in case of different binning
-        :return MicropolImage: copy of the input imagreturn e with I, Q, U, pB, DoLP, AoLP calculated from the demodulation tensor.
-        """
+        Args:
+            demodulator (Demodulator): Demodulator object containing the demodulation tensor components (see processing.new_demodulation)
 
+        Raises:
+            ValueError: raised if image and demodulator do not have the same dimension, for example in case of different binning
+
+        Returns:
+            MicropolImage: copy of the input imagreturn e with I, Q, U, pB, DoLP, AoLP calculated from the demodulation tensor.
+        """
         if (self.height, self.width) != (
             demodulator.mij.shape[2],
             demodulator.mij.shape[3],

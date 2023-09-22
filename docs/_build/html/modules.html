@@ -4,16 +4,17 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>micropolarray &mdash; micropolarray 1.0.6 documentation</title>
+  <title>micropolarray &mdash; micropolarray  documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
         <script src="_static/jquery.js?v=5d32c60e"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=c0ddf5a4"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=b3ba4146"></script>
         <script src="_static/doctools.js?v=888ff710"></script>
         <script src="_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="_static/js/theme.js"></script>
@@ -32,6 +33,9 @@
           <a href="index.html" class="icon icon-home">
             micropolarray
           </a>
+              <div class="version">
+                1.0.6
+              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
@@ -40,11 +44,11 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <!-- Local TOC -->
-              <div class="local-toc"><ul>
-<li><a class="reference internal" href="#">micropolarray</a></li>
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="micropolarray.html">micropolarray package</a></li>
 </ul>
-</div>
+
         </div>
       </div>
     </nav>
@@ -105,6 +109,7 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="micropolarray.html#module-micropolarray.image">micropolarray.image module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="micropolarray.html#micropolarray.image.Image"><code class="docutils literal notranslate"><span class="pre">Image</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="micropolarray.html#micropolarray.image.Image.data"><code class="docutils literal notranslate"><span class="pre">Image.data</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="micropolarray.html#micropolarray.image.Image.save_as_fits"><code class="docutils literal notranslate"><span class="pre">Image.save_as_fits()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="micropolarray.html#micropolarray.image.Image.save_as_raw"><code class="docutils literal notranslate"><span class="pre">Image.save_as_raw()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="micropolarray.html#micropolarray.image.Image.show"><code class="docutils literal notranslate"><span class="pre">Image.show()</span></code></a></li>
@@ -115,6 +120,11 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="micropolarray.html#module-micropolarray.micropol_image">micropolarray.micropol_image module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="micropolarray.html#micropolarray.micropol_image.MicropolImage"><code class="docutils literal notranslate"><span class="pre">MicropolImage</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="micropolarray.html#micropolarray.micropol_image.MicropolImage.AoLP"><code class="docutils literal notranslate"><span class="pre">MicropolImage.AoLP</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="micropolarray.html#micropolarray.micropol_image.MicropolImage.DoLP"><code class="docutils literal notranslate"><span class="pre">MicropolImage.DoLP</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="micropolarray.html#micropolarray.micropol_image.MicropolImage.I"><code class="docutils literal notranslate"><span class="pre">MicropolImage.I</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="micropolarray.html#micropolarray.micropol_image.MicropolImage.Q"><code class="docutils literal notranslate"><span class="pre">MicropolImage.Q</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="micropolarray.html#micropolarray.micropol_image.MicropolImage.U"><code class="docutils literal notranslate"><span class="pre">MicropolImage.U</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="micropolarray.html#micropolarray.micropol_image.MicropolImage.clean_hot_pixels"><code class="docutils literal notranslate"><span class="pre">MicropolImage.clean_hot_pixels()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="micropolarray.html#micropolarray.micropol_image.MicropolImage.congrid"><code class="docutils literal notranslate"><span class="pre">MicropolImage.congrid()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="micropolarray.html#micropolarray.micropol_image.MicropolImage.correct_flat"><code class="docutils literal notranslate"><span class="pre">MicropolImage.correct_flat()</span></code></a></li>
@@ -123,18 +133,24 @@
 <li class="toctree-l4"><a class="reference internal" href="micropolarray.html#micropolarray.micropol_image.MicropolImage.demosaic"><code class="docutils literal notranslate"><span class="pre">MicropolImage.demosaic()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="micropolarray.html#micropolarray.micropol_image.MicropolImage.first_call"><code class="docutils literal notranslate"><span class="pre">MicropolImage.first_call</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="micropolarray.html#micropolarray.micropol_image.MicropolImage.mask_occulter"><code class="docutils literal notranslate"><span class="pre">MicropolImage.mask_occulter()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="micropolarray.html#micropolarray.micropol_image.MicropolImage.pB"><code class="docutils literal notranslate"><span class="pre">MicropolImage.pB</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="micropolarray.html#micropolarray.micropol_image.MicropolImage.pol0"><code class="docutils literal notranslate"><span class="pre">MicropolImage.pol0</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="micropolarray.html#micropolarray.micropol_image.MicropolImage.pol45"><code class="docutils literal notranslate"><span class="pre">MicropolImage.pol45</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="micropolarray.html#micropolarray.micropol_image.MicropolImage.pol90"><code class="docutils literal notranslate"><span class="pre">MicropolImage.pol90</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="micropolarray.html#micropolarray.micropol_image.MicropolImage.pol_45"><code class="docutils literal notranslate"><span class="pre">MicropolImage.pol_45</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="micropolarray.html#micropolarray.micropol_image.MicropolImage.polparam_list"><code class="docutils literal notranslate"><span class="pre">MicropolImage.polparam_list</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="micropolarray.html#micropolarray.micropol_image.MicropolImage.rebin"><code class="docutils literal notranslate"><span class="pre">MicropolImage.rebin()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="micropolarray.html#micropolarray.micropol_image.MicropolImage.rotate"><code class="docutils literal notranslate"><span class="pre">MicropolImage.rotate()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="micropolarray.html#micropolarray.micropol_image.MicropolImage.save_all_pol_params_as_fits"><code class="docutils literal notranslate"><span class="pre">MicropolImage.save_all_pol_params_as_fits()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="micropolarray.html#micropolarray.micropol_image.MicropolImage.save_demosaiced_images_as_fits"><code class="docutils literal notranslate"><span class="pre">MicropolImage.save_demosaiced_images_as_fits()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="micropolarray.html#micropolarray.micropol_image.MicropolImage.save_param_as_fits"><code class="docutils literal notranslate"><span class="pre">MicropolImage.save_param_as_fits()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="micropolarray.html#micropolarray.micropol_image.MicropolImage.save_single_pol_images"><code class="docutils literal notranslate"><span class="pre">MicropolImage.save_single_pol_images()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="micropolarray.html#micropolarray.micropol_image.MicropolImage.set_data_only"><code class="docutils literal notranslate"><span class="pre">MicropolImage.set_data_only()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="micropolarray.html#micropolarray.micropol_image.MicropolImage.shift"><code class="docutils literal notranslate"><span class="pre">MicropolImage.shift()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="micropolarray.html#micropolarray.micropol_image.MicropolImage.show_demo_images"><code class="docutils literal notranslate"><span class="pre">MicropolImage.show_demo_images()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="micropolarray.html#micropolarray.micropol_image.MicropolImage.show_pol_param"><code class="docutils literal notranslate"><span class="pre">MicropolImage.show_pol_param()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="micropolarray.html#micropolarray.micropol_image.MicropolImage.show_single_pol_images"><code class="docutils literal notranslate"><span class="pre">MicropolImage.show_single_pol_images()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="micropolarray.html#micropolarray.micropol_image.MicropolImage.show_with_pol_params"><code class="docutils literal notranslate"><span class="pre">MicropolImage.show_with_pol_params()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="micropolarray.html#micropolarray.micropol_image.MicropolImage.single_pol_subimages"><code class="docutils literal notranslate"><span class="pre">MicropolImage.single_pol_subimages</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="micropolarray.html#micropolarray.micropol_image.MicropolImage.subtract_dark"><code class="docutils literal notranslate"><span class="pre">MicropolImage.subtract_dark()</span></code></a></li>
 </ul>
 </li>
@@ -149,27 +165,11 @@
 <li class="toctree-l3"><a class="reference internal" href="micropolarray.html#micropolarray.micropol_image.set_default_angles"><code class="docutils literal notranslate"><span class="pre">set_default_angles()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="micropolarray.html#module-micropolarray.parallelize">micropolarray.parallelize module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="micropolarray.html#micropolarray.parallelize.decompose_2d"><code class="docutils literal notranslate"><span class="pre">decompose_2d()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="micropolarray.html#micropolarray.parallelize.recompose_2d"><code class="docutils literal notranslate"><span class="pre">recompose_2d()</span></code></a></li>
-</ul>
-</li>
 <li class="toctree-l2"><a class="reference internal" href="micropolarray.html#module-micropolarray.polarization_functions">micropolarray.polarization_functions module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="micropolarray.html#micropolarray.polarization_functions.AoLP"><code class="docutils literal notranslate"><span class="pre">AoLP()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="micropolarray.html#micropolarray.polarization_functions.DoLP"><code class="docutils literal notranslate"><span class="pre">DoLP()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="micropolarray.html#micropolarray.polarization_functions.normalize2pi"><code class="docutils literal notranslate"><span class="pre">normalize2pi()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="micropolarray.html#micropolarray.polarization_functions.pB"><code class="docutils literal notranslate"><span class="pre">pB()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="micropolarray.html#module-micropolarray.test_v2">micropolarray.test_v2 module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="micropolarray.html#micropolarray.test_v2.dummy_data"><code class="docutils literal notranslate"><span class="pre">dummy_data()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="micropolarray.html#micropolarray.test_v2.test_demodulation"><code class="docutils literal notranslate"><span class="pre">test_demodulation()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="micropolarray.html#micropolarray.test_v2.test_demosaic"><code class="docutils literal notranslate"><span class="pre">test_demosaic()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="micropolarray.html#micropolarray.test_v2.test_image_initialization"><code class="docutils literal notranslate"><span class="pre">test_image_initialization()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="micropolarray.html#micropolarray.test_v2.test_image_writing"><code class="docutils literal notranslate"><span class="pre">test_image_writing()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="micropolarray.html#micropolarray.test_v2.test_pol_parameters"><code class="docutils literal notranslate"><span class="pre">test_pol_parameters()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="micropolarray.html#micropolarray.test_v2.test_rebinning"><code class="docutils literal notranslate"><span class="pre">test_rebinning()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="micropolarray.html#micropolarray.test_v2.write_temp_image"><code class="docutils literal notranslate"><span class="pre">write_temp_image()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="micropolarray.html#module-micropolarray.utils">micropolarray.utils module</a><ul>

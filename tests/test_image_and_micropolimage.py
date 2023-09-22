@@ -147,6 +147,7 @@ class TestMicropolImage:
         image = ml.MicropolImage(dummy_data_40)
         congridded_image = image.congrid(16, 16)
         assert np.all(congridded_image.data == dummy_data_16)
+        assert np.all(congridded_image.I.data == 0.5 * (1 + 2 + 3 + 4))
 
     def test_operations(self, dummy_data):
         data = np.ones(shape=(16, 16))
