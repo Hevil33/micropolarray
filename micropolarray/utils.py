@@ -16,29 +16,8 @@ from micropolarray.processing.demosaic import (
 )
 
 
-def make_abs_and_create_dir_old(filenames: str):
-    cwd = os.getcwd()
-    turned_to_list = False
-    if type(filenames) is not list:
-        turned_to_list = True
-        filenames = [filenames]
-    # Make path absolute, create dirs if not existing
-    for idx, filename in enumerate(filenames):
-        if not os.path.isabs(filename):
-            filename = cwd + os.path.sep + filename
-            filenames[idx] = filename
-        parent_dir = os.path.sep.join(filename.split(os.path.sep)[:-1])
-        if not os.path.exists(parent_dir):
-            os.makedirs(parent_dir)
-    if turned_to_list:
-        return filenames[0]
-    else:
-        return filenames
-
-
-def make_abs_and_create_dir(filename: str):
+def _make_abs_and_create_dir(filename: str):
     path = Path(filename)
-    print(path)
 
     if not path.is_absolute():  # suppose it is in cwd
         path = path.joinpath(Path().cwd(), path)

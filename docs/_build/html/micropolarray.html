@@ -131,8 +131,6 @@
 <li class="toctree-l3"><a class="reference internal" href="#micropolarray.utils.fix_data"><code class="docutils literal notranslate"><span class="pre">fix_data()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#micropolarray.utils.get_Bsun_units"><code class="docutils literal notranslate"><span class="pre">get_Bsun_units()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#micropolarray.utils.get_malus_normalization"><code class="docutils literal notranslate"><span class="pre">get_malus_normalization()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#micropolarray.utils.make_abs_and_create_dir"><code class="docutils literal notranslate"><span class="pre">make_abs_and_create_dir()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#micropolarray.utils.make_abs_and_create_dir_old"><code class="docutils literal notranslate"><span class="pre">make_abs_and_create_dir_old()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#micropolarray.utils.mean_minus_std"><code class="docutils literal notranslate"><span class="pre">mean_minus_std()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#micropolarray.utils.mean_plus_std"><code class="docutils literal notranslate"><span class="pre">mean_plus_std()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#micropolarray.utils.median_minus_std"><code class="docutils literal notranslate"><span class="pre">median_minus_std()</span></code></a></li>
@@ -180,15 +178,12 @@
 <li class="toctree-l1"><a class="reference internal" href="micropolarray.processing.html">micropolarray.processing package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="micropolarray.processing.html#submodules">Submodules</a></li>
 <li class="toctree-l2"><a class="reference internal" href="micropolarray.processing.html#module-micropolarray.processing.chen_wan_liang_calibration">micropolarray.processing.chen_wan_liang_calibration module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="micropolarray.processing.html#micropolarray.processing.chen_wan_liang_calibration.build_S_input"><code class="docutils literal notranslate"><span class="pre">build_S_input()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="micropolarray.processing.html#micropolarray.processing.chen_wan_liang_calibration.calculate_chen_wan_lian_calibration"><code class="docutils literal notranslate"><span class="pre">calculate_chen_wan_lian_calibration()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="micropolarray.processing.html#micropolarray.processing.chen_wan_liang_calibration.chen_wan_liang_calibration"><code class="docutils literal notranslate"><span class="pre">chen_wan_liang_calibration()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="micropolarray.processing.html#micropolarray.processing.chen_wan_liang_calibration.ifov_jitcorrect"><code class="docutils literal notranslate"><span class="pre">ifov_jitcorrect()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="micropolarray.processing.html#module-micropolarray.processing.congrid">micropolarray.processing.congrid module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="micropolarray.processing.html#micropolarray.processing.congrid.congrid"><code class="docutils literal notranslate"><span class="pre">congrid()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="micropolarray.processing.html#micropolarray.processing.congrid.interpolate"><code class="docutils literal notranslate"><span class="pre">interpolate()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="micropolarray.processing.html#micropolarray.processing.congrid.micropolarray_jitcongrid"><code class="docutils literal notranslate"><span class="pre">micropolarray_jitcongrid()</span></code></a></li>
 </ul>
 </li>
@@ -947,16 +942,6 @@ data [units of B_sun] = data[DN] * get_Bsun_units(mean_Bsun_brightness, texp_ima
 <dl class="py function">
 <dt class="sig sig-object py" id="micropolarray.utils.get_malus_normalization">
 <span class="sig-prename descclassname"><span class="pre">micropolarray.utils.</span></span><span class="sig-name descname"><span class="pre">get_malus_normalization</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">four_peaks_images</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_hist</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/micropolarray/utils.html#get_malus_normalization"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#micropolarray.utils.get_malus_normalization" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="micropolarray.utils.make_abs_and_create_dir">
-<span class="sig-prename descclassname"><span class="pre">micropolarray.utils.</span></span><span class="sig-name descname"><span class="pre">make_abs_and_create_dir</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/micropolarray/utils.html#make_abs_and_create_dir"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#micropolarray.utils.make_abs_and_create_dir" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="micropolarray.utils.make_abs_and_create_dir_old">
-<span class="sig-prename descclassname"><span class="pre">micropolarray.utils.</span></span><span class="sig-name descname"><span class="pre">make_abs_and_create_dir_old</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filenames</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/micropolarray/utils.html#make_abs_and_create_dir_old"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#micropolarray.utils.make_abs_and_create_dir_old" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py function">

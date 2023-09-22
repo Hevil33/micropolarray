@@ -15,11 +15,6 @@
 		\hyperpage{2}
 
   \indexspace
-  \bigletter B
-  \item \spxentry{build\_S\_input()}\spxextra{in module micropolarray.processing.chen\_wan\_liang\_calibration}, 
-		\hyperpage{1}
-
-  \indexspace
   \bigletter C
   \item \spxentry{calculate\_chen\_wan\_lian\_calibration()}\spxextra{in module micropolarray.processing.chen\_wan\_liang\_calibration}, 
 		\hyperpage{1}
@@ -36,7 +31,7 @@
   \item \spxentry{congrid()}\spxextra{micropolarray.micropol\_image.MicropolImage method}, 
 		\hyperpage{11}
   \item \spxentry{convert\_rawfile\_to\_fits()}\spxextra{in module micropolarray.processing.convert}, 
-		\hyperpage{3}
+		\hyperpage{2}
   \item \spxentry{convert\_set()}\spxextra{in module micropolarray.processing.convert}, 
 		\hyperpage{3}
   \item \spxentry{correct\_flat()}\spxextra{micropolarray.micropol\_image.MicropolImage method}, 
@@ -87,11 +82,7 @@
   \bigletter I
   \item \spxentry{I}\spxextra{micropolarray.micropol\_image.MicropolImage property}, \hyperpage{11}
   \item \spxentry{ID}\spxextra{micropolarray.micropol\_image.PolParam attribute}, \hyperpage{15}
-  \item \spxentry{ifov\_jitcorrect()}\spxextra{in module micropolarray.processing.chen\_wan\_liang\_calibration}, 
-		\hyperpage{2}
   \item \spxentry{Image}\spxextra{class in micropolarray.image}, \hyperpage{10}
-  \item \spxentry{interpolate()}\spxextra{in module micropolarray.processing.congrid}, 
-		\hyperpage{2}
 
   \indexspace
   \bigletter K
@@ -99,10 +90,6 @@
 
   \indexspace
   \bigletter M
-  \item \spxentry{make\_abs\_and\_create\_dir()}\spxextra{in module micropolarray.utils}, 
-		\hyperpage{17}
-  \item \spxentry{make\_abs\_and\_create\_dir\_old()}\spxextra{in module micropolarray.utils}, 
-		\hyperpage{17}
   \item \spxentry{Malus()}\spxextra{in module micropolarray.processing.demodulation}, \hyperpage{4}
   \item \spxentry{map\_polar\_coordinates()}\spxextra{in module micropolarray.processing.nrgf}, 
 		\hyperpage{6}

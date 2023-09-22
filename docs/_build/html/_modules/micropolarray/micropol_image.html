@@ -84,7 +84,9 @@
 <span class="kn">from</span> <span class="nn">micropolarray.cameras</span> <span class="kn">import</span> <span class="n">Camera</span><span class="p">,</span> <span class="n">PolarCam</span>
 <span class="kn">from</span> <span class="nn">micropolarray.image</span> <span class="kn">import</span> <span class="n">Image</span>
 <span class="kn">from</span> <span class="nn">micropolarray.polarization_functions</span> <span class="kn">import</span> <span class="n">AoLP</span><span class="p">,</span> <span class="n">DoLP</span><span class="p">,</span> <span class="n">pB</span>
-<span class="kn">from</span> <span class="nn">micropolarray.processing.chen_wan_liang_calibration</span> <span class="kn">import</span> <span class="n">ifov_jitcorrect</span>
+<span class="kn">from</span> <span class="nn">micropolarray.processing.chen_wan_liang_calibration</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">_ifov_jitcorrect</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span> <span class="nn">micropolarray.processing.congrid</span> <span class="kn">import</span> <span class="n">congrid</span>
 <span class="kn">from</span> <span class="nn">micropolarray.processing.demodulation</span> <span class="kn">import</span> <span class="n">Demodulator</span>
 <span class="kn">from</span> <span class="nn">micropolarray.processing.demosaic</span> <span class="kn">import</span> <span class="p">(</span>
@@ -96,8 +98,8 @@
 <span class="kn">from</span> <span class="nn">micropolarray.processing.rebin</span> <span class="kn">import</span> <span class="n">micropolarray_rebin</span>
 <span class="kn">from</span> <span class="nn">micropolarray.processing.shift</span> <span class="kn">import</span> <span class="n">shift_micropol</span>
 <span class="kn">from</span> <span class="nn">micropolarray.utils</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">_make_abs_and_create_dir</span><span class="p">,</span>
     <span class="n">fix_data</span><span class="p">,</span>
-    <span class="n">make_abs_and_create_dir</span><span class="p">,</span>
     <span class="n">mean_minus_std</span><span class="p">,</span>
     <span class="n">mean_plus_std</span><span class="p">,</span>
 <span class="p">)</span>
@@ -483,7 +485,7 @@
 <span class="sd">            MicropolImage: image with data corrected for field of view differences</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">corrected_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-        <span class="n">corrected_data</span> <span class="o">=</span> <span class="n">ifov_jitcorrect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">)</span>
+        <span class="n">corrected_data</span> <span class="o">=</span> <span class="n">_ifov_jitcorrect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_update_data_and_Stokes</span><span class="p">(</span><span class="n">corrected_data</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span></div>
 
@@ -668,7 +670,7 @@
 <span class="sd">            ValueError: an invalid file name is provided</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">polslist</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">pol0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pol45</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pol90</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pol_45</span><span class="p">]</span>
-        <span class="n">filepath</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">make_abs_and_create_dir</span><span class="p">(</span><span class="n">filename</span><span class="p">))</span>
+        <span class="n">filepath</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">_make_abs_and_create_dir</span><span class="p">(</span><span class="n">filename</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">filepath</span><span class="o">.</span><span class="n">suffix</span> <span class="o">!=</span> <span class="s2">&quot;.fits&quot;</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;filename must be a valid file name, not folder.&quot;</span><span class="p">)</span>
         <span class="n">group_filepath</span> <span class="o">=</span> <span class="n">filepath</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="n">filepath</span><span class="o">.</span><span class="n">parent</span><span class="p">,</span> <span class="n">filepath</span><span class="o">.</span><span class="n">stem</span><span class="p">)</span>
@@ -709,7 +711,7 @@
 <span class="sd">        Raises:</span>
 <span class="sd">            ValueError: filename is not a valid .fits file</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">filepath</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">make_abs_and_create_dir</span><span class="p">(</span><span class="n">filename</span><span class="p">))</span>
+        <span class="n">filepath</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">_make_abs_and_create_dir</span><span class="p">(</span><span class="n">filename</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">filepath</span><span class="o">.</span><span class="n">suffix</span> <span class="o">!=</span> <span class="s2">&quot;.fits&quot;</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;filename must be a valid file name, not folder.&quot;</span><span class="p">)</span>
         <span class="n">hdr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
@@ -731,7 +733,7 @@
             <span class="p">)</span>
         <span class="p">)</span>
 
-        <span class="c1"># filename = make_abs_and_create_dir(filename)</span>
+        <span class="c1"># filename = _make_abs_and_create_dir(filename)</span>
         <span class="c1"># filename_with_ID = (</span>
         <span class="c1">#    filename.split(&quot;.&quot;)[-2] + &quot;_&quot; + polparam.ID + &quot;.fits&quot;</span>
         <span class="c1"># )</span>
@@ -751,7 +753,7 @@
         <span class="n">filepath</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">filepath</span><span class="o">.</span><span class="n">suffix</span> <span class="o">!=</span> <span class="s2">&quot;.fits&quot;</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;filename must be a valid file name, not folder.&quot;</span><span class="p">)</span>
-        <span class="n">filepath</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">make_abs_and_create_dir</span><span class="p">(</span><span class="n">filename</span><span class="p">))</span>
+        <span class="n">filepath</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">_make_abs_and_create_dir</span><span class="p">(</span><span class="n">filename</span><span class="p">))</span>
         <span class="n">group_filename</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">filepath</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="n">filepath</span><span class="o">.</span><span class="n">parent</span><span class="p">,</span> <span class="n">filepath</span><span class="o">.</span><span class="n">stem</span><span class="p">))</span>
         <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">polparam_list</span><span class="p">:</span>
             <span class="n">hdr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
@@ -789,7 +791,7 @@
         <span class="n">filepath</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">filepath</span><span class="o">.</span><span class="n">suffix</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;filename must be a valid file name, not folder.&quot;</span><span class="p">)</span>
-        <span class="n">filepath</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">make_abs_and_create_dir</span><span class="p">(</span><span class="n">filename</span><span class="p">))</span>
+        <span class="n">filepath</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">_make_abs_and_create_dir</span><span class="p">(</span><span class="n">filename</span><span class="p">))</span>
         <span class="n">group_filename</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">filepath</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="n">filepath</span><span class="o">.</span><span class="n">parent</span><span class="p">,</span> <span class="n">filepath</span><span class="o">.</span><span class="n">stem</span><span class="p">))</span>
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">demo_image</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">demosaiced_images</span><span class="p">):</span>
             <span class="n">POL_ID</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">angle_dic</span><span class="o">.</span><span class="n">keys</span><span class="p">())[</span>

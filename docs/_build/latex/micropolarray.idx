@@ -1,18 +1,15 @@
 \indexentry{module@\spxentry{module}!micropolarray.processing.chen\_wan\_liang\_calibration@\spxentry{micropolarray.processing.chen\_wan\_liang\_calibration}|hyperpage}{1}
 \indexentry{micropolarray.processing.chen\_wan\_liang\_calibration@\spxentry{micropolarray.processing.chen\_wan\_liang\_calibration}!module@\spxentry{module}|hyperpage}{1}
-\indexentry{build\_S\_input() (in module micropolarray.processing.chen\_wan\_liang\_calibration)@\spxentry{build\_S\_input()}\spxextra{in module micropolarray.processing.chen\_wan\_liang\_calibration}|hyperpage}{1}
 \indexentry{calculate\_chen\_wan\_lian\_calibration() (in module micropolarray.processing.chen\_wan\_liang\_calibration)@\spxentry{calculate\_chen\_wan\_lian\_calibration()}\spxextra{in module micropolarray.processing.chen\_wan\_liang\_calibration}|hyperpage}{1}
 \indexentry{chen\_wan\_liang\_calibration() (in module micropolarray.processing.chen\_wan\_liang\_calibration)@\spxentry{chen\_wan\_liang\_calibration()}\spxextra{in module micropolarray.processing.chen\_wan\_liang\_calibration}|hyperpage}{2}
-\indexentry{ifov\_jitcorrect() (in module micropolarray.processing.chen\_wan\_liang\_calibration)@\spxentry{ifov\_jitcorrect()}\spxextra{in module micropolarray.processing.chen\_wan\_liang\_calibration}|hyperpage}{2}
 \indexentry{module@\spxentry{module}!micropolarray.processing.congrid@\spxentry{micropolarray.processing.congrid}|hyperpage}{2}
 \indexentry{micropolarray.processing.congrid@\spxentry{micropolarray.processing.congrid}!module@\spxentry{module}|hyperpage}{2}
 \indexentry{congrid() (in module micropolarray.processing.congrid)@\spxentry{congrid()}\spxextra{in module micropolarray.processing.congrid}|hyperpage}{2}
-\indexentry{interpolate() (in module micropolarray.processing.congrid)@\spxentry{interpolate()}\spxextra{in module micropolarray.processing.congrid}|hyperpage}{2}
 \indexentry{micropolarray\_jitcongrid() (in module micropolarray.processing.congrid)@\spxentry{micropolarray\_jitcongrid()}\spxextra{in module micropolarray.processing.congrid}|hyperpage}{2}
 \indexentry{module@\spxentry{module}!micropolarray.processing.convert@\spxentry{micropolarray.processing.convert}|hyperpage}{2}
 \indexentry{micropolarray.processing.convert@\spxentry{micropolarray.processing.convert}!module@\spxentry{module}|hyperpage}{2}
 \indexentry{average\_rawfiles\_to\_fits() (in module micropolarray.processing.convert)@\spxentry{average\_rawfiles\_to\_fits()}\spxextra{in module micropolarray.processing.convert}|hyperpage}{2}
-\indexentry{convert\_rawfile\_to\_fits() (in module micropolarray.processing.convert)@\spxentry{convert\_rawfile\_to\_fits()}\spxextra{in module micropolarray.processing.convert}|hyperpage}{3}
+\indexentry{convert\_rawfile\_to\_fits() (in module micropolarray.processing.convert)@\spxentry{convert\_rawfile\_to\_fits()}\spxextra{in module micropolarray.processing.convert}|hyperpage}{2}
 \indexentry{convert\_set() (in module micropolarray.processing.convert)@\spxentry{convert\_set()}\spxextra{in module micropolarray.processing.convert}|hyperpage}{3}
 \indexentry{nparr\_from\_binary() (in module micropolarray.processing.convert)@\spxentry{nparr\_from\_binary()}\spxextra{in module micropolarray.processing.convert}|hyperpage}{3}
 \indexentry{three\_bytes\_to\_two\_ints() (in module micropolarray.processing.convert)@\spxentry{three\_bytes\_to\_two\_ints()}\spxextra{in module micropolarray.processing.convert}|hyperpage}{3}
@@ -132,8 +129,6 @@
 \indexentry{fix\_data() (in module micropolarray.utils)@\spxentry{fix\_data()}\spxextra{in module micropolarray.utils}|hyperpage}{17}
 \indexentry{get\_Bsun\_units() (in module micropolarray.utils)@\spxentry{get\_Bsun\_units()}\spxextra{in module micropolarray.utils}|hyperpage}{17}
 \indexentry{get\_malus\_normalization() (in module micropolarray.utils)@\spxentry{get\_malus\_normalization()}\spxextra{in module micropolarray.utils}|hyperpage}{17}
-\indexentry{make\_abs\_and\_create\_dir() (in module micropolarray.utils)@\spxentry{make\_abs\_and\_create\_dir()}\spxextra{in module micropolarray.utils}|hyperpage}{17}
-\indexentry{make\_abs\_and\_create\_dir\_old() (in module micropolarray.utils)@\spxentry{make\_abs\_and\_create\_dir\_old()}\spxextra{in module micropolarray.utils}|hyperpage}{17}
 \indexentry{mean\_minus\_std() (in module micropolarray.utils)@\spxentry{mean\_minus\_std()}\spxextra{in module micropolarray.utils}|hyperpage}{17}
 \indexentry{mean\_plus\_std() (in module micropolarray.utils)@\spxentry{mean\_plus\_std()}\spxextra{in module micropolarray.utils}|hyperpage}{17}
 \indexentry{median\_minus\_std() (in module micropolarray.utils)@\spxentry{median\_minus\_std()}\spxextra{in module micropolarray.utils}|hyperpage}{17}

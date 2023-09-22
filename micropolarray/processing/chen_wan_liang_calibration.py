@@ -9,7 +9,7 @@ from tqdm import tqdm
 
 from micropolarray.cameras import PolarCam
 from micropolarray.processing.nrgf import roi_from_polar
-from micropolarray.utils import make_abs_and_create_dir
+from micropolarray.utils import _make_abs_and_create_dir
 
 
 def calculate_chen_wan_lian_calibration(
@@ -210,7 +210,7 @@ def calculate_chen_wan_lian_calibration(
     C_ij = np.mean(C_ij, axis=0)
     d_ij = np.mean(d_ij, axis=0)
 
-    output_dir = make_abs_and_create_dir(output_dir)
+    output_dir = _make_abs_and_create_dir(output_dir)
     for i in range(4):
         for j in range(4):
             hdu = fits.PrimaryHDU(data=C_ij[i, j])

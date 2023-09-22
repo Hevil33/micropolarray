@@ -27,8 +27,8 @@ from micropolarray.processing.nrgf import roi_from_polar
 from micropolarray.processing.rebin import micropolarray_rebin
 from micropolarray.processing.shift import shift_micropol
 from micropolarray.utils import (
+    _make_abs_and_create_dir,
     fix_data,
-    make_abs_and_create_dir,
     mean_minus_std,
     mean_plus_std,
 )
@@ -599,7 +599,7 @@ class MicropolImage(Image):
             ValueError: an invalid file name is provided
         """
         polslist = [self.pol0, self.pol45, self.pol90, self.pol_45]
-        filepath = Path(make_abs_and_create_dir(filename))
+        filepath = Path(_make_abs_and_create_dir(filename))
         if filepath.suffix != ".fits":
             raise ValueError("filename must be a valid file name, not folder.")
         group_filepath = filepath.joinpath(filepath.parent, filepath.stem)
@@ -640,7 +640,7 @@ class MicropolImage(Image):
         Raises:
             ValueError: filename is not a valid .fits file
         """
-        filepath = Path(make_abs_and_create_dir(filename))
+        filepath = Path(_make_abs_and_create_dir(filename))
         if filepath.suffix != ".fits":
             raise ValueError("filename must be a valid file name, not folder.")
         hdr = self.header.copy()
@@ -662,7 +662,7 @@ class MicropolImage(Image):
             )
         )
 
-        # filename = make_abs_and_create_dir(filename)
+        # filename = _make_abs_and_create_dir(filename)
         # filename_with_ID = (
         #    filename.split(".")[-2] + "_" + polparam.ID + ".fits"
         # )
@@ -682,7 +682,7 @@ class MicropolImage(Image):
         filepath = Path(filename)
         if filepath.suffix != ".fits":
             raise ValueError("filename must be a valid file name, not folder.")
-        filepath = Path(make_abs_and_create_dir(filename))
+        filepath = Path(_make_abs_and_create_dir(filename))
         group_filename = str(filepath.joinpath(filepath.parent, filepath.stem))
         for param in self.polparam_list:
             hdr = self.header.copy()
@@ -720,7 +720,7 @@ class MicropolImage(Image):
         filepath = Path(filename)
         if not filepath.suffix:
             raise ValueError("filename must be a valid file name, not folder.")
-        filepath = Path(make_abs_and_create_dir(filename))
+        filepath = Path(_make_abs_and_create_dir(filename))
         group_filename = str(filepath.joinpath(filepath.parent, filepath.stem))
         for i, demo_image in enumerate(self.demosaiced_images):
             POL_ID = list(self.angle_dic.keys())[

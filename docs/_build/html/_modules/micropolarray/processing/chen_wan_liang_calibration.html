@@ -69,16 +69,18 @@
            <div itemprop="articleBody">
              
   <h1>Source code for micropolarray.processing.chen_wan_liang_calibration</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span></span><span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">logging</span> <span class="kn">import</span> <span class="n">info</span><span class="p">,</span> <span class="n">warning</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">astropy.io</span> <span class="kn">import</span> <span class="n">fits</span>
-<span class="kn">from</span> <span class="nn">micropolarray.cameras</span> <span class="kn">import</span> <span class="n">PolarCam</span>
-<span class="kn">from</span> <span class="nn">micropolarray.processing.nrgf</span> <span class="kn">import</span> <span class="n">roi_from_polar</span>
-<span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">from</span> <span class="nn">numba</span> <span class="kn">import</span> <span class="n">njit</span>
 <span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
-<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">micropolarray.utils</span> <span class="kn">import</span> <span class="n">make_abs_and_create_dir</span>
-<span class="kn">from</span> <span class="nn">logging</span> <span class="kn">import</span> <span class="n">warning</span><span class="p">,</span> <span class="n">info</span>
+
+<span class="kn">from</span> <span class="nn">micropolarray.cameras</span> <span class="kn">import</span> <span class="n">PolarCam</span>
+<span class="kn">from</span> <span class="nn">micropolarray.processing.nrgf</span> <span class="kn">import</span> <span class="n">roi_from_polar</span>
+<span class="kn">from</span> <span class="nn">micropolarray.utils</span> <span class="kn">import</span> <span class="n">_make_abs_and_create_dir</span>
 
 
 <div class="viewcode-block" id="calculate_chen_wan_lian_calibration"><a class="viewcode-back" href="../../../micropolarray.processing.html#micropolarray.processing.chen_wan_liang_calibration.calculate_chen_wan_lian_calibration">[docs]</a><span class="k">def</span> <span class="nf">calculate_chen_wan_lian_calibration</span><span class="p">(</span>
@@ -223,7 +225,7 @@
         <span class="p">:,</span> <span class="n">angle_dic</span><span class="p">[</span><span class="mi">90</span><span class="p">],</span> <span class="p">:,</span> <span class="p">:</span>
     <span class="p">]</span>
 
-    <span class="n">build_S_input</span><span class="p">(</span><span class="n">sorted_single_pol_images</span><span class="p">,</span> <span class="n">S_input</span><span class="p">)</span>  <span class="c1"># speeds up A LOT</span>
+    <span class="n">_build_S_input</span><span class="p">(</span><span class="n">sorted_single_pol_images</span><span class="p">,</span> <span class="n">S_input</span><span class="p">)</span>  <span class="c1"># speeds up A LOT</span>
 
     <span class="n">W_ideal</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
         <span class="p">[</span>
@@ -279,7 +281,7 @@
     <span class="n">C_ij</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">C_ij</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
     <span class="n">d_ij</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">d_ij</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 
-    <span class="n">output_dir</span> <span class="o">=</span> <span class="n">make_abs_and_create_dir</span><span class="p">(</span><span class="n">output_dir</span><span class="p">)</span>
+    <span class="n">output_dir</span> <span class="o">=</span> <span class="n">_make_abs_and_create_dir</span><span class="p">(</span><span class="n">output_dir</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">):</span>
             <span class="n">hdu</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">PrimaryHDU</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">C_ij</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">])</span>
@@ -288,8 +290,8 @@
     <span class="n">hdu</span><span class="o">.</span><span class="n">writeto</span><span class="p">(</span><span class="n">output_dir</span> <span class="o">+</span> <span class="s2">&quot;/d_ij.fits&quot;</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="build_S_input"><a class="viewcode-back" href="../../../micropolarray.processing.html#micropolarray.processing.chen_wan_liang_calibration.build_S_input">[docs]</a><span class="nd">@njit</span>
-<span class="k">def</span> <span class="nf">build_S_input</span><span class="p">(</span><span class="n">single_pol_images</span><span class="p">,</span> <span class="n">S_input</span><span class="p">):</span>
+<span class="nd">@njit</span>
+<span class="k">def</span> <span class="nf">_build_S_input</span><span class="p">(</span><span class="n">single_pol_images</span><span class="p">,</span> <span class="n">S_input</span><span class="p">):</span>
     <span class="c1"># ANGLES_LIST positions:</span>
     <span class="c1">#    0 &lt;==&gt; 0</span>
     <span class="c1">#    1 &lt;==&gt; 45</span>
@@ -323,7 +325,7 @@
                 <span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
                     <span class="n">single_pol_images</span><span class="p">[</span><span class="n">pol_idx</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">]</span>
                     <span class="o">-</span> <span class="n">single_pol_images</span><span class="p">[</span><span class="n">pol_idx</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">]</span>
-                <span class="p">)</span></div>
+                <span class="p">)</span>
 
 
 <div class="viewcode-block" id="chen_wan_liang_calibration"><a class="viewcode-back" href="../../../micropolarray.processing.html#micropolarray.processing.chen_wan_liang_calibration.chen_wan_liang_calibration">[docs]</a><span class="k">def</span> <span class="nf">chen_wan_liang_calibration</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">calibration_matrices_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
@@ -369,13 +371,13 @@
                 <span class="n">super_y</span> <span class="p">:</span> <span class="n">super_y</span> <span class="o">+</span> <span class="mi">2</span><span class="p">,</span> <span class="n">super_x</span> <span class="p">:</span> <span class="n">super_x</span> <span class="o">+</span> <span class="mi">2</span>
             <span class="p">]</span> <span class="o">=</span> <span class="n">mult</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
 
-    <span class="n">ifov_corrected_data</span> <span class="o">=</span> <span class="n">ifov_jitcorrect</span><span class="p">(</span><span class="n">corrected_data</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">)</span>
+    <span class="n">ifov_corrected_data</span> <span class="o">=</span> <span class="n">_ifov_jitcorrect</span><span class="p">(</span><span class="n">corrected_data</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">ifov_corrected_data</span></div>
 
 
-<div class="viewcode-block" id="ifov_jitcorrect"><a class="viewcode-back" href="../../../micropolarray.processing.html#micropolarray.processing.chen_wan_liang_calibration.ifov_jitcorrect">[docs]</a><span class="nd">@njit</span>
-<span class="k">def</span> <span class="nf">ifov_jitcorrect</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">):</span>
+<span class="nd">@njit</span>
+<span class="k">def</span> <span class="nf">_ifov_jitcorrect</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">):</span>
     <span class="n">corrected_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">))</span>
     <span class="c1"># correct IFOV error, skip first rows/cols</span>
     <span class="k">for</span> <span class="n">super_y</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span>
@@ -388,7 +390,7 @@
                         <span class="o">+</span> <span class="n">data</span><span class="p">[</span><span class="n">super_y</span> <span class="o">+</span> <span class="n">j</span><span class="p">,</span> <span class="n">super_x</span> <span class="o">+</span> <span class="n">i</span> <span class="o">-</span> <span class="mi">2</span><span class="p">]</span>
                         <span class="o">+</span> <span class="n">data</span><span class="p">[</span><span class="n">super_y</span> <span class="o">+</span> <span class="n">j</span><span class="p">,</span> <span class="n">super_x</span> <span class="o">+</span> <span class="n">i</span><span class="p">]</span>
                     <span class="p">)</span>
-    <span class="k">return</span> <span class="n">corrected_data</span></div>
+    <span class="k">return</span> <span class="n">corrected_data</span>
 </pre></div>
 
            </div>

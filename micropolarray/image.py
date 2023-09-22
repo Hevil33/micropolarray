@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from astropy.io import fits
 
-from micropolarray.utils import fix_data, make_abs_and_create_dir
+from micropolarray.utils import _make_abs_and_create_dir, fix_data
 
 
 class Image:
@@ -148,9 +148,10 @@ class Image:
         """
         filepath = Path(filename)
         if filepath.suffix != ".fits":
-            print(filepath.suffix)
-            raise ValueError("filename must be a valid file name, not folder.")
-        filepath = Path(make_abs_and_create_dir(filename))
+            raise ValueError(
+                f"filename ends with '{filepath.suffix}'filename must be a valid file name, not folder."
+            )
+        filepath = Path(_make_abs_and_create_dir(filename))
         if fixto:
             data = fix_data(self.data, *fixto)
         else:

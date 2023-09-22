@@ -24,7 +24,8 @@ def dummy_data():
 def generate_polarized_data(
     shape, S, angle_rad=0, t=1, eff=1, angles_list=[0, 45, -45, 90]
 ):
-    ones = np.ones(shape=shape)
+    single_pol_shape = (int(shape[0] / 2), int(shape[0] / 2))
+    ones = np.ones(shape=single_pol_shape)
     angles = np.array([np.deg2rad(angle) for angle in angles_list])
     subimages = np.array(
         [ones * S * Malus(angle_rad, t, eff, angle) for angle in angles]

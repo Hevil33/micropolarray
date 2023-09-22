@@ -42,7 +42,7 @@ class Demodulator:
         self.n_malus_params = N_MALUS_PARAMS
         self.demo_matrices_path = demo_matrices_path
 
-        self.mij = self._get_demodulation_tensor()
+        self.mij, self.fit_found_flags = self._get_demodulation_tensor()
 
     def _get_demodulation_tensor(self):
         """Reads files "MIJ.fits" from path folder and returns a (3,4,y,x)
@@ -75,29 +75,31 @@ class Demodulator:
             ),
             dtype=float,
         )
+        fit_found_flags = None
 
         matches = 0
         for filename in filenames_list:
-            if (
-                re.search("[Mm][0-9]{2}", filename.split(os.path.sep)[-1])
-                is not None
-            ):  # Exclude files not matching m/Mij
+            pattern_query = re.search(
+                "[0-9]{2}", filename.split(os.path.sep)[-1]
+            )
+            if pattern_query is not None:  # Exclude files not matching m/Mij
                 matches += 1
-                i, j = re.search(
-                    "[Mm][0-9]{2}", filename.split(os.path.sep)[-1]
-                ).group()[
+                i, j = pattern_query.group()[
                     -2:
-                ]  # Searches for pattern M/m + ij as last string before .fits
-                i = int(i)
-                j = int(j)
+                ]  # Searches for pattern ij as last string before .fits
+                i, j = int(i), int(j)
                 with fits.open(filename) as hul:
                     Mij[i, j] = hul[0].data
+            if Path(filename).stem == "fit_found_flag":
+                with fits.open(filename) as hul:
+                    fit_found_flags = hul[0].data
+
         if matches != 12:
             raise ValueError(
-                "Some matrices were not found in the selected folder. Check correct folder name and files pattern Mij.fits or mij.fits"
+                "Missing matrices in the selected folder. Check correct folder name and files pattern '*ij*.fits'."
             )
 
-        return Mij
+        return Mij, fit_found_flags
 
     def show(self, vmin=-1, vmax=1, cmap="Greys") -> tuple:
         """Shows the demodulation tensor
@@ -216,14 +218,13 @@ def calculate_demodulation_tensor(
 
     # polarizations = array of polarizer orientations
     # filenames_list = list of filenames
-    firstcall = True
     if (normalizing_S is None) and (
         not np.all(np.isin([0, 45, 90, -45], polarizer_orientations))
     ):
         raise ValueError(
             "Each one among (0, 45, 90, -45) polarizations must be included in the polarizer orientation array"
         )  # for calculating normalizing_S
-    # Have to be sorted
+
     polarizer_orientations, filenames_list = (
         list(t)
         for t in zip(*sorted(zip(polarizer_orientations, filenames_list)))
@@ -477,6 +478,10 @@ def calculate_demodulation_tensor(
     ending_time = time.perf_counter()
     info(f"Elapsed : {(ending_time - starting_time)/60:3.2f} mins")
 
+    # result == array [
+    # [chunk_id],
+    # [mij, t, eff, k]
+    # ]
     result = np.array(result, dtype=object)
     m_ij = np.zeros(
         shape=(N_MALUS_PARAMS, N_PIXELS_IN_SUPERPIX, height, width)
@@ -484,6 +489,22 @@ def calculate_demodulation_tensor(
     tks = np.zeros(shape=(height, width))
     efficiences = np.zeros(shape=(height, width))
     phases = np.zeros(shape=(height, width))
+    fit_found_flag = np.zeros(shape=(height, width))
+
+    def _merge_parameter(parameter: np.ndarray, param_number: int):
+        for i in range(chunks_n_y):
+            for j in range(chunks_n_x):
+                parameter[
+                    i * (chunk_size_y) : (i + 1) * chunk_size_y,
+                    j * (chunk_size_x) : (j + 1) * chunk_size_x,
+                ] = result[i + chunks_n_y * j, param_number].reshape(
+                    chunk_size_y, chunk_size_x
+                )
+
+    _merge_parameter(tks, 1)
+    _merge_parameter(efficiences, 2)
+    _merge_parameter(phases, 3)
+    _merge_parameter(fit_found_flag, 4)
 
     for i in range(chunks_n_y):
         for j in range(chunks_n_x):
@@ -497,24 +518,6 @@ def calculate_demodulation_tensor(
                 N_PIXELS_IN_SUPERPIX,
                 chunk_size_y,
                 chunk_size_x,
-            )
-            tks[
-                i * (chunk_size_y) : (i + 1) * chunk_size_y,
-                j * (chunk_size_x) : (j + 1) * chunk_size_x,
-            ] = result[i + chunks_n_y * j, 1].reshape(
-                chunk_size_y, chunk_size_x
-            )
-            efficiences[
-                i * (chunk_size_y) : (i + 1) * chunk_size_y,
-                j * (chunk_size_x) : (j + 1) * chunk_size_x,
-            ] = result[i + chunks_n_y * j, 2].reshape(
-                chunk_size_y, chunk_size_x
-            )
-            phases[
-                i * (chunk_size_y) : (i + 1) * chunk_size_y,
-                j * (chunk_size_x) : (j + 1) * chunk_size_x,
-            ] = result[i + chunks_n_y * j, 3].reshape(
-                chunk_size_y, chunk_size_x
             )
 
     phases = np.rad2deg(phases)
@@ -533,12 +536,15 @@ def calculate_demodulation_tensor(
         for j in range(N_PIXELS_IN_SUPERPIX):
             hdu = fits.PrimaryHDU(data=m_ij[i, j])
             hdu.writeto(output_str + f"/M{i}{j}.fits", overwrite=True)
-    hdu = fits.PrimaryHDU(data=tks)
-    hdu.writeto(output_str + "/transmittancies.fits", overwrite=True)
-    hdu = fits.PrimaryHDU(data=efficiences)
-    hdu.writeto(output_str + "/efficiences.fits", overwrite=True)
-    hdu = fits.PrimaryHDU(data=phases)
-    hdu.writeto(output_str + "/phases.fits", overwrite=True)
+
+    for parameter_data, parameter_name in zip(
+        [tks, efficiences, phases, fit_found_flag],
+        ["transmittancies", "efficiences", "phases", "fit_found_flag"],
+    ):
+        hdu = fits.PrimaryHDU(data=parameter_data)
+        hdu.writeto(
+            output_str + "/" + parameter_name + ".fits", overwrite=True
+        )
 
     info("Demodulation matrices and fit data successfully saved!")
 
@@ -606,6 +612,7 @@ def compute_demodulation_by_chunk(
     tk_data = np.ones(shape=(height, width)) * tk_prediction
     eff_data = np.ones(shape=(height, width)) * efficiency_prediction
     phase_data = np.zeros(shape=(height, width))
+    fit_found = np.zeros(shape=(height, width))
     superpix_params = np.zeros(shape=(N_PIXELS_IN_SUPERPIX, N_MALUS_PARAMS))
 
     predictions = np.zeros(shape=(N_PIXELS_IN_SUPERPIX, N_MALUS_PARAMS))
@@ -685,6 +692,7 @@ def compute_demodulation_by_chunk(
                         fit_success = True
                     except RuntimeError:
                         fit_success = False
+                        print("fit failed")
                         break
 
                 if DEBUG:  # DEBUG
@@ -769,6 +777,7 @@ def compute_demodulation_by_chunk(
                     demodulation_matrix < -100
                 ):
                     demodulation_matrix = theo_demodulation_matrix
+                    fit_success = False
 
                 for i in range(2):
                     for j in range(2):
@@ -785,6 +794,9 @@ def compute_demodulation_by_chunk(
                 phase_data[
                     super_y : super_y + 2, super_x : super_x + 2
                 ] = np.array(phi, dtype=float).reshape(2, 2)
+                fit_found[
+                    super_y : super_y + 2, super_x : super_x + 2
+                ] = 1.0 * (fit_success)
 
             else:  # pixel is in occulter region
                 for i in range(2):
@@ -816,7 +828,7 @@ def compute_demodulation_by_chunk(
 
     m_ij_chunk = m_ij
 
-    return m_ij_chunk, tk_data, eff_data, phase_data
+    return m_ij_chunk, tk_data, eff_data, phase_data, fit_found
 
 
 def Malus(angle, throughput, efficiency, phase):

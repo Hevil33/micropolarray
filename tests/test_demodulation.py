@@ -1,5 +1,6 @@
 import glob
 import os
+from logging import info, warn
 from pathlib import Path
 
 import matplotlib.pyplot as plt
@@ -60,7 +61,7 @@ class TestDemodulation:
         input_signal = 100
         t = 0.9
         eff = 0.7
-        side = 10
+        side = 20
         shape = (side, side)
         ones = np.ones(shape=shape)
         for pol, pol_rad in zip(polarizations, pols_rad):
@@ -117,6 +118,9 @@ class TestDemodulation:
         assert np.all(ideal_image.DoLP.data == 1)
 
         demodulator = ml.Demodulator(output_str)
+        assert (
+            demodulator.fit_found_flags.shape == demodulator.mij[0, 0].shape
+        )  # after September 2023
         test_angle = np.deg2rad(30)
         example_image = ml.MicropolImage(
             generate_polarized_data(
