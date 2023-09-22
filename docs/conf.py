@@ -49,8 +49,8 @@ templates_path = ["_templates"]
 # source_encoding = 'utf-8-sig'
 
 # The master toctree document.
-root_doc = "modules"
-root_doc = "index"
+# root_doc = "modules"
+# root_doc = "index"
 
 # General information about the project.
 # project = 'test'
@@ -74,7 +74,7 @@ author = "Herve Haudemand"
 #
 # This is also used if you do content translation via gettext catalogs.
 # Usually you set "language" from the command line for these cases.
-language = "en"
+# language = "en"
 
 # There are two options for replacing |today|: either, you set today to some
 # non-false value, then it is used:
@@ -337,7 +337,7 @@ latex_elements = {
 import os
 import sys
 
-sys.path.insert(0, os.path.abspath("."))
+sys.path.insert(0, os.path.abspath(".."))
 
 
 # extensions.append("sphinx.ext.todo")
