@@ -175,18 +175,18 @@ class Demodulator:
 
 
 def calculate_demodulation_tensor(
-    polarizer_orientations,
-    filenames_list,
-    micropol_phases_previsions,
-    gain,  #  needed for errors
-    output_dir,
-    binning=1,
-    occulter=None,
-    procs_grid=[4, 4],
-    dark_filename=None,
-    flat_filename=None,
+    polarizer_orientations: list,
+    filenames_list: list,
+    micropol_phases_previsions: list,
+    gain: float,  #  needed for errors
+    output_dir: str,
+    binning: int = 1,
+    occulter: bool = None,
+    procs_grid: list = [4, 4],
+    dark_filename: str = None,
+    flat_filename: str = None,
     normalizing_S=None,
-    DEBUG=False,
+    DEBUG: bool = False,
 ):
     """Calculates the demodulation tensor images and saves them. Requires a set of images with different polarizations to fit a Malus curve model.
 
@@ -201,7 +201,7 @@ def calculate_demodulation_tensor(
         procs_grid ([int, int], optional): number of processors per side [Y, X], parallelization will be done in a Y x X grid. Defaults to [4,4] (16 procs in a 4x4 grid).
         dark_filename (str, optional): Dark image filename to correct input images. Defaults to None.
         flat_filename (str, optional): Flat image filename to correct input images. Defaults to None.
-        normalizing_S (float, optional): maximum signal used to normalize single pixel signal. Defaults to None.
+        normalizing_S (float or np.ndarray, optional): maximum signal used to normalize single pixel signal. If not set will be estimated as the 4sigma of the signal distribution.
 
     Raises:
         ValueError: Raised if any among [0, 45, 90, -45] is not included in the input polarizations.
@@ -320,45 +320,6 @@ def calculate_demodulation_tensor(
                 )
     all_data_arr = np.array(all_data_arr)
 
-    if DEBUG:
-        procs_grid = [1, 1]
-
-    # parallelize into a procs_per_size x procs_per_size grid
-    info("Splitting into subdomains to parallelize...")
-    chunks_n_y, chunks_n_x = procs_grid
-    chunk_size_y = int(height / chunks_n_y)
-    chunk_size_x = int(width / chunks_n_x)
-    if (chunk_size_x % 2) or (chunk_size_y % 2):
-        raise ValueError(
-            f"cant decompose into a {procs_grid[0]}x{procs_grid[1]} grid (odd side grid {chunk_size_y}x{chunk_size_x}). Try changing the number of processors."
-        )
-    splitted_data = np.zeros(
-        shape=(
-            chunks_n_y * chunks_n_x,
-            len(polarizer_orientations),
-            chunk_size_y,
-            chunk_size_x,
-        )
-    )
-    splitted_occulter = np.zeros(
-        shape=(chunks_n_y * chunks_n_x, chunk_size_y, chunk_size_x)
-    )
-    for i in range(chunks_n_y):
-        for j in range(chunks_n_x):
-            splitted_data[i + chunks_n_y * j] = np.array(
-                all_data_arr[
-                    :,
-                    i * (chunk_size_y) : (i + 1) * chunk_size_y,
-                    j * (chunk_size_x) : (j + 1) * chunk_size_x,
-                ]
-            )  # shape = (chunks_n*chunks_n, len(filenames_list), chunk_size_y, chunk_size_x)
-            splitted_occulter[i + chunks_n_y * j] = np.array(
-                occulter_flag[
-                    i * (chunk_size_y) : (i + 1) * chunk_size_y,
-                    j * (chunk_size_x) : (j + 1) * chunk_size_x,
-                ]
-            )  # shape = (chunks_n*chunks_n, chunk_size_y, chunk_size_x)
-
     if normalizing_S is None:
         info("Calculating normalization...")
         S_max = np.zeros(
@@ -412,6 +373,56 @@ def calculate_demodulation_tensor(
     else:
         normalizing_S *= binning * binning  # account binning
 
+    if type(normalizing_S) is not np.ndarray:
+        normalizing_S = np.ones(shape=(height, width)) * normalizing_S
+
+    if DEBUG:
+        procs_grid = [1, 1]
+
+    # parallelize into a procs_per_size x procs_per_size grid
+    info("Splitting into subdomains to parallelize...")
+    chunks_n_y, chunks_n_x = procs_grid
+    chunk_size_y = int(height / chunks_n_y)
+    chunk_size_x = int(width / chunks_n_x)
+    if (chunk_size_x % 2) or (chunk_size_y % 2):
+        raise ValueError(
+            f"cant decompose into a {procs_grid[0]}x{procs_grid[1]} grid (odd side grid {chunk_size_y}x{chunk_size_x}). Try changing the number of processors."
+        )
+    splitted_data = np.zeros(
+        shape=(
+            chunks_n_y * chunks_n_x,
+            len(polarizer_orientations),
+            chunk_size_y,
+            chunk_size_x,
+        )
+    )
+    splitted_occulter = np.zeros(
+        shape=(chunks_n_y * chunks_n_x, chunk_size_y, chunk_size_x)
+    )
+    splitted_normalizing_S = np.zeros_like(splitted_occulter)
+
+    for i in range(chunks_n_y):
+        for j in range(chunks_n_x):
+            splitted_data[i + chunks_n_y * j] = np.array(
+                all_data_arr[
+                    :,
+                    i * (chunk_size_y) : (i + 1) * chunk_size_y,
+                    j * (chunk_size_x) : (j + 1) * chunk_size_x,
+                ]
+            )  # shape = (chunks_n*chunks_n, len(filenames_list), chunk_size_y, chunk_size_x)
+            splitted_occulter[i + chunks_n_y * j] = np.array(
+                occulter_flag[
+                    i * (chunk_size_y) : (i + 1) * chunk_size_y,
+                    j * (chunk_size_x) : (j + 1) * chunk_size_x,
+                ]
+            )  # shape = (chunks_n*chunks_n, chunk_size_y, chunk_size_x)
+            splitted_normalizing_S[i + chunks_n_y * j] = np.array(
+                normalizing_S[
+                    i * (chunk_size_y) : (i + 1) * chunk_size_y,
+                    j * (chunk_size_x) : (j + 1) * chunk_size_x,
+                ]
+            )
+
     # Debug
     if False:
         index = 0
@@ -435,7 +446,7 @@ def calculate_demodulation_tensor(
     args = (
         [
             splitted_data[i],
-            normalizing_S,
+            splitted_normalizing_S[i],
             splitted_occulter[i],
             polarizer_orientations,
             rad_micropol_phases_previsions,
@@ -553,7 +564,7 @@ def calculate_demodulation_tensor(
 
 def compute_demodulation_by_chunk(
     splitted_dara_arr,
-    normalizing_S,
+    splitted_normalizing_S,
     splitted_occulter_flag,
     polarizer_orientations,
     rad_micropol_phases_previsions,
@@ -589,21 +600,27 @@ def compute_demodulation_by_chunk(
     tk_prediction = 0.5
     efficiency_prediction = 0.4
 
-    normalized_splitted_data = splitted_dara_arr / normalizing_S
+    # normalized_splitted_data = splitted_dara_arr / normalizing_S
+    normalized_splitted_data = np.divide(
+        splitted_dara_arr, splitted_normalizing_S
+    )
     all_zeros = np.zeros(shape=(num_of_points))
 
     # Checked errors
-    sigma_S2 = np.sqrt(0.5 * normalizing_S / gain)
-    normalizing_S2 = normalizing_S * normalizing_S
+    # sigma_S2 = np.sqrt(0.5 * normalizing_S / gain)
+    splitted_sigma_S2 = np.sqrt(0.5 * splitted_normalizing_S / gain)
+    # normalizing_S2 = normalizing_S * normalizing_S
+    splitted_S2 = splitted_normalizing_S * splitted_normalizing_S
     # pix_DN_sigma = np.sqrt(
     #    splitted_dara_arr / (gain * normalizing_S2)
     #    + sigma_S2
     #    * (splitted_dara_arr * splitted_dara_arr)
     #    / (normalizing_S2 * normalizing_S2)
     # )
-    pix_DN_sigma = (
-        np.sqrt(splitted_dara_arr / gain) / normalizing_S
-    )  # poisson error on the photoelectrons
+    # pix_DN_sigma = (
+    #    np.sqrt(splitted_dara_arr / gain) / normalizing_S
+    # )  # poisson error on the photoelectrons
+    pix_DN_sigma = np.sqrt(splitted_dara_arr / gain) / splitted_normalizing_S
     # pix_DN_sigma = np.sqrt(normalized_splitted_data / gain)
 
     m_ij = np.zeros(

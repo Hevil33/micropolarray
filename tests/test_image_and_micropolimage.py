@@ -41,9 +41,30 @@ class TestMicropolImage:
     def test_image_writing(self, dummy_data, tmp_path):
         """Tests the saving of both Image and MicroPolArrayImage"""
         dummy_data_16 = dummy_data(16)
+        image = ml.Image(dummy_data_16)
+        for input_path in ["image.fits", "test/image.fits"]:
+            image.save_as_fits(tmp_path / input_path)
+            read_image = ml.Image(
+                str((tmp_path / input_path).with_suffix(".fits"))
+            )
+            assert np.all(read_image.data == dummy_data_16)
+            read_image.header["EXTEND"] = True
+            assert read_image.header == image.header
+
         for image_type in [ml.Image, ml.MicropolImage]:
             image = image_type(dummy_data_16)
             image.save_as_fits(str(tmp_path / "image.fits"))
+
+        image = ml.MicroPolarizerArrayImage(dummy_data_16)
+        print(tmp_path / "image.fits")
+        print((tmp_path / "image.fits").suffix)
+
+        image.save_single_pol_images(tmp_path / "image.fits")
+
+        for i in glob.glob(str(tmp_path / "image*")):
+            print(i)
+        return
+        assert np.all(ml.Image(tmp_path / "image_POL0.fits").data == 1)
 
     def test_dark_and_flat_correction(self, dummy_data, tmp_path):
         # test dark

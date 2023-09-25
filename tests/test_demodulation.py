@@ -91,18 +91,21 @@ class TestDemodulation:
             glob.glob(str(tmp_path / "pol*.fits")),
             key=lambda x: int(x.split(os.path.sep)[-1][4:].strip(".fits")),
         )
-
-        ml.calculate_demodulation_tensor(
-            polarizer_orientations=polarizations,
-            filenames_list=filenames,
-            micropol_phases_previsions=np.rad2deg(angles),
-            gain=2.75,
-            output_dir=output_str,
-            binning=1,
-            procs_grid=[2, 2],
-            normalizing_S=input_signal,
-            DEBUG=False,
-        )
+        for S_type in [
+            input_signal,
+            input_signal * np.ones(shape=(side, side)),
+        ]:
+            ml.calculate_demodulation_tensor(
+                polarizer_orientations=polarizations,
+                filenames_list=filenames,
+                micropol_phases_previsions=np.rad2deg(angles),
+                gain=2.75,
+                output_dir=output_str,
+                binning=1,
+                procs_grid=[2, 2],
+                normalizing_S=S_type,
+                DEBUG=False,
+            )
 
         # image polarized with phi=0 uniform, t=1, eff=1
         ideal_image = ml.MicropolImage(

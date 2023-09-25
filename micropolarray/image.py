@@ -151,7 +151,10 @@ class Image:
             raise ValueError(
                 f"filename ends with '{filepath.suffix}'filename must be a valid file name, not folder."
             )
-        filepath = Path(_make_abs_and_create_dir(filename))
+        if not filepath.is_absolute():  # suppose it is in cwd
+            filepath = Path().cwd() / filepath
+        filepath.parent.mkdir(parents=True, exist_ok=True)
+
         if fixto:
             data = fix_data(self.data, *fixto)
         else:
@@ -162,11 +165,8 @@ class Image:
             do_not_scale_image_data=True,
             uint=False,
         )
-        filename = str(
-            filepath.joinpath(filepath.parent, filepath.stem + ".fits")
-        )
-        hdu.writeto(filename, overwrite=True)
-        info(f'Image successfully saved to "{filename}".')
+        hdu.writeto(filepath, overwrite=True)
+        info(f'Image successfully saved to "{filepath}".')
 
     def save_as_raw(self, filename: str):
         """Saves the image as a raw binary file

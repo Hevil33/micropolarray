@@ -6,7 +6,6 @@ setup.py
 ./micropolarray/cameras.py
 ./micropolarray/image.py
 ./micropolarray/micropol_image.py
-./micropolarray/parallelize.py
 ./micropolarray/polarization_functions.py
 ./micropolarray/utils.py
 ./micropolarray/processing/__init__.py
@@ -22,9 +21,7 @@ micropolarray/__init__.py
 micropolarray/cameras.py
 micropolarray/image.py
 micropolarray/micropol_image.py
-micropolarray/parallelize.py
 micropolarray/polarization_functions.py
-micropolarray/test_v2.py
 micropolarray/utils.py
 micropolarray.egg-info/PKG-INFO
 micropolarray.egg-info/SOURCES.txt
@@ -41,3 +38,6 @@ micropolarray/processing/hotpix_cleaning.py
 micropolarray/processing/nrgf.py
 micropolarray/processing/rebin.py
 micropolarray/processing/shift.py
+tests/test_demodulation.py
+tests/test_image_and_micropolimage.py
+tests/test_utils.py
