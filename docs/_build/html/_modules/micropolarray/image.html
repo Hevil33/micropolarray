@@ -222,7 +222,10 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;filename ends with &#39;</span><span class="si">{</span><span class="n">filepath</span><span class="o">.</span><span class="n">suffix</span><span class="si">}</span><span class="s2">&#39;filename must be a valid file name, not folder.&quot;</span>
             <span class="p">)</span>
-        <span class="n">filepath</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">_make_abs_and_create_dir</span><span class="p">(</span><span class="n">filename</span><span class="p">))</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">filepath</span><span class="o">.</span><span class="n">is_absolute</span><span class="p">():</span>  <span class="c1"># suppose it is in cwd</span>
+            <span class="n">filepath</span> <span class="o">=</span> <span class="n">Path</span><span class="p">()</span><span class="o">.</span><span class="n">cwd</span><span class="p">()</span> <span class="o">/</span> <span class="n">filepath</span>
+        <span class="n">filepath</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
         <span class="k">if</span> <span class="n">fixto</span><span class="p">:</span>
             <span class="n">data</span> <span class="o">=</span> <span class="n">fix_data</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="o">*</span><span class="n">fixto</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
@@ -233,11 +236,8 @@
             <span class="n">do_not_scale_image_data</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
             <span class="n">uint</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="n">filename</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span>
-            <span class="n">filepath</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="n">filepath</span><span class="o">.</span><span class="n">parent</span><span class="p">,</span> <span class="n">filepath</span><span class="o">.</span><span class="n">stem</span> <span class="o">+</span> <span class="s2">&quot;.fits&quot;</span><span class="p">)</span>
-        <span class="p">)</span>
-        <span class="n">hdu</span><span class="o">.</span><span class="n">writeto</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Image successfully saved to &quot;</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s1">&quot;.&#39;</span><span class="p">)</span></div>
+        <span class="n">hdu</span><span class="o">.</span><span class="n">writeto</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Image successfully saved to &quot;</span><span class="si">{</span><span class="n">filepath</span><span class="si">}</span><span class="s1">&quot;.&#39;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Image.save_as_raw"><a class="viewcode-back" href="../../micropolarray.html#micropolarray.image.Image.save_as_raw">[docs]</a>    <span class="k">def</span> <span class="nf">save_as_raw</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Saves the image as a raw binary file</span>

@@ -218,11 +218,13 @@ def calculate_demodulation_tensor(
 
     # polarizations = array of polarizer orientations
     # filenames_list = list of filenames
+    available_norms = [[0, 45, 90, -45], [0, 45, 90, 135]]
     if (normalizing_S is None) and (
-        not np.all(np.isin([0, 45, 90, -45], polarizer_orientations))
+        not np.all(np.isin(available_norms[0], polarizer_orientations))
+        or not np.all(np.isin(available_norms[1], polarizer_orientations))
     ):
         raise ValueError(
-            "Each one among (0, 45, 90, -45) polarizations must be included in the polarizer orientation array"
+            "Each one among (0, 45, 90, -45 / 135) polarizations must be included in the polarizer orientation array"
         )  # for calculating normalizing_S
 
     polarizer_orientations, filenames_list = (
@@ -325,8 +327,11 @@ def calculate_demodulation_tensor(
         S_max = np.zeros(
             shape=(height, width)
         )  # tk_sum = tk_0 + tk_45 + tk_90 + tk_45
+        for chosen_norm in available_norms:
+            if np.all(np.isin(chosen_norm, polarizer_orientations)):
+                norm_S_angle_list = chosen_norm
         for pol, image in zip(polarizer_orientations, all_data_arr):
-            if pol in [0, 90, 45, -45]:
+            if pol in norm_S_angle_list:
                 S_max += 0.5 * image
         # Normalizing S, has a spike of which maximum is taken
         bins = 1000
