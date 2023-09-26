@@ -16,6 +16,26 @@ from micropolarray.processing.demosaic import (
 )
 
 
+# timer decorator
+def timer(func):
+    """Use this to time function execution
+
+    Args:
+        func (function): function of which to measure execution time
+    """
+
+    def wrapper(*args, **kwargs):
+        start = time.time()
+        result = func(*args, **kwargs)
+        end = time.time()
+        print(
+            f"Function {func.__name__} took {round(end - start, 4)} s to run"
+        )
+        return result
+
+    return wrapper
+
+
 def _make_abs_and_create_dir(filename: str):
     path = Path(filename)
 
@@ -46,6 +66,7 @@ def fix_data(data: np.array, min, max):
     return fixed_data
 
 
+@timer
 def mean_minus_std(data: np.array, stds_n: int = 1) -> float:
     """Returns the value at the mean - standard deviation for the input data
 
@@ -59,6 +80,7 @@ def mean_minus_std(data: np.array, stds_n: int = 1) -> float:
     return np.mean(data) - stds_n * np.std(data)
 
 
+@timer
 def mean_plus_std(data: np.array, stds_n: int = 1) -> float:
     """Returns the value at the mean + standard deviation for the input data
 
@@ -115,26 +137,6 @@ def normalize2pi(angles_list):
         angles_list[i] = angle
 
     return angles_list
-
-
-# timer decorator
-def timer(func):
-    """Use this to time function execution
-
-    Args:
-        func (function): function of which to measure execution time
-    """
-
-    def wrapper(*args, **kwargs):
-        start = time.time()
-        result = func(*args, **kwargs)
-        end = time.time()
-        print(
-            f"Function {func.__name__} took {round(end - start, 4)} ns to run"
-        )
-        return result
-
-    return wrapper
 
 
 def align_keywords_and_data(header, data, sun_center, platescale, binning=1):

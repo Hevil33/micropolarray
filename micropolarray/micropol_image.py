@@ -31,6 +31,7 @@ from micropolarray.utils import (
     fix_data,
     mean_minus_std,
     mean_plus_std,
+    timer,
 )
 
 
@@ -102,6 +103,8 @@ class MicropolImage(Image):
 
         if type(initializer) is MicropolImage:
             self._import_image_parameters(initializer)
+        else:
+            self.Stokes_vec = self._get_theo_Stokes_vec_components()
 
         # Apply corrections if needed
         if dark is not None:
@@ -111,8 +114,6 @@ class MicropolImage(Image):
         elif MicropolImage.first_call:
             warning("Remember to set dark")
             MicropolImage.first_call = False
-
-        self._update_Stokes_vec()
 
     def _initialize_internal_variables(self):
         self._data = None
@@ -239,20 +240,10 @@ class MicropolImage(Image):
     # ---------------------- STOKES COMPONENTS -----------------------
     # ----------------------------------update_dim------------------------------
 
-    def _update_Stokes_vec(self) -> None:
-        if not self._is_demosaiced:
-            self.Stokes_vec = self._get_theo_Stokes_vec_components(
-                self.single_pol_subimages
-            )
-        else:
-            self.Stokes_vec = self._get_theo_Stokes_vec_components(
-                self.demosaiced_images
-            )
-
     def _update_data_and_Stokes(self, newdata: np.ndarray = None):
         if newdata is not None:
             self.data = newdata
-        self._update_Stokes_vec()
+        self.Stokes_vec = self._get_theo_Stokes_vec_components()
 
     def demodulate(self, demodulator: Demodulator) -> MicropolImage:
         """Returns a MicropolImage with polarization parameters calculated from the demodulation tensor provided.
@@ -285,22 +276,20 @@ class MicropolImage(Image):
         info("Image correctly demodulated")
         return demodulated_image
 
-    def _get_theo_Stokes_vec_components(self, single_pol_images) -> np.array:
+    def _get_theo_Stokes_vec_components(self) -> np.array:
         """
         Computes stokes vector components from four polarized images at four angles, angle_dic describes the coupling between
         poled_images_array[i] <--> angle_dic[i]
         Return:
             stokes vector, shape=(3, poled_images.shape[1], poled_images.shape[0])
         """
-        I = 0.5 * np.sum(single_pol_images, axis=0)
-        Q = (
-            single_pol_images[self.angle_dic[0]]
-            - single_pol_images[self.angle_dic[90]]
-        )
-        U = (
-            single_pol_images[self.angle_dic[45]]
-            - single_pol_images[self.angle_dic[-45]]
-        )
+        if self._is_demosaiced:
+            subimages = self.demosaiced_images
+        else:
+            subimages = self.single_pol_subimages
+        I = 0.5 * np.sum(subimages, axis=0)
+        Q = subimages[self.angle_dic[0]] - subimages[self.angle_dic[90]]
+        U = subimages[self.angle_dic[45]] - subimages[self.angle_dic[-45]]
 
         S = np.array([I, Q, U], dtype=float)
         return S
@@ -380,12 +369,12 @@ class MicropolImage(Image):
         """
         self.data = self.data - dark.data
         self.data = np.where(self.data >= 0, self.data, 0)  # Fix data
-        self._update_Stokes_vec()
+        self.Stokes_vec = self._get_theo_Stokes_vec_components()
         self._dark_subtracted = True
         return self
 
     def correct_flat(self, flat: MicropolImage) -> MicropolImage:
-        """Normalizes the flat and uses it to correct the image.
+        """Normalizes the flat and uses it to correStokes_vecct the image.
 
         Args:
             flat (MicropolImage): flat image, does not need to be normalized.
@@ -403,7 +392,7 @@ class MicropolImage(Image):
 
         # self.data = np.where(self.data >= 0, self.data, 0)
         # self.data = np.where(self.data < 4096, self.data, 4096)
-        self._update_Stokes_vec()
+        self.Stokes_vec = self._get_theo_Stokes_vec_components()
         self._flat_subtracted = True
         return self
 
@@ -439,14 +428,15 @@ class MicropolImage(Image):
         """
         data_ratio = self.data.shape[0] / self.data.shape[1]
         image_fig, imageax = plt.subplots(dpi=200, constrained_layout=True)
+
+        avg = np.mean(self.data)
+        stdev = np.std(self.data)
         mappable = imageax.imshow(
             self.data,
             cmap=cmap,
-            vmin=mean_minus_std(self.data),
-            vmax=mean_plus_std(self.data),
+            vmin=avg - stdev,
+            vmax=avg + stdev,
         )
-        avg = np.mean(self.data)
-        stdev = np.std(self.data)
         imageax.set_title(
             f"Image data (avrg {avg:3.2f}+-{stdev:3.2f})",
             color="black",
@@ -461,25 +451,25 @@ class MicropolImage(Image):
         )
 
         stokesax = stokesax.ravel()
-        for i, stokes in enumerate(stokesax):
-            vmin = mean_minus_std(self.polparam_list[i].data)
-            vmax = mean_plus_std(self.polparam_list[i].data)
-            avg = np.mean(self.polparam_list[i].data)
-            stdev = np.std(self.polparam_list[i].data)
-            mappable_stokes = stokes.imshow(
-                self.polparam_list[i].data, cmap=cmap, vmin=vmin, vmax=vmax
+        for parameter, axis in zip(self.polparam_list, stokesax):
+            avg = np.mean(parameter.data)
+            stdev = np.std(parameter.data)
+            mappable_stokes = axis.imshow(
+                parameter.data,
+                cmap=cmap,
+                vmin=avg - stdev,
+                vmax=avg + stdev,
             )
-            stokes.set_title(
-                self.polparam_list[i].title
-                + f" (avrg {avg:3.2f}+-{stdev:3.2f})",
+            axis.set_title(
+                parameter.title + f" (avrg {avg:3.2f}+-{stdev:3.2f})",
                 color="black",
             )
-            stokes.set_xlabel("x [px]")
-            stokes.set_ylabel("y [px]")
+            axis.set_xlabel("x [px]")
+            axis.set_ylabel("y [px]")
             stokes_fig.colorbar(
                 mappable_stokes,
-                ax=stokes,
-                label=self.polparam_list[i].measure_unit,
+                ax=axis,
+                label=parameter.measure_unit,
                 fraction=data_ratio * 0.05,
             )
         return image_fig, imageax, stokes_fig, stokesax
@@ -497,15 +487,15 @@ class MicropolImage(Image):
         fig, ax = plt.subplots(2, 2, figsize=(9, 9), constrained_layout=True)
         ax = ax.ravel()
         polslist = [self.pol0, self.pol45, self.pol90, self.pol_45]
-        for i, singlepolax in enumerate(ax):
-            mappable = singlepolax.imshow(polslist[i].data, cmap=cmap)
-            singlepolax.set_title(polslist[i].title)
-            singlepolax.set_xlabel("x [px]")
-            singlepolax.set_ylabel("y [px]")
+        for pol, axis in zip(polslist, ax):
+            mappable = axis.imshow(pol.data, cmap=cmap)
+            axis.set_title(pol.title)
+            axis.set_xlabel("x [px]")
+            axis.set_ylabel("y [px]")
             fig.colorbar(
                 mappable,
-                ax=singlepolax,
-                label=polslist[i].measure_unit,
+                ax=axis,
+                label=pol.measure_unit,
                 fraction=data_ratio * 0.05,
                 pad=0.01,
             )
@@ -548,17 +538,18 @@ class MicropolImage(Image):
         return fig, ax
 
     def show_pol_param(
-        self, polparam: PolParam, cmap="Greys_r", vmin=None, vmax=None
+        self, polparam: str, cmap="Greys_r", vmin=None, vmax=None
     ):
         """Plots a single polarization parameter given as input
 
         Args:
-            polparam (PolParam): image PolParam containing the parameter to plot. Can be one among [self.I, self.Q, self.U, self.pB, self.AoLP, self.DoLP]
+            polparam (str): image PolParam containing the parameter to plot. Can be one among [I, Q, U, pB, AoLP, DoLP]
             cmap (str, optional): colormap for the plot. Defaults to "Greys_r".
 
         Returns:
             tuple: a (figure, axis) couple same as matplotlib.pyplot.subplots
         """
+        polparam = getattr(self, polparam)
         data_ratio = self.data.shape[0] / self.data.shape[1]
         fig, ax = plt.subplots(dpi=200)
         if vmin is None:
@@ -627,19 +618,20 @@ class MicropolImage(Image):
     def save_param_as_fits(
         self,
         filename: str,
-        polparam: PolParam,
+        polparam: str,
         fixto: list[float, float] = None,
     ) -> None:
         """Saves chosen polarization parameter as a fits file
 
         Args:
             filename (str): filename of the output image.
-            polparam (PolParam): polarization parameter to save. Can be one among [self.I, self.Q, self.U, self.pB, self.AoLP, self.DoLP]
+            polparam (str): polarization parameter to save. Can be one among [I, Q, U, pB, AoLP, DoLP]
             fixto (list[float, float], optional): set the minimum and maximum value for the output images. Defaults to None.
 
         Raises:
             ValueError: filename is not a valid .fits file
         """
+        polparam = getattr(self, polparam)
         filepath = Path(_make_abs_and_create_dir(filename))
         if filepath.suffix != ".fits":
             raise ValueError("filename must be a valid file name, not folder.")
@@ -757,10 +749,8 @@ class MicropolImage(Image):
         """
 
         self.demosaiced_images = demosaic(self.data, option=demosaic_mode)
-        self.Stokes_vec = self._get_theo_Stokes_vec_components(
-            self.demosaiced_images
-        )
         self._is_demosaiced = True
+        self.Stokes_vec = self._get_theo_Stokes_vec_components()
 
         return self
 
@@ -800,27 +790,41 @@ class MicropolImage(Image):
             warning(
                 f"New dimension was incompatible with superpixels. Trimmed to ({newdim_y}, {newdim_x})"
             )
-
         new_subdims = [int(newdim_y / 2), int(newdim_x / 2)]
         congridded_pol_images = np.zeros(shape=(4, *new_subdims), dtype=float)
         for subimage_i, pol_subimage in enumerate(self.single_pol_subimages):
             congridded_pol_images[subimage_i] = congrid(
                 pol_subimage, new_subdims
             )
-        newimage = MicropolImage(merge_polarizations(congridded_pol_images))
+        newdata = merge_polarizations(congridded_pol_images)
+        newimage = MicropolImage(self)
+        newimage.data = newdata
+        newimage.Stokes_vec = [
+            congrid(stokes_component, [newdim_y, newdim_x])
+            for stokes_component in self.Stokes_vec
+        ]
         return newimage
 
     def rotate(self, angle: float) -> MicropolImage:
         """Rotates an image of angle degrees, counter-clockwise."""
 
-        single_pols = split_polarizations(self.data)
+        single_pols = self.single_pol_subimages
         for i in range(4):
             image = PILImage.fromarray(single_pols[i])
             image = image.rotate(angle)
-            single_pols[i] = np.asarray(image)
+            single_pols[i] = np.asarray(image, dtype=float)
         data = merge_polarizations(single_pols)
 
-        return MicropolImage(data)
+        Stokes_vec = self.Stokes_vec
+        for i in range(3):
+            image = PILImage.fromarray(Stokes_vec[i])
+            image = image.rotate(angle)
+            Stokes_vec[i] = np.asarray(image, dtype=float)
+        newimage = MicropolImage(self)
+        newimage.data = data
+        newimage.Stokes_vec = Stokes_vec
+
+        return newimage
 
     def mask_occulter(
         self,
@@ -859,6 +863,12 @@ class MicropolImage(Image):
                 )
                 for data in self.demosaiced_images
             ]
+        for i in range(3):
+            self.Stokes_vec[i] = roi_from_polar(
+                self.Stokes_vec[i],
+                (y, x),
+                [r, 2 * np.max((self.height, self.width))],
+            )
 
     def shift(self, y: int, x: int) -> MicropolImage:
         """Shifts image by y, x pixels and fills with 0 the remaining space. Positive numbers for up/right shift and negative for down/left shift. Image is split into polarizations, each one is shifted, then they are merged again.

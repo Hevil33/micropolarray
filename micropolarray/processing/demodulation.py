@@ -221,10 +221,10 @@ def calculate_demodulation_tensor(
     available_norms = [[0, 45, 90, -45], [0, 45, 90, 135]]
     if (normalizing_S is None) and (
         not np.all(np.isin(available_norms[0], polarizer_orientations))
-        or not np.all(np.isin(available_norms[1], polarizer_orientations))
+        and not np.all(np.isin(available_norms[1], polarizer_orientations))
     ):
         raise ValueError(
-            "Each one among (0, 45, 90, -45 / 135) polarizations must be included in the polarizer orientation array"
+            f"Each one among (0, 45, 90, -45 / 135) polarizations must be included in the polarizer orientation array. Provided {polarizer_orientations}"
         )  # for calculating normalizing_S
 
     polarizer_orientations, filenames_list = (
@@ -657,9 +657,11 @@ def compute_demodulation_by_chunk(
     # occulter if present.
     if DEBUG:
         x_start, x_end = 100, 110
-        x_start, x_end = 0, 2
+        x_start, x_end = 700, 710
+        # x_start, x_end = 0, 2
         y_start, y_end = 100, 110
-        y_start, y_end = 0, 2
+        y_start, y_end = 500, 510
+        # y_start, y_end = 0, 2
     else:
         y_start, y_end = 0, height
         x_start, x_end = 0, width
@@ -714,7 +716,6 @@ def compute_demodulation_by_chunk(
                         fit_success = True
                     except RuntimeError:
                         fit_success = False
-                        print("fit failed")
                         break
 
                 if DEBUG:  # DEBUG
@@ -731,6 +732,7 @@ def compute_demodulation_by_chunk(
                             label=f"points {i}",
                             fmt="k-",
                             color=colors[i],
+                            linestyle="none",
                         )
                         min = np.min(polarizations_rad)
                         # min = 225
