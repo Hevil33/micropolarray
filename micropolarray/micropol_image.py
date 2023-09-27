@@ -474,11 +474,12 @@ class MicropolImage(Image):
             )
         return image_fig, imageax, stokes_fig, stokesax
 
-    def show_single_pol_images(self, cmap="Greys_r"):
+    def show_single_pol_images(self, cmap="Greys_r", **kwargs):
         """Plots the four polarizations images.
 
         Args:
             cmap (str, optional): colormap for the plot. Defaults to "Greys_r".
+            **kwargs: arguments passed to matplotlib.pyplot.imshow.
 
         Returns:
             tuple: a (figure, axis) couple same as matplotlib.pyplot.subplots
@@ -488,7 +489,7 @@ class MicropolImage(Image):
         ax = ax.ravel()
         polslist = [self.pol0, self.pol45, self.pol90, self.pol_45]
         for pol, axis in zip(polslist, ax):
-            mappable = axis.imshow(pol.data, cmap=cmap)
+            mappable = axis.imshow(pol.data, cmap=cmap, **kwargs)
             axis.set_title(pol.title)
             axis.set_xlabel("x [px]")
             axis.set_ylabel("y [px]")
@@ -501,11 +502,12 @@ class MicropolImage(Image):
             )
         return fig, ax
 
-    def show_demo_images(self, cmap="Greys_r"):
+    def show_demo_images(self, cmap="Greys_r", vmin=None, vmax=None, **kwargs):
         """Plots the four demosaiced images.
 
         Args:
             cmap (str, optional): colormap for the plot. Defaults to "Greys_r".
+            **kwargs: arguments passed to matplotlib.pyplot.imshow.
 
         Returns:
             tuple: a (figure, axis) couple same as matplotlib.pyplot.subplots
@@ -517,11 +519,16 @@ class MicropolImage(Image):
         ax = ax.ravel()
         demo_images_list = self.demosaiced_images
         for i, single_demo_ax in enumerate(ax):
+            if vmin is None:
+                this_vmin = mean_minus_std(demo_images_list[i])
+            if vmax is None:
+                this_vmax = mean_plus_std(demo_images_list[i])
             mappable = single_demo_ax.imshow(
                 demo_images_list[i],
                 cmap=cmap,
-                vmin=mean_minus_std(demo_images_list[i]),
-                vmax=mean_plus_std(demo_images_list[i]),
+                vmin=this_vmin,
+                vmax=this_vmax,
+                **kwargs,
             )
             single_demo_ax.set_title(
                 f"Demosaiced image {list(self.angle_dic.keys())[list(self.angle_dic.values()).index(i)]}"
@@ -545,6 +552,7 @@ class MicropolImage(Image):
         Args:
             polparam (str): image PolParam containing the parameter to plot. Can be one among [I, Q, U, pB, AoLP, DoLP]
             cmap (str, optional): colormap for the plot. Defaults to "Greys_r".
+            **kwargs: arguments passed to matplotlib.pyplot.imshow.
 
         Returns:
             tuple: a (figure, axis) couple same as matplotlib.pyplot.subplots
