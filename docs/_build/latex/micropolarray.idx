@@ -132,9 +132,9 @@
 \indexentry{mean\_minus\_std() (in module micropolarray.utils)@\spxentry{mean\_minus\_std()}\spxextra{in module micropolarray.utils}|hyperpage}{17}
 \indexentry{mean\_plus\_std() (in module micropolarray.utils)@\spxentry{mean\_plus\_std()}\spxextra{in module micropolarray.utils}|hyperpage}{17}
 \indexentry{median\_minus\_std() (in module micropolarray.utils)@\spxentry{median\_minus\_std()}\spxextra{in module micropolarray.utils}|hyperpage}{17}
-\indexentry{median\_plus\_std() (in module micropolarray.utils)@\spxentry{median\_plus\_std()}\spxextra{in module micropolarray.utils}|hyperpage}{18}
-\indexentry{normalize2pi() (in module micropolarray.utils)@\spxentry{normalize2pi()}\spxextra{in module micropolarray.utils}|hyperpage}{18}
-\indexentry{sigma\_DN() (in module micropolarray.utils)@\spxentry{sigma\_DN()}\spxextra{in module micropolarray.utils}|hyperpage}{18}
-\indexentry{timer() (in module micropolarray.utils)@\spxentry{timer()}\spxextra{in module micropolarray.utils}|hyperpage}{18}
+\indexentry{median\_plus\_std() (in module micropolarray.utils)@\spxentry{median\_plus\_std()}\spxextra{in module micropolarray.utils}|hyperpage}{17}
+\indexentry{normalize2pi() (in module micropolarray.utils)@\spxentry{normalize2pi()}\spxextra{in module micropolarray.utils}|hyperpage}{17}
+\indexentry{sigma\_DN() (in module micropolarray.utils)@\spxentry{sigma\_DN()}\spxextra{in module micropolarray.utils}|hyperpage}{17}
+\indexentry{timer() (in module micropolarray.utils)@\spxentry{timer()}\spxextra{in module micropolarray.utils}|hyperpage}{17}
 \indexentry{module@\spxentry{module}!micropolarray@\spxentry{micropolarray}|hyperpage}{18}
 \indexentry{micropolarray@\spxentry{micropolarray}!module@\spxentry{module}|hyperpage}{18}

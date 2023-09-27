@@ -87,6 +87,26 @@
 <span class="p">)</span>
 
 
+<span class="c1"># timer decorator</span>
+<div class="viewcode-block" id="timer"><a class="viewcode-back" href="../../micropolarray.html#micropolarray.utils.timer">[docs]</a><span class="k">def</span> <span class="nf">timer</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Use this to time function execution</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        func (function): function of which to measure execution time</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">end</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Function </span><span class="si">{</span><span class="n">func</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> took </span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">end</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">start</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">)</span><span class="si">}</span><span class="s2"> s to run&quot;</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="k">return</span> <span class="n">wrapper</span></div>
+
+
 <span class="k">def</span> <span class="nf">_make_abs_and_create_dir</span><span class="p">(</span><span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
     <span class="n">path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
 
@@ -117,7 +137,8 @@
     <span class="k">return</span> <span class="n">fixed_data</span></div>
 
 
-<div class="viewcode-block" id="mean_minus_std"><a class="viewcode-back" href="../../micropolarray.html#micropolarray.utils.mean_minus_std">[docs]</a><span class="k">def</span> <span class="nf">mean_minus_std</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">stds_n</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<div class="viewcode-block" id="mean_minus_std"><a class="viewcode-back" href="../../micropolarray.html#micropolarray.utils.mean_minus_std">[docs]</a><span class="nd">@timer</span>
+<span class="k">def</span> <span class="nf">mean_minus_std</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">stds_n</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns the value at the mean - standard deviation for the input data</span>
 
 <span class="sd">    Args:</span>
@@ -130,7 +151,8 @@
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">-</span> <span class="n">stds_n</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="mean_plus_std"><a class="viewcode-back" href="../../micropolarray.html#micropolarray.utils.mean_plus_std">[docs]</a><span class="k">def</span> <span class="nf">mean_plus_std</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">stds_n</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<div class="viewcode-block" id="mean_plus_std"><a class="viewcode-back" href="../../micropolarray.html#micropolarray.utils.mean_plus_std">[docs]</a><span class="nd">@timer</span>
+<span class="k">def</span> <span class="nf">mean_plus_std</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">stds_n</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns the value at the mean + standard deviation for the input data</span>
 
 <span class="sd">    Args:</span>
@@ -186,26 +208,6 @@
         <span class="n">angles_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">angle</span>
 
     <span class="k">return</span> <span class="n">angles_list</span></div>
-
-
-<span class="c1"># timer decorator</span>
-<div class="viewcode-block" id="timer"><a class="viewcode-back" href="../../micropolarray.html#micropolarray.utils.timer">[docs]</a><span class="k">def</span> <span class="nf">timer</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Use this to time function execution</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        func (function): function of which to measure execution time</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="n">end</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-        <span class="nb">print</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Function </span><span class="si">{</span><span class="n">func</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> took </span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">end</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">start</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">)</span><span class="si">}</span><span class="s2"> ns to run&quot;</span>
-        <span class="p">)</span>
-        <span class="k">return</span> <span class="n">result</span>
-
-    <span class="k">return</span> <span class="n">wrapper</span></div>
 
 
 <div class="viewcode-block" id="align_keywords_and_data"><a class="viewcode-back" href="../../micropolarray.html#micropolarray.utils.align_keywords_and_data">[docs]</a><span class="k">def</span> <span class="nf">align_keywords_and_data</span><span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">sun_center</span><span class="p">,</span> <span class="n">platescale</span><span class="p">,</span> <span class="n">binning</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>

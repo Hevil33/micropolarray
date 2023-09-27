@@ -111,9 +111,6 @@ class MicropolImage(Image):
             self.subtract_dark(dark=dark)
         if flat is not None:
             self.correct_flat(flat=flat)
-        elif MicropolImage.first_call:
-            warning("Remember to set dark")
-            MicropolImage.first_call = False
 
     def _initialize_internal_variables(self):
         self._data = None
@@ -299,7 +296,7 @@ class MicropolImage(Image):
     ) -> np.array:
         """
         Computes stokes vector components from four polarized images at four angles, angle_dic describes the coupling between
-        poled_images_array[i] <--> angle_dic[i]. Assumes:
+        poled_images_array[i] <--> angle_dic[i]. Calculates:
 
         I = M_00 * I_1 + M_01 * I_2 + M_02 * I_3 + M_03 * I_4
         Q = M_10 * I_1 + M_11 * I_2 + M_12 * I_3 + M_13 * I_4
@@ -312,6 +309,7 @@ class MicropolImage(Image):
         num_of_malus_parameters = 3  # 3 multiplication params
         pixels_in_superpix = 4
         mij = demodulator.mij
+        fit_found_flags = demodulator.fit_found_flags
 
         self.demosaic()
         demosaiced_images = self.demosaiced_images
@@ -355,7 +353,11 @@ class MicropolImage(Image):
         Q = T_ij[1, 0] + T_ij[1, 1] + T_ij[1, 2] + T_ij[1, 3]
         U = T_ij[2, 0] + T_ij[2, 1] + T_ij[2, 2] + T_ij[2, 3]
 
+        # use theo stokes where fit wasn't found
         S = np.array([I, Q, U], dtype=float)
+        theo_S = self.Stokes_vec
+        S = np.where(fit_found_flags == 1.0, S, theo_S)
+
         return S
 
     def subtract_dark(self, dark: MicropolImage) -> MicropolImage:
@@ -412,19 +414,17 @@ class MicropolImage(Image):
     # ----------------------------------------------------------------
 
     def show_with_pol_params(self, cmap="Greys_r") -> tuple:
-        """Returns a fig for each set of image parameters. User must call
-        plt.show after this is called.
-        Returned parameters:
-        - Original image
-        - Stokes vector I, Q, U
-        - Angle, degree of linear polarizaimagetion Polarized brightness
-
+        """Returns a tuple containing figure and axis of the plotted
+        data, and figure and axis of polarization parameters (3x2
+        subplots). User must callplt.show after this is called.
 
         Args:
             cmap (str, optional): colormap string. Defaults to "Greys_r".
 
         Returns:
-            tuple: a (figure, axis) couple same as matplotlib.pyplot.subplots for the image data and another for the six polarization parameters
+            tuple: a (figure, axis, figure, axis) couple same as
+            matplotlib.pyplot.subplots for the image data and another for
+            the six polarization parameters
         """
         data_ratio = self.data.shape[0] / self.data.shape[1]
         image_fig, imageax = plt.subplots(dpi=200, constrained_layout=True)
@@ -538,7 +538,7 @@ class MicropolImage(Image):
         return fig, ax
 
     def show_pol_param(
-        self, polparam: str, cmap="Greys_r", vmin=None, vmax=None
+        self, polparam: str, cmap="Greys_r", vmin=None, vmax=None, **kwargs
     ):
         """Plots a single polarization parameter given as input
 
@@ -561,6 +561,7 @@ class MicropolImage(Image):
             cmap=cmap,
             vmin=vmin,
             vmax=vmax,
+            **kwargs,
         )
         ax.set_title(polparam.title)
         ax.set_xlabel("x [px]")

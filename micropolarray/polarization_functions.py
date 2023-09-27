@@ -32,6 +32,7 @@ def AoLP(Stokes_vec_components):
 def DoLP(Stokes_vec_components):
     """Degree of linear polarization in [%]"""
     I, Q, U = Stokes_vec_components
+
     return np.divide(
         np.sqrt((Q * Q) + (U * U), dtype=float), I, where=(I != 0)
     )  # avoids 0/0 error

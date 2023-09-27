@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019/Debian) (preloaded format=pdflatex 2023.5.31)  25 SEP 2023 10:48
+This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019/Debian) (preloaded format=pdflatex 2023.5.31)  26 SEP 2023 11:46
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -947,7 +947,7 @@ Chapter 2.
 ] [20
 
 ]
-Overfull \hbox (40.37172pt too wide) in paragraph at lines 2474--2475
+Overfull \hbox (40.37172pt too wide) in paragraph at lines 2426--2427
 []\T1/txtt/m/n/10 micropolarray.processing.chen_wan_liang_calibration\T1/qtm/m/
 n/10 ,
  []
@@ -1458,15 +1458,15 @@ pol_image.PolParam at-
 [25] [26
 
 ])
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 2488.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 2488.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 2440.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 2440.
  (./micropolarray.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 2488.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 2488.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 2440.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 2440.
 
 Package rerunfilecheck Info: File `micropolarray.out' has not changed.
 (rerunfilecheck)             Checksum: 0C54E8A000E1676B71C6321037BFBEA4;5008.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 2488.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 2440.
  ) 
 Here is how much of TeX's memory you used:
  15369 strings out of 481239
@@ -1486,10 +1486,10 @@ e/texmf-dist/fonts/type1/public/txfonts/t1xbtt.pfb></usr/share/texlive/texmf-di
 st/fonts/type1/public/txfonts/t1xbtt.pfb></usr/share/texlive/texmf-dist/fonts/t
 ype1/public/txfonts/t1xtt.pfb></usr/share/texlive/texmf-dist/fonts/type1/public
 /txfonts/t1xtt.pfb>
-Output written on micropolarray.pdf (30 pages, 220225 bytes).
+Output written on micropolarray.pdf (30 pages, 219796 bytes).
 PDF statistics:
- 655 PDF objects out of 1000 (max. 8388607)
- 601 compressed objects within 7 object streams
+ 650 PDF objects out of 1000 (max. 8388607)
+ 597 compressed objects within 6 object streams
  163 named destinations out of 1000 (max. 500000)
  213 words of extra memory for PDF output out of 10000 (max. 10000000)
 

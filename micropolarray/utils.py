@@ -66,7 +66,6 @@ def fix_data(data: np.array, min, max):
     return fixed_data
 
 
-@timer
 def mean_minus_std(data: np.array, stds_n: int = 1) -> float:
     """Returns the value at the mean - standard deviation for the input data
 
@@ -80,7 +79,6 @@ def mean_minus_std(data: np.array, stds_n: int = 1) -> float:
     return np.mean(data) - stds_n * np.std(data)
 
 
-@timer
 def mean_plus_std(data: np.array, stds_n: int = 1) -> float:
     """Returns the value at the mean + standard deviation for the input data
 

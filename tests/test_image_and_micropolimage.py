@@ -66,6 +66,19 @@ class TestMicropolImage:
         return
         assert np.all(ml.Image(tmp_path / "image_POL0.fits").data == 1)
 
+    def test_show(self, dummy_data):
+        dummy_data_16 = dummy_data(16)
+        for image_type in [ml.MicropolImage, ml.Image]:
+            dummy_image = image_type(dummy_data_16)
+            dummy_image.show()
+            dummy_image.show_histogram()
+        dummy_image = ml.MicropolImage(dummy_data_16)
+        dummy_image.show_with_pol_params()
+        dummy_image.show_single_pol_images()
+        dummy_image.show_pol_param("DoLP")
+        dummy_image.demosaic()
+        dummy_image.show_demo_images()
+
     def test_dark_and_flat_correction(self, dummy_data, tmp_path):
         # test dark
         dummy_data_16 = dummy_data(16)
