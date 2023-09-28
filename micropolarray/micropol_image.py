@@ -242,7 +242,9 @@ class MicropolImage(Image):
             self.data = newdata
         self.Stokes_vec = self._get_theo_Stokes_vec_components()
 
-    def demodulate(self, demodulator: Demodulator) -> MicropolImage:
+    def demodulate(
+        self, demodulator: Demodulator, demosaicing: bool = True
+    ) -> MicropolImage:
         """Returns a MicropolImage with polarization parameters calculated from the demodulation tensor provided.
 
         Args:
@@ -254,19 +256,13 @@ class MicropolImage(Image):
         Returns:
             MicropolImage: copy of the input imagreturn e with I, Q, U, pB, DoLP, AoLP calculated from the demodulation tensor.
         """
-        if (self.height, self.width) != (
-            demodulator.mij.shape[2],
-            demodulator.mij.shape[3],
-        ):
-            print(demodulator.mij.shape[2], demodulator.mij.shape[3])
-            print(self.height, self.width)
-            raise ValueError(
-                "Image and demodulator do not have the same dimensions, check binning."
-            )
+
         info("Demodulating...")
         demodulated_image = MicropolImage(self)
         demodulated_image.Stokes_vec = (
-            demodulated_image._get_Stokes_from_demodulator(demodulator)
+            demodulated_image._get_Stokes_from_demodulator(
+                demodulator, demosaicing
+            )
         )
         demodulated_image._is_demodulated = True
 
@@ -292,7 +288,9 @@ class MicropolImage(Image):
         return S
 
     def _get_Stokes_from_demodulator(
-        self, demodulator: Demodulator
+        self,
+        demodulator: Demodulator,
+        demosaicing: bool,
     ) -> np.array:
         """
         Computes stokes vector components from four polarized images at four angles, angle_dic describes the coupling between
@@ -311,8 +309,11 @@ class MicropolImage(Image):
         mij = demodulator.mij
         fit_found_flags = demodulator.fit_found_flags
 
-        self.demosaic()
-        demosaiced_images = self.demosaiced_images
+        if demosaicing:
+            self.demosaic()
+            splitted_pols = self.demosaiced_images
+        else:
+            splitted_pols = self.single_pol_subimages
 
         # IMG = np.array(
         #    [
@@ -325,21 +326,21 @@ class MicropolImage(Image):
         # )  # Liberatore article/thesis
 
         IMG = np.array(
-            [demo_image for demo_image in demosaiced_images],
+            [splitted_pol for splitted_pol in splitted_pols],
             dtype=float,
         )
         if (mij[0, 0].shape[0] != IMG[0].shape[0]) or (
             mij[0, 0].shape[1] != IMG[0].shape[1]
         ):
             raise ValueError(
-                f"demodulation matrix and demosaiced images have different shape {mij[0,0].shape} {IMG[0].shape}. Check that binning is correct."
+                f"demodulation matrix {mij[0,0].shape} and images {IMG[0].shape} have different shapes. Check that binning is correct and demosaicing keyword is correctly set."
             )  # sanity check
 
         T_ij = np.zeros(
             shape=(
                 num_of_malus_parameters,
                 pixels_in_superpix,
-                *self.data.shape,
+                *splitted_pols[0].shape,
             )
         )
         for i in range(num_of_malus_parameters):
@@ -626,15 +627,15 @@ class MicropolImage(Image):
 
     def save_param_as_fits(
         self,
-        filename: str,
         polparam: str,
+        filename: str,
         fixto: list[float, float] = None,
     ) -> None:
         """Saves chosen polarization parameter as a fits file
 
         Args:
-            filename (str): filename of the output image.
             polparam (str): polarization parameter to save. Can be one among [I, Q, U, pB, AoLP, DoLP]
+            filename (str): filename of the output image.
             fixto (list[float, float], optional): set the minimum and maximum value for the output images. Defaults to None.
 
         Raises:

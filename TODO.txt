@@ -1,4 +1,4 @@
-stampare dove arriva con logging, usare fixtures per test su piu dati
+usare fixtures per test su piu dati
 
 refactor della demodulazione con pulizia dark e flat da un'altra parte magari
 
@@ -11,4 +11,4 @@ faster nrgf filter
 
 passare da classi di polarizzatori a json
 
-aggiungere colorbar a return dei plot
+fare il demodulatore con metà dimensione
