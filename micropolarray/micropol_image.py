@@ -249,6 +249,7 @@ class MicropolImage(Image):
 
         Args:
             demodulator (Demodulator): Demodulator object containing the demodulation tensor components (see processing.new_demodulation)
+            demosaicing (bool, optional): wether to apply demosaicing to the image or not. Set it to False if demodulation matrices have half the dimension of the image. Defaults to True.
 
         Raises:
             ValueError: raised if image and demodulator do not have the same dimension, for example in case of different binning

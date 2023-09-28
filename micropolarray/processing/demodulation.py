@@ -14,18 +14,13 @@ from scipy.optimize import curve_fit
 from tqdm import tqdm
 
 from micropolarray.cameras import PolarCam
-from micropolarray.processing.chen_wan_liang_calibration import (
-    _ifov_jitcorrect,
-)
-from micropolarray.processing.nrgf import (
-    find_occulter_position,
-    roi_from_polar,
-)
-from micropolarray.processing.rebin import (
-    micropolarray_rebin,
-    standard_rebin,
-    trim_to_match_binning,
-)
+from micropolarray.processing.chen_wan_liang_calibration import \
+    _ifov_jitcorrect
+from micropolarray.processing.nrgf import (find_occulter_position,
+                                           roi_from_polar)
+from micropolarray.processing.rebin import (micropolarray_rebin,
+                                            standard_rebin,
+                                            trim_to_match_binning)
 from micropolarray.utils import mean_plus_std
 
 # Shape of the demodulation matrix
@@ -65,13 +60,13 @@ class Demodulator:
         )
 
         with fits.open(filenames_list[0]) as firsthul:
-            sample_data = np.array(firsthul[0].data)
+            sample_matrix = np.array(firsthul[0].data)
         Mij = np.zeros(
             shape=(
                 self.n_malus_params,
                 self.n_pixels_in_superpix,
-                sample_data.shape[0],
-                sample_data.shape[1],
+                sample_matrix.shape[0],
+                sample_matrix.shape[1],
             ),
             dtype=float,
         )
