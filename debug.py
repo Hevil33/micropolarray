@@ -19,8 +19,9 @@ def main():
     demodulator = ml.Demodulator(
         "/home/herve/dottorato/codex/data/DemodulationTensor_GSFCData"
     )
-    image.demodulate(demodulator, demosaicing=False)
-    image.show_pol_param("pB")
+
+    demo_image = image.demodulate(demodulator, demosaicing=True)
+    demo_image.show_pol_param("pB")
 
     plt.show()
 

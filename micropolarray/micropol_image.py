@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import sys
 from dataclasses import dataclass
 from logging import debug, error, info, warning
 from pathlib import Path
@@ -243,7 +244,7 @@ class MicropolImage(Image):
         self.Stokes_vec = self._get_theo_Stokes_vec_components()
 
     def demodulate(
-        self, demodulator: Demodulator, demosaicing: bool = True
+        self, demodulator: Demodulator, demosaicing: bool = False
     ) -> MicropolImage:
         """Returns a MicropolImage with polarization parameters calculated from the demodulation tensor provided.
 
@@ -307,13 +308,29 @@ class MicropolImage(Image):
         # Corrected with demodulation matrices, S.shape = (4, n, m)
         num_of_malus_parameters = 3  # 3 multiplication params
         pixels_in_superpix = 4
-        mij = demodulator.mij
         fit_found_flags = demodulator.fit_found_flags
 
         if demosaicing:
             self.demosaic()
             splitted_pols = self.demosaiced_images
+            mij = np.ones(
+                shape=(
+                    demodulator.mij.shape[0],
+                    demodulator.mij.shape[1],
+                    demodulator.mij.shape[2] * 2,
+                    demodulator.mij.shape[3] * 2,
+                ),
+                dtype=float,
+            )
+            for i in range(num_of_malus_parameters):
+                for j in range(pixels_in_superpix):
+                    demo_component = demodulator.mij[i, j]
+                    mij[i, j, :, :] = merge_polarizations(
+                        np.repeat(demo_component[np.newaxis, :, :], 4, axis=0)
+                    )  # repeat necessary to avoid numba problems
+
         else:
+            mij = demodulator.mij
             splitted_pols = self.single_pol_subimages
 
         # IMG = np.array(
@@ -326,15 +343,15 @@ class MicropolImage(Image):
         #    dtype=float,
         # )  # Liberatore article/thesis
 
-        IMG = np.array(
+        pixel_values = np.array(
             [splitted_pol for splitted_pol in splitted_pols],
             dtype=float,
         )
-        if (mij[0, 0].shape[0] != IMG[0].shape[0]) or (
-            mij[0, 0].shape[1] != IMG[0].shape[1]
+        if (mij[0, 0].shape[0] != pixel_values[0].shape[0]) or (
+            mij[0, 0].shape[1] != pixel_values[0].shape[1]
         ):
             raise ValueError(
-                f"demodulation matrix {mij[0,0].shape} and images {IMG[0].shape} have different shapes. Check that binning is correct and demosaicing keyword is correctly set."
+                f"demodulation matrix {mij[0,0].shape} and images {pixel_values[0].shape} have different shapes. Check that binning is correct."
             )  # sanity check
 
         T_ij = np.zeros(
@@ -347,7 +364,7 @@ class MicropolImage(Image):
         for i in range(num_of_malus_parameters):
             for j in range(pixels_in_superpix):
                 temp_tij = np.multiply(
-                    demodulator.mij[i, j, :, :], IMG[j, :, :]
+                    mij[i, j, :, :], pixel_values[j, :, :]
                 )  # Matrix product
                 T_ij[i, j, :, :] = temp_tij
 
@@ -355,10 +372,12 @@ class MicropolImage(Image):
         Q = T_ij[1, 0] + T_ij[1, 1] + T_ij[1, 2] + T_ij[1, 3]
         U = T_ij[2, 0] + T_ij[2, 1] + T_ij[2, 2] + T_ij[2, 3]
 
-        # use theo stokes where fit wasn't found
         S = np.array([I, Q, U], dtype=float)
-        theo_S = self.Stokes_vec
-        S = np.where(fit_found_flags == 1.0, S, theo_S)
+
+        # use theo stokes where fit wasn't found
+        if demodulator.fit_found_flags is not None:
+            theo_S = self.Stokes_vec
+            S = np.where(fit_found_flags == 1.0, S, theo_S)
 
         return S
 

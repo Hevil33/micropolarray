@@ -14,13 +14,18 @@ from scipy.optimize import curve_fit
 from tqdm import tqdm
 
 from micropolarray.cameras import PolarCam
-from micropolarray.processing.chen_wan_liang_calibration import \
-    _ifov_jitcorrect
-from micropolarray.processing.nrgf import (find_occulter_position,
-                                           roi_from_polar)
-from micropolarray.processing.rebin import (micropolarray_rebin,
-                                            standard_rebin,
-                                            trim_to_match_binning)
+from micropolarray.processing.chen_wan_liang_calibration import (
+    _ifov_jitcorrect,
+)
+from micropolarray.processing.nrgf import (
+    find_occulter_position,
+    roi_from_polar,
+)
+from micropolarray.processing.rebin import (
+    micropolarray_rebin,
+    standard_rebin,
+    trim_to_match_binning,
+)
 from micropolarray.utils import mean_plus_std
 
 # Shape of the demodulation matrix
@@ -55,12 +60,21 @@ class Demodulator:
 
         if not os.path.exists(self.demo_matrices_path):
             raise FileNotFoundError("self.demo_matrices_path not found.")
+
+        # look for first matrix file and get dimensions
         filenames_list = glob.glob(
             self.demo_matrices_path + os.path.sep + "*.fits"
         )
 
-        with fits.open(filenames_list[0]) as firsthul:
-            sample_matrix = np.array(firsthul[0].data)
+        for filename in filenames_list:
+            if (
+                re.search("[0-9]{2}", filename.split(os.path.sep)[-1])
+                is not None
+            ):
+                with fits.open(filename) as firsthul:
+                    sample_matrix = np.array(firsthul[0].data)
+                break
+
         Mij = np.zeros(
             shape=(
                 self.n_malus_params,
@@ -469,6 +483,7 @@ def calculate_demodulation_tensor(
                     compute_demodulation_by_chunk,
                     args,
                 )
+
         except:
             error("Fit not found")
             ending_time = time.perf_counter()
@@ -495,41 +510,61 @@ def calculate_demodulation_tensor(
     # ]
     result = np.array(result, dtype=object)
     m_ij = np.zeros(
-        shape=(N_MALUS_PARAMS, N_PIXELS_IN_SUPERPIX, height, width)
+        shape=(
+            N_MALUS_PARAMS,
+            N_PIXELS_IN_SUPERPIX,
+            int(height / 2),
+            int(width / 2),
+        )
     )
+    fit_found_flag = np.zeros(shape=(int(height / 2), int(width / 2)))
+
     tks = np.zeros(shape=(height, width))
     efficiences = np.zeros(shape=(height, width))
     phases = np.zeros(shape=(height, width))
-    fit_found_flag = np.zeros(shape=(height, width))
 
-    def _merge_parameter(parameter: np.ndarray, param_number: int):
+    def _merge_parameter(parameter: np.ndarray, param_ID: int):
         for i in range(chunks_n_y):
             for j in range(chunks_n_x):
                 parameter[
                     i * (chunk_size_y) : (i + 1) * chunk_size_y,
                     j * (chunk_size_x) : (j + 1) * chunk_size_x,
-                ] = result[i + chunks_n_y * j, param_number].reshape(
+                ] = result[i + chunks_n_y * j, param_ID].reshape(
                     chunk_size_y, chunk_size_x
                 )
 
     _merge_parameter(tks, 1)
     _merge_parameter(efficiences, 2)
     _merge_parameter(phases, 3)
-    _merge_parameter(fit_found_flag, 4)
+
+    half_chunk_size_y = int(chunk_size_y / 2)
+    half_chunk_size_x = int(chunk_size_x / 2)
+
+    # merge flags
+    for i in range(chunks_n_y):
+        for j in range(chunks_n_x):
+            fit_found_flag[
+                i * (half_chunk_size_y) : (i + 1) * half_chunk_size_y,
+                j * (half_chunk_size_x) : (j + 1) * half_chunk_size_x,
+            ] = result[i + chunks_n_y * j, 4].reshape(
+                half_chunk_size_y,
+                half_chunk_size_x,
+            )
 
     for i in range(chunks_n_y):
         for j in range(chunks_n_x):
+            shaped_result = result[i + chunks_n_y * j, 0].reshape(
+                N_MALUS_PARAMS,
+                N_PIXELS_IN_SUPERPIX,
+                half_chunk_size_y,
+                half_chunk_size_x,
+            )
             m_ij[
                 :,
                 :,
-                i * (chunk_size_y) : (i + 1) * chunk_size_y,
-                j * (chunk_size_x) : (j + 1) * chunk_size_x,
-            ] = result[i + chunks_n_y * j, 0].reshape(
-                N_MALUS_PARAMS,
-                N_PIXELS_IN_SUPERPIX,
-                chunk_size_y,
-                chunk_size_x,
-            )
+                i * (half_chunk_size_y) : (i + 1) * half_chunk_size_y,
+                j * (half_chunk_size_x) : (j + 1) * half_chunk_size_x,
+            ] = shaped_result
 
     phases = np.rad2deg(phases)
 
@@ -624,12 +659,17 @@ def compute_demodulation_by_chunk(
     # pix_DN_sigma = np.sqrt(normalized_splitted_data / gain)
 
     m_ij = np.zeros(
-        shape=(N_MALUS_PARAMS, N_PIXELS_IN_SUPERPIX, height, width)
+        shape=(
+            N_MALUS_PARAMS,
+            N_PIXELS_IN_SUPERPIX,
+            int(height / 2),
+            int(width / 2),
+        )
     )  # demodulation matrix
+    fit_found = np.zeros_like(m_ij[0, 0])
     tk_data = np.ones(shape=(height, width)) * tk_prediction
     eff_data = np.ones(shape=(height, width)) * efficiency_prediction
     phase_data = np.zeros(shape=(height, width))
-    fit_found = np.zeros(shape=(height, width))
     superpix_params = np.zeros(shape=(N_PIXELS_IN_SUPERPIX, N_MALUS_PARAMS))
 
     predictions = np.zeros(shape=(N_PIXELS_IN_SUPERPIX, N_MALUS_PARAMS))
@@ -750,11 +790,9 @@ def compute_demodulation_by_chunk(
                     plt.show()
 
                 if not fit_success:
-                    for i in range(2):
-                        for j in range(2):
-                            m_ij[
-                                :, :, super_y + i, super_x + j
-                            ] = theo_demodulation_matrix
+                    m_ij[
+                        :, :, int(super_y / 2), int(super_x / 2)
+                    ] = theo_demodulation_matrix
                     continue
 
                 # Compute modulation matrix and its inverse
@@ -798,11 +836,12 @@ def compute_demodulation_by_chunk(
                     demodulation_matrix = theo_demodulation_matrix
                     fit_success = False
 
-                for i in range(2):
-                    for j in range(2):
-                        m_ij[
-                            :, :, super_y + i, super_x + j
-                        ] = demodulation_matrix
+                m_ij[
+                    :, :, int(super_y / 2), int(super_x / 2)
+                ] = demodulation_matrix
+                fit_found[int(super_y / 2), int(super_x / 2)] = (
+                    1.0 * fit_success
+                )
 
                 tk_data[
                     super_y : super_y + 2, super_x : super_x + 2
@@ -813,16 +852,11 @@ def compute_demodulation_by_chunk(
                 phase_data[
                     super_y : super_y + 2, super_x : super_x + 2
                 ] = np.array(phi, dtype=float).reshape(2, 2)
-                fit_found[
-                    super_y : super_y + 2, super_x : super_x + 2
-                ] = 1.0 * (fit_success)
 
             else:  # pixel is in occulter region
-                for i in range(2):
-                    for j in range(2):
-                        m_ij[
-                            :, :, super_y + i, super_x + j
-                        ] = theo_demodulation_matrix
+                m_ij[
+                    :, :, int(super_y / 2), int(super_x / 2)
+                ] = theo_demodulation_matrix
                 phase_data[
                     super_y : super_y + 2, super_x : super_x + 2
                 ] = rad_micropol_phases_previsions.reshape(2, 2)
@@ -845,9 +879,7 @@ def compute_demodulation_by_chunk(
                     dtype=float,
                 )
 
-    m_ij_chunk = m_ij
-
-    return m_ij_chunk, tk_data, eff_data, phase_data, fit_found
+    return m_ij, tk_data, eff_data, phase_data, fit_found
 
 
 def Malus(angle, throughput, efficiency, phase):

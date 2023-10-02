@@ -32,7 +32,7 @@ class TestDemodulation:
         for i in range(3):
             for j in range(4):
                 image = fits.PrimaryHDU()
-                image.data = np.ones_like(dummy_data_16) * demo_matrix[i, j]
+                image.data = np.ones(shape=(8, 8)) * demo_matrix[i, j]
                 image.writeto(tmp_path / f"M{i}{j}.fits")
 
         image = ml.PolarcamImage(dummy_data_16)
@@ -91,6 +91,7 @@ class TestDemodulation:
             glob.glob(str(tmp_path / "pol*.fits")),
             key=lambda x: int(x.split(os.path.sep)[-1][4:].strip(".fits")),
         )
+        # test normalization with number and with array
         for S_type in [
             input_signal,
             input_signal * np.ones(shape=(side, side)),
@@ -121,6 +122,7 @@ class TestDemodulation:
         assert np.all(ideal_image.DoLP.data == 1)
 
         demodulator = ml.Demodulator(output_str)
+
         assert (
             demodulator.fit_found_flags.shape == demodulator.mij[0, 0].shape
         )  # after September 2023
@@ -130,12 +132,6 @@ class TestDemodulation:
                 shape, S=input_signal, angle_rad=test_angle, t=t, eff=eff
             )
         )
-        example_image = example_image.demodulate(demodulator)
-        if False:
-            demodulator.show()
-            example_image.show_with_pol_params()
-            plt.show()
-
         # Theoric values
         I = input_signal * (
             Malus(test_angle, 1, 1, 0) + Malus(test_angle, 1, 1, np.pi / 2)
@@ -152,12 +148,29 @@ class TestDemodulation:
         aolp = np.round(AoLP(S), 5)
         pb = np.round(pB(S), 5)
 
-        assert np.all(np.round(example_image.I.data, 5) == np.round(I, 5))
-        assert np.all(np.round(example_image.Q.data, 5) == np.round(Q, 5))
-        assert np.all(np.round(example_image.U.data, 5) == np.round(U, 5))
-        assert np.all(np.round(example_image.DoLP.data, 5) == dolp)
-        assert np.all(np.round(example_image.AoLP.data, 5) == aolp)
-        assert np.all(np.round(example_image.pB.data, 5) == pb)
+        # test demodulation without demosaicing
+        no_demosaic_image = ml.MicropolImage(example_image)
+        no_demosaic_image = no_demosaic_image.demodulate(
+            demodulator, demosaicing=False
+        )
+        assert np.all(np.round(no_demosaic_image.pB.data, 5) == pb)
+        assert (
+            no_demosaic_image.pB.data.shape
+            == no_demosaic_image.single_pol_subimages[0].shape
+        )
+
+        demo_image = example_image.demodulate(demodulator)
+        if False:
+            demodulator.show()
+            example_image.show_with_pol_params()
+            plt.show()
+
+        assert np.all(np.round(demo_image.I.data, 5) == np.round(I, 5))
+        assert np.all(np.round(demo_image.Q.data, 5) == np.round(Q, 5))
+        assert np.all(np.round(demo_image.U.data, 5) == np.round(U, 5))
+        assert np.all(np.round(demo_image.DoLP.data, 5) == dolp)
+        assert np.all(np.round(demo_image.AoLP.data, 5) == aolp)
+        assert np.all(np.round(demo_image.pB.data, 5) == pb)
 
         simples = []
         measureds = []
