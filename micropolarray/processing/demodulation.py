@@ -435,13 +435,9 @@ def calculate_demodulation_tensor(
     pixel_errors = np.sqrt(
         np.divide(normalized_all_data_arr, normalizing_S * gain)
     )
-    print(normalized_all_data_arr.shape)
-    print(pixel_errors.shape)
 
-    print("QUA")
     for i in range(chunks_n_y):
         for j in range(chunks_n_x):
-            print("coso")
             splitted_data[i + chunks_n_y * j] = np.array(
                 normalized_all_data_arr[
                     :,
@@ -449,7 +445,6 @@ def calculate_demodulation_tensor(
                     j * (chunk_size_x) : (j + 1) * chunk_size_x,
                 ]
             )  # shape = (chunks_n*chunks_n, len(filenames_list), chunk_size_y, chunk_size_x)
-            print("prima")
             splitted_pixel_errors[i + chunks_n_y * j] = np.array(
                 pixel_errors[
                     :,
@@ -457,7 +452,6 @@ def calculate_demodulation_tensor(
                     j * (chunk_size_x) : (j + 1) * chunk_size_x,
                 ]
             )
-            print("dopo")
             splitted_occulter[i + chunks_n_y * j] = np.array(
                 occulter_flag[
                     i * (chunk_size_y) : (i + 1) * chunk_size_y,
@@ -514,7 +508,6 @@ def calculate_demodulation_tensor(
             splitted_occulter[i],
             polarizer_orientations,
             rad_micropol_phases_previsions,
-            gain,
             DEBUG,
         ]
         for i in range(chunks_n_y * chunks_n_x)
@@ -705,8 +698,8 @@ def compute_demodulation_by_chunk(
     predictions[:, 2] = rad_micropol_phases_previsions  # Angle prediction
 
     bounds = np.zeros(shape=(N_PIXELS_IN_SUPERPIX, 2, N_MALUS_PARAMS))
-    bounds[:, 0, 0], bounds[:, 1, 0] = 0.01, 0.9999999  # Throughput bounds
-    bounds[:, 0, 1], bounds[:, 1, 1] = 0.01, 0.9999999  # Efficiency bounds
+    bounds[:, 0, 0], bounds[:, 1, 0] = 0.1, 0.9999999  # Throughput bounds
+    bounds[:, 0, 1], bounds[:, 1, 1] = 0.1, 0.9999999  # Efficiency bounds
     bounds[:, 0, 2] = rad_micropol_phases_previsions - 15  # Lower angle bounds
     bounds[:, 1, 2] = rad_micropol_phases_previsions + 15  # Upper angle bounds
 
@@ -714,10 +707,10 @@ def compute_demodulation_by_chunk(
     # occulter if present.
     if DEBUG:
         x_start, x_end = 100, 110
-        x_start, x_end = 500, 510
+        # x_start, x_end = 500, 510
         # x_start, x_end = 0, 2
         y_start, y_end = 100, 110
-        y_start, y_end = 500, 510
+        # y_start, y_end = 500, 510
         # y_start, y_end = 0, 2
     else:
         y_start, y_end = 0, height
