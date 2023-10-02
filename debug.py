@@ -16,12 +16,7 @@ def main():
     image = ml.MicroPolarizerArrayImage(
         "../../../codex/data/20230606_Polarization/T3_430nm/105deg/average.fits"
     )
-    demodulator = ml.Demodulator(
-        "/home/herve/dottorato/codex/data/DemodulationTensor_GSFCData"
-    )
-
-    demo_image = image.demodulate(demodulator, demosaicing=True)
-    demo_image.show_pol_param("pB")
+    image.show()
 
     plt.show()
 

@@ -7,7 +7,7 @@ import numpy as np
 import pytest
 from astropy.io import fits
 from scipy.optimize import curve_fit
-from test_utils import dummy_data, generate_polarized_data
+from test_utils import generate_dummy_data, generate_polarized_data
 
 import micropolarray as ml
 from micropolarray.polarization_functions import AoLP, DoLP, pB
@@ -23,9 +23,9 @@ class TestMicropolImage:
         image.header["FROMFILE"] = True
         image.writeto(tmp_path / "sample_image.fits")
 
-    def test_image_initialization(self, dummy_data, tmp_path):
+    def test_image_initialization(self, generate_dummy_data, tmp_path):
         """Tests the initialization of both Image and MicroPolArrayImage"""
-        dummy_data_16 = dummy_data(16)
+        dummy_data_16 = generate_dummy_data(16)
         self.write_temp_image(tmp_path, dummy_data_16)
         for ImageClass in [ml.Image, ml.MicropolImage]:
             image = ImageClass(dummy_data_16)
@@ -38,9 +38,9 @@ class TestMicropolImage:
             image = ImageClass(image)
             assert np.all(image.data == dummy_data_16)
 
-    def test_image_writing(self, dummy_data, tmp_path):
+    def test_image_writing(self, generate_dummy_data, tmp_path):
         """Tests the saving of both Image and MicroPolArrayImage"""
-        dummy_data_16 = dummy_data(16)
+        dummy_data_16 = generate_dummy_data(16)
         image = ml.Image(dummy_data_16)
         for input_path in ["image.fits", "test/image.fits"]:
             image.save_as_fits(tmp_path / input_path)
@@ -66,8 +66,8 @@ class TestMicropolImage:
         return
         assert np.all(ml.Image(tmp_path / "image_POL0.fits").data == 1)
 
-    def test_show(self, dummy_data):
-        dummy_data_16 = dummy_data(16)
+    def test_show(self, generate_dummy_data):
+        dummy_data_16 = generate_dummy_data(16)
         for image_type in [ml.MicropolImage, ml.Image]:
             dummy_image = image_type(dummy_data_16)
             dummy_image.show()
@@ -79,10 +79,10 @@ class TestMicropolImage:
         dummy_image.demosaic()
         dummy_image.show_demo_images()
 
-    def test_dark_and_flat_correction(self, dummy_data, tmp_path):
+    def test_dark_and_flat_correction(self, generate_dummy_data, tmp_path):
         # test dark
-        dummy_data_16 = dummy_data(16)
-        dark_data = dummy_data(16)
+        dummy_data_16 = generate_dummy_data(16)
+        dark_data = generate_dummy_data(16)
         dark_image = ml.MicropolImage(dark_data)
         dummy_image = ml.MicropolImage(dummy_data_16, dark=dark_image)
         assert np.all(dummy_image.data == 0.0)
@@ -94,9 +94,9 @@ class TestMicropolImage:
         dummy_image = ml.MicropolImage(dummy_data_16, flat=flat_image)
         assert np.all(dummy_image.data == signal)
 
-    def test_demosaic(self, dummy_data, tmp_path):
+    def test_demosaic(self, generate_dummy_data, tmp_path):
         """Tests demosaic operation and demosaic writing"""
-        dummy_data_16 = dummy_data(16)
+        dummy_data_16 = generate_dummy_data(16)
         # test mean
         image = ml.MicropolImage(dummy_data_16)
         assert image.data.shape == (16, 16)
@@ -120,17 +120,17 @@ class TestMicropolImage:
             str(tmp_path / "demosaiced_images.fits")
         )
 
-    def test_rebinning(self, dummy_data):
+    def test_rebinning(self, generate_dummy_data):
         """Tests 2x2 and 4x4 binning (the other will be supposedly fine)"""
-        dummy_data_16 = dummy_data(16)
+        dummy_data_16 = generate_dummy_data(16)
 
         binned_image_2 = ml.MicropolImage(dummy_data_16).rebin(2)
-        assert np.all(binned_image_2.data == dummy_data(8) * 4)
+        assert np.all(binned_image_2.data == generate_dummy_data(8) * 4)
 
         binned_image_4 = ml.MicropolImage(dummy_data_16).rebin(4)
-        assert np.all(binned_image_4.data == dummy_data(4) * 16)
+        assert np.all(binned_image_4.data == generate_dummy_data(4) * 16)
 
-    def test_pol_parameters(self, dummy_data):
+    def test_pol_parameters(self, generate_dummy_data):
         """Test if polarization parameters are correcly computed"""
 
         def test_theo_stokes(image, I, Q, U):
@@ -147,7 +147,7 @@ class TestMicropolImage:
             )
 
         array_side = 16
-        dummy_data_16 = dummy_data(array_side)
+        dummy_data_16 = generate_dummy_data(array_side)
         half_ones = np.ones(shape=(int(array_side / 2), int(array_side / 2)))
 
         image = ml.MicropolImage(dummy_data_16)
@@ -175,15 +175,15 @@ class TestMicropolImage:
         U = 1.0 - 4.0
         test_theo_stokes(image, I, Q, U)
 
-    def test_congrid(self, dummy_data):
-        dummy_data_40 = dummy_data(40)
-        dummy_data_16 = dummy_data(16)
+    def test_congrid(self, generate_dummy_data):
+        dummy_data_40 = generate_dummy_data(40)
+        dummy_data_16 = generate_dummy_data(16)
         image = ml.MicropolImage(dummy_data_40)
         congridded_image = image.congrid(16, 16)
         assert np.all(congridded_image.data == dummy_data_16)
         assert np.all(congridded_image.I.data == 0.5 * (1 + 2 + 3 + 4))
 
-    def test_operations(self, dummy_data):
+    def test_operations(self, generate_dummy_data):
         data = np.ones(shape=(16, 16))
         for image_type in [ml.Image, ml.MicropolImage]:
             image1 = image_type(7 * data)

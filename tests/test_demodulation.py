@@ -8,7 +8,7 @@ import numpy as np
 import pytest
 from astropy.io import fits
 from scipy.optimize import curve_fit
-from test_utils import dummy_data, generate_polarized_data
+from test_utils import generate_dummy_data, generate_polarized_data
 
 import micropolarray as ml
 from micropolarray.polarization_functions import AoLP, DoLP, pB
@@ -16,10 +16,8 @@ from micropolarray.processing.demodulation import Malus
 
 
 class TestDemodulation:
-    # TODO
-    def test_demo_from_dummy(self, dummy_data, tmp_path):
+    def test_demo_from_dummy(self, generate_dummy_data, tmp_path):
         """Create a dummy demodulation matrix, save it, read it then use it to demodulate. Check if demodulation is correctly done."""
-        dummy_data_16 = dummy_data(16)
         ml.set_default_angles(ml.PolarCam().angle_dic)
         angles = np.array([np.deg2rad(angle) for angle in [0, 45, -45, 90]])
         demo_matrix = np.array(
@@ -35,7 +33,7 @@ class TestDemodulation:
                 image.data = np.ones(shape=(8, 8)) * demo_matrix[i, j]
                 image.writeto(tmp_path / f"M{i}{j}.fits")
 
-        image = ml.PolarcamImage(dummy_data_16)
+        image = ml.PolarcamImage(generate_dummy_data(16))
         assert np.all(image.Q.data == (1 - 4))
         assert np.all(image.U.data == (2 - 3))
         assert np.all(image.I.data == (0.5 * (1 + 2 + 3 + 4)))
@@ -50,13 +48,13 @@ class TestDemodulation:
         )
 
     # TODO refactor calling angles with fixtures
-    def test_demodulation_computation(self, dummy_data, tmp_path):
+    def test_demodulation_computation(self, tmp_path):
         # try demodulation
         angles = np.array([np.deg2rad(angle) for angle in [0, 45, -45, 90]])
         output_dir = tmp_path / "computed_matrix"
         output_str = str(output_dir)
 
-        polarizations = np.arange(-45, 91, 15)
+        polarizations = np.arange(-45, 136, 15)
         pols_rad = np.deg2rad(polarizations)
         input_signal = 100
         t = 0.9
@@ -103,7 +101,10 @@ class TestDemodulation:
                 gain=2.75,
                 output_dir=output_str,
                 binning=1,
+                occulter=False,
                 procs_grid=[2, 2],
+                dark_filename=None,
+                flat_filename=None,
                 normalizing_S=S_type,
                 DEBUG=False,
             )
@@ -201,10 +202,5 @@ class TestDemodulation:
             assert measured == theo
             assert simple == theo
 
-        if False:
-            fig, ax = plt.subplots()
-            ax.plot(theos, label="theo")
-            ax.plot(simples, label="simple")
-            ax.plot(measured, label="demodulated")
-            ax.legend()
-            plt.show()
+    def test_demo_rebin(self, generate_dummy_data, tmp_path):
+        dummy_data = generate_dummy_data(32)

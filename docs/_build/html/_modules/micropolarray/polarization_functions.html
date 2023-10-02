@@ -103,6 +103,7 @@
 <div class="viewcode-block" id="DoLP"><a class="viewcode-back" href="../../micropolarray.html#micropolarray.polarization_functions.DoLP">[docs]</a><span class="k">def</span> <span class="nf">DoLP</span><span class="p">(</span><span class="n">Stokes_vec_components</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Degree of linear polarization in [%]&quot;&quot;&quot;</span>
     <span class="n">I</span><span class="p">,</span> <span class="n">Q</span><span class="p">,</span> <span class="n">U</span> <span class="o">=</span> <span class="n">Stokes_vec_components</span>
+
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">divide</span><span class="p">(</span>
         <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="n">Q</span> <span class="o">*</span> <span class="n">Q</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">U</span> <span class="o">*</span> <span class="n">U</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">),</span> <span class="n">I</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="p">(</span><span class="n">I</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
     <span class="p">)</span>  <span class="c1"># avoids 0/0 error</span></div>

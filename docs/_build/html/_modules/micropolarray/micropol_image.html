@@ -71,6 +71,7 @@
   <h1>Source code for micropolarray.micropol_image</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
 
+<span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
 <span class="kn">from</span> <span class="nn">logging</span> <span class="kn">import</span> <span class="n">debug</span><span class="p">,</span> <span class="n">error</span><span class="p">,</span> <span class="n">info</span><span class="p">,</span> <span class="n">warning</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
@@ -182,9 +183,6 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">subtract_dark</span><span class="p">(</span><span class="n">dark</span><span class="o">=</span><span class="n">dark</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">flat</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">correct_flat</span><span class="p">(</span><span class="n">flat</span><span class="o">=</span><span class="n">flat</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">MicropolImage</span><span class="o">.</span><span class="n">first_call</span><span class="p">:</span>
-            <span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Remember to set dark&quot;</span><span class="p">)</span>
-            <span class="n">MicropolImage</span><span class="o">.</span><span class="n">first_call</span> <span class="o">=</span> <span class="kc">False</span>
 
     <span class="k">def</span> <span class="nf">_initialize_internal_variables</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="kc">None</span>
@@ -316,11 +314,14 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">newdata</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">Stokes_vec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_theo_Stokes_vec_components</span><span class="p">()</span>
 
-<div class="viewcode-block" id="MicropolImage.demodulate"><a class="viewcode-back" href="../../micropolarray.html#micropolarray.micropol_image.MicropolImage.demodulate">[docs]</a>    <span class="k">def</span> <span class="nf">demodulate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">demodulator</span><span class="p">:</span> <span class="n">Demodulator</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MicropolImage</span><span class="p">:</span>
+<div class="viewcode-block" id="MicropolImage.demodulate"><a class="viewcode-back" href="../../micropolarray.html#micropolarray.micropol_image.MicropolImage.demodulate">[docs]</a>    <span class="k">def</span> <span class="nf">demodulate</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">demodulator</span><span class="p">:</span> <span class="n">Demodulator</span><span class="p">,</span> <span class="n">demosaicing</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MicropolImage</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a MicropolImage with polarization parameters calculated from the demodulation tensor provided.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            demodulator (Demodulator): Demodulator object containing the demodulation tensor components (see processing.new_demodulation)</span>
+<span class="sd">            demosaicing (bool, optional): wether to apply demosaicing to the image or not. Set it to False if demodulation matrices have half the dimension of the image. Defaults to True.</span>
 
 <span class="sd">        Raises:</span>
 <span class="sd">            ValueError: raised if image and demodulator do not have the same dimension, for example in case of different binning</span>
@@ -328,19 +329,13 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            MicropolImage: copy of the input imagreturn e with I, Q, U, pB, DoLP, AoLP calculated from the demodulation tensor.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">)</span> <span class="o">!=</span> <span class="p">(</span>
-            <span class="n">demodulator</span><span class="o">.</span><span class="n">mij</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
-            <span class="n">demodulator</span><span class="o">.</span><span class="n">mij</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span>
-        <span class="p">):</span>
-            <span class="nb">print</span><span class="p">(</span><span class="n">demodulator</span><span class="o">.</span><span class="n">mij</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">demodulator</span><span class="o">.</span><span class="n">mij</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
-            <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">)</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;Image and demodulator do not have the same dimensions, check binning.&quot;</span>
-            <span class="p">)</span>
+
         <span class="n">info</span><span class="p">(</span><span class="s2">&quot;Demodulating...&quot;</span><span class="p">)</span>
         <span class="n">demodulated_image</span> <span class="o">=</span> <span class="n">MicropolImage</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="n">demodulated_image</span><span class="o">.</span><span class="n">Stokes_vec</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">demodulated_image</span><span class="o">.</span><span class="n">_get_Stokes_from_demodulator</span><span class="p">(</span><span class="n">demodulator</span><span class="p">)</span>
+            <span class="n">demodulated_image</span><span class="o">.</span><span class="n">_get_Stokes_from_demodulator</span><span class="p">(</span>
+                <span class="n">demodulator</span><span class="p">,</span> <span class="n">demosaicing</span>
+            <span class="p">)</span>
         <span class="p">)</span>
         <span class="n">demodulated_image</span><span class="o">.</span><span class="n">_is_demodulated</span> <span class="o">=</span> <span class="kc">True</span>
 
@@ -366,11 +361,13 @@
         <span class="k">return</span> <span class="n">S</span>
 
     <span class="k">def</span> <span class="nf">_get_Stokes_from_demodulator</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">demodulator</span><span class="p">:</span> <span class="n">Demodulator</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">demodulator</span><span class="p">:</span> <span class="n">Demodulator</span><span class="p">,</span>
+        <span class="n">demosaicing</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Computes stokes vector components from four polarized images at four angles, angle_dic describes the coupling between</span>
-<span class="sd">        poled_images_array[i] &lt;--&gt; angle_dic[i]. Assumes:</span>
+<span class="sd">        poled_images_array[i] &lt;--&gt; angle_dic[i]. Calculates:</span>
 
 <span class="sd">        I = M_00 * I_1 + M_01 * I_2 + M_02 * I_3 + M_03 * I_4</span>
 <span class="sd">        Q = M_10 * I_1 + M_11 * I_2 + M_12 * I_3 + M_13 * I_4</span>
@@ -382,10 +379,30 @@
         <span class="c1"># Corrected with demodulation matrices, S.shape = (4, n, m)</span>
         <span class="n">num_of_malus_parameters</span> <span class="o">=</span> <span class="mi">3</span>  <span class="c1"># 3 multiplication params</span>
         <span class="n">pixels_in_superpix</span> <span class="o">=</span> <span class="mi">4</span>
-        <span class="n">mij</span> <span class="o">=</span> <span class="n">demodulator</span><span class="o">.</span><span class="n">mij</span>
+        <span class="n">fit_found_flags</span> <span class="o">=</span> <span class="n">demodulator</span><span class="o">.</span><span class="n">fit_found_flags</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">demosaic</span><span class="p">()</span>
-        <span class="n">demosaiced_images</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">demosaiced_images</span>
+        <span class="k">if</span> <span class="n">demosaicing</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">demosaic</span><span class="p">()</span>
+            <span class="n">splitted_pols</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">demosaiced_images</span>
+            <span class="n">mij</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span>
+                <span class="n">shape</span><span class="o">=</span><span class="p">(</span>
+                    <span class="n">demodulator</span><span class="o">.</span><span class="n">mij</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                    <span class="n">demodulator</span><span class="o">.</span><span class="n">mij</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                    <span class="n">demodulator</span><span class="o">.</span><span class="n">mij</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">*</span> <span class="mi">2</span><span class="p">,</span>
+                    <span class="n">demodulator</span><span class="o">.</span><span class="n">mij</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">*</span> <span class="mi">2</span><span class="p">,</span>
+                <span class="p">),</span>
+                <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_of_malus_parameters</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">pixels_in_superpix</span><span class="p">):</span>
+                    <span class="n">demo_component</span> <span class="o">=</span> <span class="n">demodulator</span><span class="o">.</span><span class="n">mij</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
+                    <span class="n">mij</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">merge_polarizations</span><span class="p">(</span>
+                        <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">demo_component</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:],</span> <span class="mi">4</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+                    <span class="p">)</span>  <span class="c1"># repeat necessary to avoid numba problems</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">mij</span> <span class="o">=</span> <span class="n">demodulator</span><span class="o">.</span><span class="n">mij</span>
+            <span class="n">splitted_pols</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">single_pol_subimages</span>
 
         <span class="c1"># IMG = np.array(</span>
         <span class="c1">#    [</span>
@@ -397,28 +414,28 @@
         <span class="c1">#    dtype=float,</span>
         <span class="c1"># )  # Liberatore article/thesis</span>
 
-        <span class="n">IMG</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
-            <span class="p">[</span><span class="n">demo_image</span> <span class="k">for</span> <span class="n">demo_image</span> <span class="ow">in</span> <span class="n">demosaiced_images</span><span class="p">],</span>
+        <span class="n">pixel_values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+            <span class="p">[</span><span class="n">splitted_pol</span> <span class="k">for</span> <span class="n">splitted_pol</span> <span class="ow">in</span> <span class="n">splitted_pols</span><span class="p">],</span>
             <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">mij</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">IMG</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="ow">or</span> <span class="p">(</span>
-            <span class="n">mij</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">IMG</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">mij</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">pixel_values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="ow">or</span> <span class="p">(</span>
+            <span class="n">mij</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">pixel_values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
         <span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;demodulation matrix and demosaiced images have different shape </span><span class="si">{</span><span class="n">mij</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">IMG</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">. Check that binning is correct.&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;demodulation matrix </span><span class="si">{</span><span class="n">mij</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2"> and images </span><span class="si">{</span><span class="n">pixel_values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2"> have different shapes. Check that binning is correct.&quot;</span>
             <span class="p">)</span>  <span class="c1"># sanity check</span>
 
         <span class="n">T_ij</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
             <span class="n">shape</span><span class="o">=</span><span class="p">(</span>
                 <span class="n">num_of_malus_parameters</span><span class="p">,</span>
                 <span class="n">pixels_in_superpix</span><span class="p">,</span>
-                <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span>
+                <span class="o">*</span><span class="n">splitted_pols</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="p">)</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_of_malus_parameters</span><span class="p">):</span>
             <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">pixels_in_superpix</span><span class="p">):</span>
                 <span class="n">temp_tij</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span>
-                    <span class="n">demodulator</span><span class="o">.</span><span class="n">mij</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:],</span> <span class="n">IMG</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span>
+                    <span class="n">mij</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:],</span> <span class="n">pixel_values</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span>
                 <span class="p">)</span>  <span class="c1"># Matrix product</span>
                 <span class="n">T_ij</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">temp_tij</span>
 
@@ -427,6 +444,12 @@
         <span class="n">U</span> <span class="o">=</span> <span class="n">T_ij</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">T_ij</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">T_ij</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="n">T_ij</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
 
         <span class="n">S</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">I</span><span class="p">,</span> <span class="n">Q</span><span class="p">,</span> <span class="n">U</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+
+        <span class="c1"># use theo stokes where fit wasn&#39;t found</span>
+        <span class="k">if</span> <span class="n">demodulator</span><span class="o">.</span><span class="n">fit_found_flags</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">theo_S</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Stokes_vec</span>
+            <span class="n">S</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">fit_found_flags</span> <span class="o">==</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">theo_S</span><span class="p">)</span>
+
         <span class="k">return</span> <span class="n">S</span>
 
 <div class="viewcode-block" id="MicropolImage.subtract_dark"><a class="viewcode-back" href="../../micropolarray.html#micropolarray.micropol_image.MicropolImage.subtract_dark">[docs]</a>    <span class="k">def</span> <span class="nf">subtract_dark</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dark</span><span class="p">:</span> <span class="n">MicropolImage</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MicropolImage</span><span class="p">:</span>
@@ -483,19 +506,17 @@
     <span class="c1"># ----------------------------------------------------------------</span>
 
 <div class="viewcode-block" id="MicropolImage.show_with_pol_params"><a class="viewcode-back" href="../../micropolarray.html#micropolarray.micropol_image.MicropolImage.show_with_pol_params">[docs]</a>    <span class="k">def</span> <span class="nf">show_with_pol_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;Greys_r&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a fig for each set of image parameters. User must call</span>
-<span class="sd">        plt.show after this is called.</span>
-<span class="sd">        Returned parameters:</span>
-<span class="sd">        - Original image</span>
-<span class="sd">        - Stokes vector I, Q, U</span>
-<span class="sd">        - Angle, degree of linear polarizaimagetion Polarized brightness</span>
-
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a tuple containing figure and axis of the plotted</span>
+<span class="sd">        data, and figure and axis of polarization parameters (3x2</span>
+<span class="sd">        subplots). User must callplt.show after this is called.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            cmap (str, optional): colormap string. Defaults to &quot;Greys_r&quot;.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            tuple: a (figure, axis) couple same as matplotlib.pyplot.subplots for the image data and another for the six polarization parameters</span>
+<span class="sd">            tuple: a (figure, axis, figure, axis) couple same as</span>
+<span class="sd">            matplotlib.pyplot.subplots for the image data and another for</span>
+<span class="sd">            the six polarization parameters</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">data_ratio</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
         <span class="n">image_fig</span><span class="p">,</span> <span class="n">imageax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">dpi</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">constrained_layout</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -545,11 +566,12 @@
             <span class="p">)</span>
         <span class="k">return</span> <span class="n">image_fig</span><span class="p">,</span> <span class="n">imageax</span><span class="p">,</span> <span class="n">stokes_fig</span><span class="p">,</span> <span class="n">stokesax</span></div>
 
-<div class="viewcode-block" id="MicropolImage.show_single_pol_images"><a class="viewcode-back" href="../../micropolarray.html#micropolarray.micropol_image.MicropolImage.show_single_pol_images">[docs]</a>    <span class="k">def</span> <span class="nf">show_single_pol_images</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;Greys_r&quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="MicropolImage.show_single_pol_images"><a class="viewcode-back" href="../../micropolarray.html#micropolarray.micropol_image.MicropolImage.show_single_pol_images">[docs]</a>    <span class="k">def</span> <span class="nf">show_single_pol_images</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;Greys_r&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Plots the four polarizations images.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            cmap (str, optional): colormap for the plot. Defaults to &quot;Greys_r&quot;.</span>
+<span class="sd">            **kwargs: arguments passed to matplotlib.pyplot.imshow.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            tuple: a (figure, axis) couple same as matplotlib.pyplot.subplots</span>
@@ -559,7 +581,7 @@
         <span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
         <span class="n">polslist</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">pol0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pol45</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pol90</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pol_45</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">pol</span><span class="p">,</span> <span class="n">axis</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">polslist</span><span class="p">,</span> <span class="n">ax</span><span class="p">):</span>
-            <span class="n">mappable</span> <span class="o">=</span> <span class="n">axis</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">pol</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cmap</span><span class="p">)</span>
+            <span class="n">mappable</span> <span class="o">=</span> <span class="n">axis</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">pol</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cmap</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
             <span class="n">axis</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">pol</span><span class="o">.</span><span class="n">title</span><span class="p">)</span>
             <span class="n">axis</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;x [px]&quot;</span><span class="p">)</span>
             <span class="n">axis</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;y [px]&quot;</span><span class="p">)</span>
@@ -572,11 +594,12 @@
             <span class="p">)</span>
         <span class="k">return</span> <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span></div>
 
-<div class="viewcode-block" id="MicropolImage.show_demo_images"><a class="viewcode-back" href="../../micropolarray.html#micropolarray.micropol_image.MicropolImage.show_demo_images">[docs]</a>    <span class="k">def</span> <span class="nf">show_demo_images</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;Greys_r&quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="MicropolImage.show_demo_images"><a class="viewcode-back" href="../../micropolarray.html#micropolarray.micropol_image.MicropolImage.show_demo_images">[docs]</a>    <span class="k">def</span> <span class="nf">show_demo_images</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;Greys_r&quot;</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Plots the four demosaiced images.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            cmap (str, optional): colormap for the plot. Defaults to &quot;Greys_r&quot;.</span>
+<span class="sd">            **kwargs: arguments passed to matplotlib.pyplot.imshow.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            tuple: a (figure, axis) couple same as matplotlib.pyplot.subplots</span>
@@ -588,11 +611,16 @@
         <span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
         <span class="n">demo_images_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">demosaiced_images</span>
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">single_demo_ax</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">ax</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">vmin</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">this_vmin</span> <span class="o">=</span> <span class="n">mean_minus_std</span><span class="p">(</span><span class="n">demo_images_list</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">vmax</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">this_vmax</span> <span class="o">=</span> <span class="n">mean_plus_std</span><span class="p">(</span><span class="n">demo_images_list</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
             <span class="n">mappable</span> <span class="o">=</span> <span class="n">single_demo_ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span>
                 <span class="n">demo_images_list</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
                 <span class="n">cmap</span><span class="o">=</span><span class="n">cmap</span><span class="p">,</span>
-                <span class="n">vmin</span><span class="o">=</span><span class="n">mean_minus_std</span><span class="p">(</span><span class="n">demo_images_list</span><span class="p">[</span><span class="n">i</span><span class="p">]),</span>
-                <span class="n">vmax</span><span class="o">=</span><span class="n">mean_plus_std</span><span class="p">(</span><span class="n">demo_images_list</span><span class="p">[</span><span class="n">i</span><span class="p">]),</span>
+                <span class="n">vmin</span><span class="o">=</span><span class="n">this_vmin</span><span class="p">,</span>
+                <span class="n">vmax</span><span class="o">=</span><span class="n">this_vmax</span><span class="p">,</span>
+                <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="n">single_demo_ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;Demosaiced image </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">angle_dic</span><span class="o">.</span><span class="n">keys</span><span class="p">())[</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">angle_dic</span><span class="o">.</span><span class="n">values</span><span class="p">())</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">i</span><span class="p">)]</span><span class="si">}</span><span class="s2">&quot;</span>
@@ -609,13 +637,14 @@
         <span class="k">return</span> <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span></div>
 
 <div class="viewcode-block" id="MicropolImage.show_pol_param"><a class="viewcode-back" href="../../micropolarray.html#micropolarray.micropol_image.MicropolImage.show_pol_param">[docs]</a>    <span class="k">def</span> <span class="nf">show_pol_param</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">polparam</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;Greys_r&quot;</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="kc">None</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">polparam</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;Greys_r&quot;</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Plots a single polarization parameter given as input</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            polparam (str): image PolParam containing the parameter to plot. Can be one among [I, Q, U, pB, AoLP, DoLP]</span>
 <span class="sd">            cmap (str, optional): colormap for the plot. Defaults to &quot;Greys_r&quot;.</span>
+<span class="sd">            **kwargs: arguments passed to matplotlib.pyplot.imshow.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            tuple: a (figure, axis) couple same as matplotlib.pyplot.subplots</span>
@@ -632,6 +661,7 @@
             <span class="n">cmap</span><span class="o">=</span><span class="n">cmap</span><span class="p">,</span>
             <span class="n">vmin</span><span class="o">=</span><span class="n">vmin</span><span class="p">,</span>
             <span class="n">vmax</span><span class="o">=</span><span class="n">vmax</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">polparam</span><span class="o">.</span><span class="n">title</span><span class="p">)</span>
         <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;x [px]&quot;</span><span class="p">)</span>
@@ -688,15 +718,15 @@
 
 <div class="viewcode-block" id="MicropolImage.save_param_as_fits"><a class="viewcode-back" href="../../micropolarray.html#micropolarray.micropol_image.MicropolImage.save_param_as_fits">[docs]</a>    <span class="k">def</span> <span class="nf">save_param_as_fits</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">polparam</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">fixto</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Saves chosen polarization parameter as a fits file</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            filename (str): filename of the output image.</span>
 <span class="sd">            polparam (str): polarization parameter to save. Can be one among [I, Q, U, pB, AoLP, DoLP]</span>
+<span class="sd">            filename (str): filename of the output image.</span>
 <span class="sd">            fixto (list[float, float], optional): set the minimum and maximum value for the output images. Defaults to None.</span>
 
 <span class="sd">        Raises:</span>

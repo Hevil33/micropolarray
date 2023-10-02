@@ -64,7 +64,7 @@
 
 
 \title{micropolarray}
-\date{Sep 26, 2023}
+\date{Sep 28, 2023}
 \release{}
 \author{Herve Haudemand}
 \newcommand{\sphinxlogo}{\vbox{}}
@@ -1520,14 +1520,21 @@ image with data corrected for field of view differences
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{micropolarray:micropolarray.micropol_image.MicropolImage.demodulate}}
 \pysigstartsignatures
-\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{demodulate}}}{\sphinxparam{\DUrole{n,n}{demodulator}\DUrole{p,p}{:}\DUrole{w,w}{  }\DUrole{n,n}{{\hyperref[\detokenize{micropolarray.processing:micropolarray.processing.demodulation.Demodulator}]{\sphinxcrossref{Demodulator}}}}}}{{ $\rightarrow$ {\hyperref[\detokenize{micropolarray:micropolarray.micropol_image.MicropolImage}]{\sphinxcrossref{MicropolImage}}}}}
+\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{demodulate}}}{\sphinxparam{\DUrole{n,n}{demodulator}\DUrole{p,p}{:}\DUrole{w,w}{  }\DUrole{n,n}{{\hyperref[\detokenize{micropolarray.processing:micropolarray.processing.demodulation.Demodulator}]{\sphinxcrossref{Demodulator}}}}}\sphinxparamcomma \sphinxparam{\DUrole{n,n}{demosaicing}\DUrole{p,p}{:}\DUrole{w,w}{  }\DUrole{n,n}{bool}\DUrole{w,w}{  }\DUrole{o,o}{=}\DUrole{w,w}{  }\DUrole{default_value}{False}}}{{ $\rightarrow$ {\hyperref[\detokenize{micropolarray:micropolarray.micropol_image.MicropolImage}]{\sphinxcrossref{MicropolImage}}}}}
 \pysigstopsignatures
 \sphinxAtStartPar
 Returns a MicropolImage with polarization parameters calculated from the demodulation tensor provided.
 \begin{quote}\begin{description}
-\sphinxlineitem{Parameters}
+\sphinxlineitem{Parameters}\begin{itemize}
+\item {} 
 \sphinxAtStartPar
 \sphinxstyleliteralstrong{\sphinxupquote{demodulator}} ({\hyperref[\detokenize{micropolarray.processing:micropolarray.processing.demodulation.Demodulator}]{\sphinxcrossref{\sphinxstyleliteralemphasis{\sphinxupquote{Demodulator}}}}}) \textendash{} Demodulator object containing the demodulation tensor components (see processing.new\_demodulation)
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{demosaicing}} (\sphinxstyleliteralemphasis{\sphinxupquote{bool}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{optional}}) \textendash{} wether to apply demosaicing to the image or not. Set it to False if demodulation matrices have half the dimension of the image. Defaults to True.
+
+\end{itemize}
 
 \sphinxlineitem{Raises}
 \sphinxAtStartPar
@@ -1774,7 +1781,7 @@ Saves the four demosaiced images as fits files
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{micropolarray:micropolarray.micropol_image.MicropolImage.save_param_as_fits}}
 \pysigstartsignatures
-\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{save\_param\_as\_fits}}}{\sphinxparam{\DUrole{n,n}{filename}\DUrole{p,p}{:}\DUrole{w,w}{  }\DUrole{n,n}{str}}\sphinxparamcomma \sphinxparam{\DUrole{n,n}{polparam}\DUrole{p,p}{:}\DUrole{w,w}{  }\DUrole{n,n}{str}}\sphinxparamcomma \sphinxparam{\DUrole{n,n}{fixto}\DUrole{p,p}{:}\DUrole{w,w}{  }\DUrole{n,n}{list\DUrole{p,p}{{[}}float\DUrole{p,p}{,}\DUrole{w,w}{  }float\DUrole{p,p}{{]}}}\DUrole{w,w}{  }\DUrole{o,o}{=}\DUrole{w,w}{  }\DUrole{default_value}{None}}}{{ $\rightarrow$ None}}
+\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{save\_param\_as\_fits}}}{\sphinxparam{\DUrole{n,n}{polparam}\DUrole{p,p}{:}\DUrole{w,w}{  }\DUrole{n,n}{str}}\sphinxparamcomma \sphinxparam{\DUrole{n,n}{filename}\DUrole{p,p}{:}\DUrole{w,w}{  }\DUrole{n,n}{str}}\sphinxparamcomma \sphinxparam{\DUrole{n,n}{fixto}\DUrole{p,p}{:}\DUrole{w,w}{  }\DUrole{n,n}{list\DUrole{p,p}{{[}}float\DUrole{p,p}{,}\DUrole{w,w}{  }float\DUrole{p,p}{{]}}}\DUrole{w,w}{  }\DUrole{o,o}{=}\DUrole{w,w}{  }\DUrole{default_value}{None}}}{{ $\rightarrow$ None}}
 \pysigstopsignatures
 \sphinxAtStartPar
 Saves chosen polarization parameter as a fits file
@@ -1782,11 +1789,11 @@ Saves chosen polarization parameter as a fits file
 \sphinxlineitem{Parameters}\begin{itemize}
 \item {} 
 \sphinxAtStartPar
-\sphinxstyleliteralstrong{\sphinxupquote{filename}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} filename of the output image.
+\sphinxstyleliteralstrong{\sphinxupquote{polparam}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} polarization parameter to save. Can be one among {[}I, Q, U, pB, AoLP, DoLP{]}
 
 \item {} 
 \sphinxAtStartPar
-\sphinxstyleliteralstrong{\sphinxupquote{polparam}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} polarization parameter to save. Can be one among {[}I, Q, U, pB, AoLP, DoLP{]}
+\sphinxstyleliteralstrong{\sphinxupquote{filename}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} filename of the output image.
 
 \item {} 
 \sphinxAtStartPar
@@ -1869,14 +1876,21 @@ shifted image copied from the original
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{micropolarray:micropolarray.micropol_image.MicropolImage.show_demo_images}}
 \pysigstartsignatures
-\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{show\_demo\_images}}}{\sphinxparam{\DUrole{n,n}{cmap}\DUrole{o,o}{=}\DUrole{default_value}{\textquotesingle{}Greys\_r\textquotesingle{}}}}{}
+\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{show\_demo\_images}}}{\sphinxparam{\DUrole{n,n}{cmap}\DUrole{o,o}{=}\DUrole{default_value}{\textquotesingle{}Greys\_r\textquotesingle{}}}\sphinxparamcomma \sphinxparam{\DUrole{n,n}{vmin}\DUrole{o,o}{=}\DUrole{default_value}{None}}\sphinxparamcomma \sphinxparam{\DUrole{n,n}{vmax}\DUrole{o,o}{=}\DUrole{default_value}{None}}\sphinxparamcomma \sphinxparam{\DUrole{o,o}{**}\DUrole{n,n}{kwargs}}}{}
 \pysigstopsignatures
 \sphinxAtStartPar
 Plots the four demosaiced images.
 \begin{quote}\begin{description}
-\sphinxlineitem{Parameters}
+\sphinxlineitem{Parameters}\begin{itemize}
+\item {} 
 \sphinxAtStartPar
 \sphinxstyleliteralstrong{\sphinxupquote{cmap}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{optional}}) \textendash{} colormap for the plot. Defaults to “Greys\_r”.
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{**kwargs}} \textendash{} arguments passed to matplotlib.pyplot.imshow.
+
+\end{itemize}
 
 \sphinxlineitem{Returns}
 \sphinxAtStartPar
@@ -1895,7 +1909,7 @@ tuple
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{micropolarray:micropolarray.micropol_image.MicropolImage.show_pol_param}}
 \pysigstartsignatures
-\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{show\_pol\_param}}}{\sphinxparam{\DUrole{n,n}{polparam}\DUrole{p,p}{:}\DUrole{w,w}{  }\DUrole{n,n}{str}}\sphinxparamcomma \sphinxparam{\DUrole{n,n}{cmap}\DUrole{o,o}{=}\DUrole{default_value}{\textquotesingle{}Greys\_r\textquotesingle{}}}\sphinxparamcomma \sphinxparam{\DUrole{n,n}{vmin}\DUrole{o,o}{=}\DUrole{default_value}{None}}\sphinxparamcomma \sphinxparam{\DUrole{n,n}{vmax}\DUrole{o,o}{=}\DUrole{default_value}{None}}}{}
+\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{show\_pol\_param}}}{\sphinxparam{\DUrole{n,n}{polparam}\DUrole{p,p}{:}\DUrole{w,w}{  }\DUrole{n,n}{str}}\sphinxparamcomma \sphinxparam{\DUrole{n,n}{cmap}\DUrole{o,o}{=}\DUrole{default_value}{\textquotesingle{}Greys\_r\textquotesingle{}}}\sphinxparamcomma \sphinxparam{\DUrole{n,n}{vmin}\DUrole{o,o}{=}\DUrole{default_value}{None}}\sphinxparamcomma \sphinxparam{\DUrole{n,n}{vmax}\DUrole{o,o}{=}\DUrole{default_value}{None}}\sphinxparamcomma \sphinxparam{\DUrole{o,o}{**}\DUrole{n,n}{kwargs}}}{}
 \pysigstopsignatures
 \sphinxAtStartPar
 Plots a single polarization parameter given as input
@@ -1908,6 +1922,10 @@ Plots a single polarization parameter given as input
 \item {} 
 \sphinxAtStartPar
 \sphinxstyleliteralstrong{\sphinxupquote{cmap}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{optional}}) \textendash{} colormap for the plot. Defaults to “Greys\_r”.
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{**kwargs}} \textendash{} arguments passed to matplotlib.pyplot.imshow.
 
 \end{itemize}
 
@@ -1928,14 +1946,21 @@ tuple
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{micropolarray:micropolarray.micropol_image.MicropolImage.show_single_pol_images}}
 \pysigstartsignatures
-\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{show\_single\_pol\_images}}}{\sphinxparam{\DUrole{n,n}{cmap}\DUrole{o,o}{=}\DUrole{default_value}{\textquotesingle{}Greys\_r\textquotesingle{}}}}{}
+\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{show\_single\_pol\_images}}}{\sphinxparam{\DUrole{n,n}{cmap}\DUrole{o,o}{=}\DUrole{default_value}{\textquotesingle{}Greys\_r\textquotesingle{}}}\sphinxparamcomma \sphinxparam{\DUrole{o,o}{**}\DUrole{n,n}{kwargs}}}{}
 \pysigstopsignatures
 \sphinxAtStartPar
 Plots the four polarizations images.
 \begin{quote}\begin{description}
-\sphinxlineitem{Parameters}
+\sphinxlineitem{Parameters}\begin{itemize}
+\item {} 
 \sphinxAtStartPar
 \sphinxstyleliteralstrong{\sphinxupquote{cmap}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{optional}}) \textendash{} colormap for the plot. Defaults to “Greys\_r”.
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{**kwargs}} \textendash{} arguments passed to matplotlib.pyplot.imshow.
+
+\end{itemize}
 
 \sphinxlineitem{Returns}
 \sphinxAtStartPar
@@ -1957,12 +1982,9 @@ tuple
 \pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{show\_with\_pol\_params}}}{\sphinxparam{\DUrole{n,n}{cmap}\DUrole{o,o}{=}\DUrole{default_value}{\textquotesingle{}Greys\_r\textquotesingle{}}}}{{ $\rightarrow$ tuple}}
 \pysigstopsignatures
 \sphinxAtStartPar
-Returns a fig for each set of image parameters. User must call
-plt.show after this is called.
-Returned parameters:
-\sphinxhyphen{} Original image
-\sphinxhyphen{} Stokes vector I, Q, U
-\sphinxhyphen{} Angle, degree of linear polarizaimagetion Polarized brightness
+Returns a tuple containing figure and axis of the plotted
+data, and figure and axis of polarization parameters (3x2
+subplots). User must callplt.show after this is called.
 \begin{quote}\begin{description}
 \sphinxlineitem{Parameters}
 \sphinxAtStartPar
@@ -1970,7 +1992,9 @@ Returned parameters:
 
 \sphinxlineitem{Returns}
 \sphinxAtStartPar
-a (figure, axis) couple same as matplotlib.pyplot.subplots for the image data and another for the six polarization parameters
+a (figure, axis, figure, axis) couple same as
+matplotlib.pyplot.subplots for the image data and another for
+the six polarization parameters
 
 \sphinxlineitem{Return type}
 \sphinxAtStartPar
@@ -2276,8 +2300,32 @@ float
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{micropolarray:micropolarray.utils.mean_minus_std}}
 \pysigstartsignatures
-\pysiglinewithargsret{\sphinxcode{\sphinxupquote{micropolarray.utils.}}\sphinxbfcode{\sphinxupquote{mean\_minus\_std}}}{\sphinxparam{\DUrole{o,o}{*}\DUrole{n,n}{args}}\sphinxparamcomma \sphinxparam{\DUrole{o,o}{**}\DUrole{n,n}{kwargs}}}{}
+\pysiglinewithargsret{\sphinxcode{\sphinxupquote{micropolarray.utils.}}\sphinxbfcode{\sphinxupquote{mean\_minus\_std}}}{\sphinxparam{\DUrole{n,n}{data}\DUrole{p,p}{:}\DUrole{w,w}{  }\DUrole{n,n}{array}}\sphinxparamcomma \sphinxparam{\DUrole{n,n}{stds\_n}\DUrole{p,p}{:}\DUrole{w,w}{  }\DUrole{n,n}{int}\DUrole{w,w}{  }\DUrole{o,o}{=}\DUrole{w,w}{  }\DUrole{default_value}{1}}}{{ $\rightarrow$ float}}
 \pysigstopsignatures
+\sphinxAtStartPar
+Returns the value at the mean \sphinxhyphen{} standard deviation for the input data
+\begin{quote}\begin{description}
+\sphinxlineitem{Parameters}\begin{itemize}
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{data}} (\sphinxstyleliteralemphasis{\sphinxupquote{np.array}}) \textendash{} input data
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{stds\_n}} (\sphinxstyleliteralemphasis{\sphinxupquote{int}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{optional}}) \textendash{} number of standard deviations. Defaults to 1.
+
+\end{itemize}
+
+\sphinxlineitem{Returns}
+\sphinxAtStartPar
+mean value \sphinxhyphen{} n*stdevs
+
+\sphinxlineitem{Return type}
+\sphinxAtStartPar
+float
+
+\end{description}\end{quote}
+
 \end{fulllineitems}
 
 \index{mean\_plus\_std() (in module micropolarray.utils)@\spxentry{mean\_plus\_std()}\spxextra{in module micropolarray.utils}}
@@ -2285,8 +2333,32 @@ float
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{micropolarray:micropolarray.utils.mean_plus_std}}
 \pysigstartsignatures
-\pysiglinewithargsret{\sphinxcode{\sphinxupquote{micropolarray.utils.}}\sphinxbfcode{\sphinxupquote{mean\_plus\_std}}}{\sphinxparam{\DUrole{o,o}{*}\DUrole{n,n}{args}}\sphinxparamcomma \sphinxparam{\DUrole{o,o}{**}\DUrole{n,n}{kwargs}}}{}
+\pysiglinewithargsret{\sphinxcode{\sphinxupquote{micropolarray.utils.}}\sphinxbfcode{\sphinxupquote{mean\_plus\_std}}}{\sphinxparam{\DUrole{n,n}{data}\DUrole{p,p}{:}\DUrole{w,w}{  }\DUrole{n,n}{array}}\sphinxparamcomma \sphinxparam{\DUrole{n,n}{stds\_n}\DUrole{p,p}{:}\DUrole{w,w}{  }\DUrole{n,n}{int}\DUrole{w,w}{  }\DUrole{o,o}{=}\DUrole{w,w}{  }\DUrole{default_value}{1}}}{{ $\rightarrow$ float}}
 \pysigstopsignatures
+\sphinxAtStartPar
+Returns the value at the mean + standard deviation for the input data
+\begin{quote}\begin{description}
+\sphinxlineitem{Parameters}\begin{itemize}
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{data}} (\sphinxstyleliteralemphasis{\sphinxupquote{np.array}}) \textendash{} input data
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{stds\_n}} (\sphinxstyleliteralemphasis{\sphinxupquote{int}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{optional}}) \textendash{} number of standard deviations. Defaults to 1.
+
+\end{itemize}
+
+\sphinxlineitem{Returns}
+\sphinxAtStartPar
+mean value + n*stdevs
+
+\sphinxlineitem{Return type}
+\sphinxAtStartPar
+float
+
+\end{description}\end{quote}
+
 \end{fulllineitems}
 
 \index{median\_minus\_std() (in module micropolarray.utils)@\spxentry{median\_minus\_std()}\spxextra{in module micropolarray.utils}}

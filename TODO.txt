@@ -11,4 +11,3 @@ faster nrgf filter
 
 passare da classi di polarizzatori a json
 
-fare il demodulatore con metà dimensione

@@ -137,8 +137,7 @@
     <span class="k">return</span> <span class="n">fixed_data</span></div>
 
 
-<div class="viewcode-block" id="mean_minus_std"><a class="viewcode-back" href="../../micropolarray.html#micropolarray.utils.mean_minus_std">[docs]</a><span class="nd">@timer</span>
-<span class="k">def</span> <span class="nf">mean_minus_std</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">stds_n</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<div class="viewcode-block" id="mean_minus_std"><a class="viewcode-back" href="../../micropolarray.html#micropolarray.utils.mean_minus_std">[docs]</a><span class="k">def</span> <span class="nf">mean_minus_std</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">stds_n</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns the value at the mean - standard deviation for the input data</span>
 
 <span class="sd">    Args:</span>
@@ -151,8 +150,7 @@
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">-</span> <span class="n">stds_n</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="mean_plus_std"><a class="viewcode-back" href="../../micropolarray.html#micropolarray.utils.mean_plus_std">[docs]</a><span class="nd">@timer</span>
-<span class="k">def</span> <span class="nf">mean_plus_std</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">stds_n</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<div class="viewcode-block" id="mean_plus_std"><a class="viewcode-back" href="../../micropolarray.html#micropolarray.utils.mean_plus_std">[docs]</a><span class="k">def</span> <span class="nf">mean_plus_std</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">stds_n</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns the value at the mean + standard deviation for the input data</span>
 
 <span class="sd">    Args:</span>

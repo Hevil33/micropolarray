@@ -18,7 +18,7 @@
 \contentsline {section}{\numberline {1.4}micropolarray.image module}{10}{section.1.4}%
 \contentsline {section}{\numberline {1.5}micropolarray.micropol\_image module}{11}{section.1.5}%
 \contentsline {section}{\numberline {1.6}micropolarray.polarization\_functions module}{16}{section.1.6}%
-\contentsline {section}{\numberline {1.7}micropolarray.utils module}{16}{section.1.7}%
+\contentsline {section}{\numberline {1.7}micropolarray.utils module}{17}{section.1.7}%
 \contentsline {section}{\numberline {1.8}Module contents}{18}{section.1.8}%
 \contentsline {chapter}{\numberline {2}Indices and tables}{19}{chapter.2}%
 \contentsline {chapter}{Python Module Index}{21}{section*.111}%

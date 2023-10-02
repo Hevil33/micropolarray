@@ -495,11 +495,14 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="micropolarray.micropol_image.MicropolImage.demodulate">
-<span class="sig-name descname"><span class="pre">demodulate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">demodulator</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="micropolarray.processing.html#micropolarray.processing.demodulation.Demodulator" title="micropolarray.processing.demodulation.Demodulator"><span class="pre">Demodulator</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#micropolarray.micropol_image.MicropolImage" title="micropolarray.micropol_image.MicropolImage"><span class="pre">MicropolImage</span></a></span></span><a class="reference internal" href="_modules/micropolarray/micropol_image.html#MicropolImage.demodulate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#micropolarray.micropol_image.MicropolImage.demodulate" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">demodulate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">demodulator</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="micropolarray.processing.html#micropolarray.processing.demodulation.Demodulator" title="micropolarray.processing.demodulation.Demodulator"><span class="pre">Demodulator</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">demosaicing</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#micropolarray.micropol_image.MicropolImage" title="micropolarray.micropol_image.MicropolImage"><span class="pre">MicropolImage</span></a></span></span><a class="reference internal" href="_modules/micropolarray/micropol_image.html#MicropolImage.demodulate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#micropolarray.micropol_image.MicropolImage.demodulate" title="Permalink to this definition"></a></dt>
 <dd><p>Returns a MicropolImage with polarization parameters calculated from the demodulation tensor provided.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>demodulator</strong> (<a class="reference internal" href="micropolarray.processing.html#micropolarray.processing.demodulation.Demodulator" title="micropolarray.processing.demodulation.Demodulator"><em>Demodulator</em></a>) – Demodulator object containing the demodulation tensor components (see processing.new_demodulation)</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>demodulator</strong> (<a class="reference internal" href="micropolarray.processing.html#micropolarray.processing.demodulation.Demodulator" title="micropolarray.processing.demodulation.Demodulator"><em>Demodulator</em></a>) – Demodulator object containing the demodulation tensor components (see processing.new_demodulation)</p></li>
+<li><p><strong>demosaicing</strong> (<em>bool</em><em>, </em><em>optional</em>) – wether to apply demosaicing to the image or not. Set it to False if demodulation matrices have half the dimension of the image. Defaults to True.</p></li>
+</ul>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>ValueError</strong> – raised if image and demodulator do not have the same dimension, for example in case of different binning</p>
@@ -645,13 +648,13 @@ binningxbinning. Sum bins by default.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="micropolarray.micropol_image.MicropolImage.save_param_as_fits">
-<span class="sig-name descname"><span class="pre">save_param_as_fits</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">polparam</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fixto</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/micropolarray/micropol_image.html#MicropolImage.save_param_as_fits"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#micropolarray.micropol_image.MicropolImage.save_param_as_fits" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">save_param_as_fits</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">polparam</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fixto</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/micropolarray/micropol_image.html#MicropolImage.save_param_as_fits"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#micropolarray.micropol_image.MicropolImage.save_param_as_fits" title="Permalink to this definition"></a></dt>
 <dd><p>Saves chosen polarization parameter as a fits file</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>filename</strong> (<em>str</em>) – filename of the output image.</p></li>
 <li><p><strong>polparam</strong> (<em>str</em>) – polarization parameter to save. Can be one among [I, Q, U, pB, AoLP, DoLP]</p></li>
+<li><p><strong>filename</strong> (<em>str</em>) – filename of the output image.</p></li>
 <li><p><strong>fixto</strong> (<em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em><em>, </em><em>optional</em>) – set the minimum and maximum value for the output images. Defaults to None.</p></li>
 </ul>
 </dd>
@@ -700,11 +703,14 @@ binningxbinning. Sum bins by default.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="micropolarray.micropol_image.MicropolImage.show_demo_images">
-<span class="sig-name descname"><span class="pre">show_demo_images</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cmap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Greys_r'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/micropolarray/micropol_image.html#MicropolImage.show_demo_images"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#micropolarray.micropol_image.MicropolImage.show_demo_images" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">show_demo_images</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cmap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Greys_r'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vmin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/micropolarray/micropol_image.html#MicropolImage.show_demo_images"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#micropolarray.micropol_image.MicropolImage.show_demo_images" title="Permalink to this definition"></a></dt>
 <dd><p>Plots the four demosaiced images.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>cmap</strong> (<em>str</em><em>, </em><em>optional</em>) – colormap for the plot. Defaults to “Greys_r”.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cmap</strong> (<em>str</em><em>, </em><em>optional</em>) – colormap for the plot. Defaults to “Greys_r”.</p></li>
+<li><p><strong>**kwargs</strong> – arguments passed to matplotlib.pyplot.imshow.</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>a (figure, axis) couple same as matplotlib.pyplot.subplots</p>
@@ -717,13 +723,14 @@ binningxbinning. Sum bins by default.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="micropolarray.micropol_image.MicropolImage.show_pol_param">
-<span class="sig-name descname"><span class="pre">show_pol_param</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">polparam</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Greys_r'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vmin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/micropolarray/micropol_image.html#MicropolImage.show_pol_param"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#micropolarray.micropol_image.MicropolImage.show_pol_param" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">show_pol_param</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">polparam</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Greys_r'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vmin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/micropolarray/micropol_image.html#MicropolImage.show_pol_param"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#micropolarray.micropol_image.MicropolImage.show_pol_param" title="Permalink to this definition"></a></dt>
 <dd><p>Plots a single polarization parameter given as input</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>polparam</strong> (<em>str</em>) – image PolParam containing the parameter to plot. Can be one among [I, Q, U, pB, AoLP, DoLP]</p></li>
 <li><p><strong>cmap</strong> (<em>str</em><em>, </em><em>optional</em>) – colormap for the plot. Defaults to “Greys_r”.</p></li>
+<li><p><strong>**kwargs</strong> – arguments passed to matplotlib.pyplot.imshow.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -737,11 +744,14 @@ binningxbinning. Sum bins by default.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="micropolarray.micropol_image.MicropolImage.show_single_pol_images">
-<span class="sig-name descname"><span class="pre">show_single_pol_images</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cmap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Greys_r'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/micropolarray/micropol_image.html#MicropolImage.show_single_pol_images"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#micropolarray.micropol_image.MicropolImage.show_single_pol_images" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">show_single_pol_images</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cmap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Greys_r'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/micropolarray/micropol_image.html#MicropolImage.show_single_pol_images"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#micropolarray.micropol_image.MicropolImage.show_single_pol_images" title="Permalink to this definition"></a></dt>
 <dd><p>Plots the four polarizations images.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>cmap</strong> (<em>str</em><em>, </em><em>optional</em>) – colormap for the plot. Defaults to “Greys_r”.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cmap</strong> (<em>str</em><em>, </em><em>optional</em>) – colormap for the plot. Defaults to “Greys_r”.</p></li>
+<li><p><strong>**kwargs</strong> – arguments passed to matplotlib.pyplot.imshow.</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>a (figure, axis) couple same as matplotlib.pyplot.subplots</p>
@@ -755,18 +765,17 @@ binningxbinning. Sum bins by default.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="micropolarray.micropol_image.MicropolImage.show_with_pol_params">
 <span class="sig-name descname"><span class="pre">show_with_pol_params</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cmap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Greys_r'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="reference internal" href="_modules/micropolarray/micropol_image.html#MicropolImage.show_with_pol_params"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#micropolarray.micropol_image.MicropolImage.show_with_pol_params" title="Permalink to this definition"></a></dt>
-<dd><p>Returns a fig for each set of image parameters. User must call
-plt.show after this is called.
-Returned parameters:
-- Original image
-- Stokes vector I, Q, U
-- Angle, degree of linear polarizaimagetion Polarized brightness</p>
+<dd><p>Returns a tuple containing figure and axis of the plotted
+data, and figure and axis of polarization parameters (3x2
+subplots). User must callplt.show after this is called.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>cmap</strong> (<em>str</em><em>, </em><em>optional</em>) – colormap string. Defaults to “Greys_r”.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>a (figure, axis) couple same as matplotlib.pyplot.subplots for the image data and another for the six polarization parameters</p>
+<dd class="field-even"><p>a (figure, axis, figure, axis) couple same as
+matplotlib.pyplot.subplots for the image data and another for
+the six polarization parameters</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>tuple</p>
@@ -946,13 +955,43 @@ data [units of B_sun] = data[DN] * get_Bsun_units(mean_Bsun_brightness, texp_ima
 
 <dl class="py function">
 <dt class="sig sig-object py" id="micropolarray.utils.mean_minus_std">
-<span class="sig-prename descclassname"><span class="pre">micropolarray.utils.</span></span><span class="sig-name descname"><span class="pre">mean_minus_std</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/micropolarray/utils.html#mean_minus_std"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#micropolarray.utils.mean_minus_std" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-prename descclassname"><span class="pre">micropolarray.utils.</span></span><span class="sig-name descname"><span class="pre">mean_minus_std</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stds_n</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="_modules/micropolarray/utils.html#mean_minus_std"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#micropolarray.utils.mean_minus_std" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the value at the mean - standard deviation for the input data</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>np.array</em>) – input data</p></li>
+<li><p><strong>stds_n</strong> (<em>int</em><em>, </em><em>optional</em>) – number of standard deviations. Defaults to 1.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>mean value - n*stdevs</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="micropolarray.utils.mean_plus_std">
-<span class="sig-prename descclassname"><span class="pre">micropolarray.utils.</span></span><span class="sig-name descname"><span class="pre">mean_plus_std</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/micropolarray/utils.html#mean_plus_std"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#micropolarray.utils.mean_plus_std" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-prename descclassname"><span class="pre">micropolarray.utils.</span></span><span class="sig-name descname"><span class="pre">mean_plus_std</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stds_n</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="_modules/micropolarray/utils.html#mean_plus_std"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#micropolarray.utils.mean_plus_std" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the value at the mean + standard deviation for the input data</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>np.array</em>) – input data</p></li>
+<li><p><strong>stds_n</strong> (<em>int</em><em>, </em><em>optional</em>) – number of standard deviations. Defaults to 1.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>mean value + n*stdevs</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="micropolarray.utils.median_minus_std">
