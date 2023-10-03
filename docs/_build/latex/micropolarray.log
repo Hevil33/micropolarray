@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019/Debian) (preloaded format=pdflatex 2023.5.31)  28 SEP 2023 12:17
+This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019/Debian) (preloaded format=pdflatex 2023.5.31)  2 OCT 2023 15:13
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -925,6 +925,11 @@ Overfull \hbox (19.73375pt too wide) in paragraph at lines 167--167
  []
 
 [2] [3] [4]
+Overfull \hbox (11.12393pt too wide) in paragraph at lines 584--584
+[]\T1/qtm/m/it/10 splitted_normalized_dara_arr\T1/qtm/m/n/10 , 
+ []
+
+
 Overfull \hbox (22.3289pt too wide) in paragraph at lines 584--584
 \T1/qtm/m/it/10 rad_micropol_phases_previsions\T1/qtm/m/n/10 , 
  []
@@ -1486,7 +1491,7 @@ e/texmf-dist/fonts/type1/public/txfonts/t1xbtt.pfb></usr/share/texlive/texmf-di
 st/fonts/type1/public/txfonts/t1xbtt.pfb></usr/share/texlive/texmf-dist/fonts/t
 ype1/public/txfonts/t1xtt.pfb></usr/share/texlive/texmf-dist/fonts/type1/public
 /txfonts/t1xtt.pfb>
-Output written on micropolarray.pdf (30 pages, 220561 bytes).
+Output written on micropolarray.pdf (30 pages, 220547 bytes).
 PDF statistics:
  650 PDF objects out of 1000 (max. 8388607)
  597 compressed objects within 6 object streams

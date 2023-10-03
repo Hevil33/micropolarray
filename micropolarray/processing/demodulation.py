@@ -4,6 +4,7 @@ import os
 import re
 import sys
 import time
+import traceback
 from logging import error, info, warning
 from pathlib import Path
 
@@ -400,7 +401,7 @@ def calculate_demodulation_tensor(
         )
 
     # correct S=0 error
-    normalizing_S = np.where(normalizing_S != 0, normalizing_S, 1)
+    normalizing_S = np.where(normalizing_S >= 0, normalizing_S, 1)
 
     if DEBUG:
         procs_grid = [1, 1]
@@ -431,15 +432,15 @@ def calculate_demodulation_tensor(
     # calculate normalized data and its error
     # sigma_data = sqrt(e) = sqrt(data / gain) (poisson)
     # sigma_norm = sqrt(data / gain) = sqrt(norm / gain / S) (propagation)
-    normalized_all_data_arr = np.divide(all_data_arr, normalizing_S)
-    pixel_errors = np.sqrt(
-        np.divide(normalized_all_data_arr, normalizing_S * gain)
-    )
+    np.divide(all_data_arr, normalizing_S, out=all_data_arr)
+    pixel_errors = np.zeros_like(all_data_arr)
+    np.divide(all_data_arr, normalizing_S * gain, out=pixel_errors)
+    np.sqrt(pixel_errors, out=pixel_errors)
 
     for i in range(chunks_n_y):
         for j in range(chunks_n_x):
             splitted_data[i + chunks_n_y * j] = np.array(
-                normalized_all_data_arr[
+                all_data_arr[
                     :,
                     i * (chunk_size_y) : (i + 1) * chunk_size_y,
                     j * (chunk_size_x) : (j + 1) * chunk_size_x,
@@ -527,8 +528,8 @@ def calculate_demodulation_tensor(
                     args,
                 )
 
-        except:
-            error("Fit not found")
+        except Exception as e:
+            traceback.print_exc()
             ending_time = time.perf_counter()
 
             info(f"Elapsed : {(ending_time - starting_time)/60:3.2f} mins")
@@ -707,10 +708,10 @@ def compute_demodulation_by_chunk(
     # occulter if present.
     if DEBUG:
         x_start, x_end = 100, 110
-        # x_start, x_end = 500, 510
+        x_start, x_end = 500, 510
         # x_start, x_end = 0, 2
         y_start, y_end = 100, 110
-        # y_start, y_end = 500, 510
+        y_start, y_end = 500, 510
         # y_start, y_end = 0, 2
     else:
         y_start, y_end = 0, height
