@@ -16,7 +16,7 @@ def main():
     image = ml.MicroPolarizerArrayImage(
         "../../../codex/data/20230606_Polarization/T3_430nm/105deg/average.fits"
     )
-    image.show()
+    image.show_single_pol_images()
 
     plt.show()
 

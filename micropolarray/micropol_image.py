@@ -468,7 +468,7 @@ class MicropolImage(Image):
             mappable, ax=imageax, label="[DN]", fraction=data_ratio * 0.05
         )
         stokes_fig, stokesax = plt.subplots(
-            2, 3, figsize=(14, 9), constrained_layout=True
+            2, 3, figsize=(14, 6), constrained_layout=True
         )
 
         stokesax = stokesax.ravel()
@@ -493,6 +493,7 @@ class MicropolImage(Image):
                 label=parameter.measure_unit,
                 fraction=data_ratio * 0.05,
             )
+
         return image_fig, imageax, stokes_fig, stokesax
 
     def show_single_pol_images(self, cmap="Greys_r", **kwargs):
@@ -506,7 +507,7 @@ class MicropolImage(Image):
             tuple: a (figure, axis) couple same as matplotlib.pyplot.subplots
         """
         data_ratio = self.data.shape[0] / self.data.shape[1]
-        fig, ax = plt.subplots(2, 2, figsize=(9, 9), constrained_layout=True)
+        fig, ax = plt.subplots(2, 2, figsize=(12, 9), constrained_layout=True)
         ax = ax.ravel()
         polslist = [self.pol0, self.pol45, self.pol90, self.pol_45]
         for pol, axis in zip(polslist, ax):
@@ -536,7 +537,7 @@ class MicropolImage(Image):
         if not self._is_demosaiced:
             error("Image is not yet demosaiced.")
         data_ratio = self.data.shape[0] / self.data.shape[1]
-        fig, ax = plt.subplots(2, 2, figsize=(9, 9), constrained_layout=True)
+        fig, ax = plt.subplots(2, 2, figsize=(12, 9), constrained_layout=True)
         ax = ax.ravel()
         demo_images_list = self.demosaiced_images
         for i, single_demo_ax in enumerate(ax):
