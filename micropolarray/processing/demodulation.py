@@ -27,7 +27,7 @@ from micropolarray.processing.rebin import (
     standard_rebin,
     trim_to_match_binning,
 )
-from micropolarray.utils import mean_plus_std
+from micropolarray.utils import mean_plus_std, merge_polarizations
 
 # Shape of the demodulation matrix
 N_PIXELS_IN_SUPERPIX = 4
@@ -691,6 +691,11 @@ def compute_demodulation_by_chunk(
     tk_data = np.ones(shape=(height, width)) * tk_prediction
     eff_data = np.ones(shape=(height, width)) * efficiency_prediction
     phase_data = np.zeros(shape=(height, width))
+    phase_data[0::2, 0::2] = rad_micropol_phases_previsions[0]
+    phase_data[0::2, 1::2] = rad_micropol_phases_previsions[1]
+    phase_data[1::2, 0::2] = rad_micropol_phases_previsions[2]
+    phase_data[1::2, 1::2] = rad_micropol_phases_previsions[3]
+
     superpix_params = np.zeros(shape=(N_PIXELS_IN_SUPERPIX, N_MALUS_PARAMS))
 
     predictions = np.zeros(shape=(N_PIXELS_IN_SUPERPIX, N_MALUS_PARAMS))
