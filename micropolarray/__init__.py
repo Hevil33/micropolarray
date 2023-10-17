@@ -29,6 +29,7 @@ from micropolarray.processing.demosaic import (
 )
 from micropolarray.processing.hotpix_cleaning import get_hot_pixels
 from micropolarray.processing.nrgf import (
+    find_occulter_hough,
     find_occulter_position,
     nrgf,
     roi_from_polar,

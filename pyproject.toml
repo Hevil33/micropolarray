@@ -27,6 +27,7 @@ dependencies = [
     "tqdm",
     "pytest",
     "sphinx-rtd-theme",
+    "opencv-python-headless",
 ]
 requires-python = ">=3.8"
 

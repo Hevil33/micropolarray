@@ -2,6 +2,7 @@ import sys
 from functools import lru_cache
 from logging import info
 
+import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 from numpy.lib.stride_tricks import as_strided
@@ -158,6 +159,49 @@ def nrgf(
             newdata = np.where(condition, 0, newdata)
 
     return newdata
+
+
+def find_occulter_hough(data: np.array) -> tuple:
+    """Uses Hough Gradient from cv2 and computes the coronagraph occulter coordinates
+
+    Args:
+        data (np.array): input data
+        minr (int): minimum occulter radius
+        maxr (int): maximum occulter radius
+
+    Returns:
+        tuple: occulter x, y, r
+    """
+    minr = 1
+    maxr = np.max(data.shape)
+    data = 255 * data / np.max(data)
+    blurred = cv2.medianBlur(data.astype("uint8"), 5)
+    accumulator = 20
+    circles = cv2.HoughCircles(
+        image=blurred,
+        method=cv2.HOUGH_GRADIENT,
+        dp=1.2,
+        minDist=maxr,
+        param1=200,
+        param2=accumulator,
+        minRadius=minr,
+        maxRadius=maxr,
+    )
+    while len(circles[0]) > 1:
+        print(f"{len(circles[0])} circles found, retrying...")
+        accumulator += 5
+        circles = cv2.HoughCircles(
+            image=blurred,
+            method=cv2.HOUGH_GRADIENT,
+            dp=1.5,
+            minDist=maxr,
+            param1=200,
+            param2=accumulator,
+            minRadius=minr,
+            maxRadius=maxr,
+        )
+    x, y, r = circles[0, 0]
+    return x, y, r
 
 
 def find_occulter_position(
