@@ -196,3 +196,10 @@ class TestMicropolImage:
             assert np.all(result.data == 14.0)
             result = image1 / image2
             assert np.all(result.data == 3.5)
+
+        image1 = ml.MicropolImage(
+            generate_polarized_data(shape=(6, 16), S=100, angle_rad=0)
+        )
+        image2 = ml.MicropolImage(50 * np.ones_like(image1.data))
+
+        print(image1.AoLP)

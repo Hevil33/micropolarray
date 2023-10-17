@@ -184,12 +184,14 @@ class TestDemodulation:
                 angle += np.pi
             return angle
 
-        for dummy_angle in np.arange(0, np.pi, 0.1):
+        # for dummy_angle in np.arange(-np.pi / 2, np.pi / 2, 0.1):
+        for dummy_angle in np.arange(-np.pi, np.pi, 0.1):
             polarized_image = ml.MicropolImage(
                 generate_polarized_data(
                     shape, input_signal, dummy_angle, t, eff
                 )
             )
+
             simple = np.round(np.mean(polarized_image.AoLP.data), 1)
             simples.append(simple)
 
@@ -199,8 +201,22 @@ class TestDemodulation:
             theo = np.round(normalize(dummy_angle), 1)
             measureds.append(measured)
             theos.append(theo)
-            assert measured == theo
-            assert simple == theo
+
+        # debug
+        if False:
+            for measured, theo, simple in zip(measureds, theos, simples):
+                print(theo, simple, measured)
+            fig, ax = plt.subplots()
+            x = np.arange(-np.pi / 2, np.pi / 2, 0.1)
+            x = np.arange(-np.pi, np.pi, 0.1)
+            ax.plot(x, theos, label="theos")
+            ax.plot(x, simples, label="simple")
+            ax.plot(x, measureds, label="demodulated")
+            ax.legend()
+            plt.show()
+
+        assert np.all(simple == theo)
+        assert np.all(measured == theo)
 
     def test_demo_rebin(self, generate_dummy_data, tmp_path):
         dummy_data = generate_dummy_data(32)

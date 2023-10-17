@@ -14,11 +14,23 @@ import numpy as np
 def AoLP(Stokes_vec_components):
     """Angle of linear polarization in [rad]"""
     I, Q, U = Stokes_vec_components
+    # old
     # angle = 0.5 * np.arctan(
-    #    np.divide(1.0 * U, 1.0 * Q, out=np.zeros_like(U), where=Q != 0),
+    #    np.divide(1.0 * U, 1.0 * Q, where=Q != 0),
     #    dtype=float,
     # )  # avoids warning when dividing by 0
+
+    # NOTE: if arctan2 is not used then the angle of linear polarization
+    # can not be retrieved since information about the sign of different
+    # pixels is crucial to determine it
     angle = 0.5 * np.arctan2(1.0 * U, 1.0 * Q, dtype=float)  # , where=Q != 0)
+    return angle
+
+    # normalize
+    while np.any(angle > np.pi / 2.0):
+        angle = np.where(angle > (np.pi / 2.0), angle - np.pi, angle)
+    while np.any(angle < np.pi / 2.0):
+        angle = np.where(angle < (np.pi / 2.0), angle + np.pi, angle)
     return angle
 
     angle = np.where(
