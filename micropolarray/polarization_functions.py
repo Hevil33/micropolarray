@@ -23,6 +23,9 @@ def AoLP(Stokes_vec_components):
     # NOTE: if arctan2 is not used then the angle of linear polarization
     # can not be retrieved since information about the sign of different
     # pixels is crucial to determine it
+
+    # angle = 0.5 * (np.random.rand(*I.shape) - 0.5) * np.pi
+
     angle = 0.5 * np.arctan2(1.0 * U, 1.0 * Q, dtype=float)  # , where=Q != 0)
     return angle
 
@@ -45,9 +48,12 @@ def DoLP(Stokes_vec_components):
     """Degree of linear polarization in [%]"""
     I, Q, U = Stokes_vec_components
 
-    return np.divide(
-        np.sqrt((Q * Q) + (U * U), dtype=float), I, where=(I != 0)
+    result = np.zeros_like(I)
+    # result = (np.random.rand(*I.shape) - 0.5) * np.pi
+    np.divide(
+        np.sqrt((Q * Q) + (U * U), dtype=float), I, where=(I != 0), out=result
     )  # avoids 0/0 error
+    return result
 
 
 def pB(Stokes_vec_components):

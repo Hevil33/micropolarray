@@ -250,7 +250,7 @@ def calculate_demodulation_tensor(
 
     # Count binning before dimensions
     data = np.array(data, dtype=float)
-    data = micropolarray_rebin(data, *data.shape, binning=binning)
+    data = micropolarray_rebin(data, binning=binning)
     height, width = data.shape
 
     occulter_flag = np.ones_like(data)  # 0 if not a occulted px, 1 otherwise
@@ -286,14 +286,14 @@ def calculate_demodulation_tensor(
     if dark_filename:
         with fits.open(dark_filename) as file:
             dark = np.array(file[0].data, dtype=np.float)
-            dark = micropolarray_rebin(dark, *dark.shape, binning)
+            dark = micropolarray_rebin(dark, binning)
     # Collect flat field, normalize it
     if flat_filename:
         with fits.open(flat_filename) as file:
             flat = np.array(file[0].data, dtype=np.float)
         if correct_ifov:
             flat = _ifov_jitcorrect(flat, *flat.shape)
-        flat = micropolarray_rebin(flat, *flat.shape, binning)
+        flat = micropolarray_rebin(flat, binning)
         # flat_max = np.max(flat, axis=(0, 1))
         flat_max = mean_plus_std(flat, stds_n=1)
     if flat_filename and dark_filename:
@@ -316,9 +316,7 @@ def calculate_demodulation_tensor(
                 all_data_arr[idx] = _ifov_jitcorrect(
                     all_data_arr[idx], *all_data_arr[idx].shape
                 )
-            all_data_arr[idx] = micropolarray_rebin(
-                all_data_arr[idx], *all_data_arr[idx].shape, binning
-            )
+            all_data_arr[idx] = micropolarray_rebin(all_data_arr[idx], binning)
             if dark_filename is not None:
                 all_data_arr[idx] -= dark
                 all_data_arr[idx] = np.where(

@@ -25,7 +25,7 @@ from micropolarray.processing.demosaic import (
     split_polarizations,
 )
 from micropolarray.processing.nrgf import roi_from_polar
-from micropolarray.processing.rebin import micropolarray_rebin
+from micropolarray.processing.rebin import micropolarray_rebin, standard_rebin
 from micropolarray.processing.shift import shift_micropol
 from micropolarray.utils import (
     _make_abs_and_create_dir,
@@ -458,8 +458,12 @@ class MicropolImage(Image):
             vmin=avg - stdev,
             vmax=avg + stdev,
         )
+        if avg < 1.0e5:
+            format = "3.2f"
+        else:
+            format = ".1e"
         imageax.set_title(
-            f"Image data (avrg {avg:3.2f}+-{stdev:3.2f})",
+            f"Image data (avrg {avg:{format}}+-{stdev:{format}})",
             color="black",
         )
         imageax.set_xlabel("x [px]")
@@ -481,8 +485,12 @@ class MicropolImage(Image):
                 vmin=avg - stdev,
                 vmax=avg + stdev,
             )
+            if avg < 1.0e5:
+                format = "3.2f"
+            else:
+                format = ".1e"
             axis.set_title(
-                parameter.title + f" (avrg {avg:3.2f}+-{stdev:3.2f})",
+                parameter.title + f" (avrg {avg:{format}}+-{stdev:{format}})",
                 color="black",
             )
             axis.set_xlabel("x [px]")
@@ -803,9 +811,22 @@ class MicropolImage(Image):
         rebinned_image = MicropolImage(self)
         rebinned_data = micropolarray_rebin(
             np.array(rebinned_image.data, dtype=float),
-            *rebinned_image.data.shape,
             binning,
         )
+
+        """
+        new_stokes = []
+        for i in range(3):
+            new_stokes.append(
+                standard_rebin(
+                    np.array(self.Stokes_vec[i], dtype=float),
+                    binning,
+                )
+            )
+        
+        rebinned_image.Stokes_vec = np.array(new_stokes, dtype=float)
+        rebinned_image.data = rebinned_data
+        """
 
         rebinned_image._update_data_and_Stokes(rebinned_data)
 
@@ -883,7 +904,7 @@ class MicropolImage(Image):
         self.data = roi_from_polar(
             self.data,
             (y, x),
-            [r, 2 * np.max((self.height, self.width))],
+            [r, 2 * np.max([self.height, self.width])],
         )
         if self._is_demosaiced:
             self.demosaiced_images = [
@@ -894,11 +915,17 @@ class MicropolImage(Image):
                 )
                 for data in self.demosaiced_images
             ]
+
+        if not self._is_demosaiced:
+            y = int(y / 2)
+            x = int(x / 2)
+            r = int(r / 2)
         for i in range(3):
             self.Stokes_vec[i] = roi_from_polar(
                 self.Stokes_vec[i],
                 (y, x),
-                [r, 2 * np.max((self.height, self.width))],
+                [r, 2 * np.max(self.Stokes_vec[i].shape)],
+                include_superpixels=False,
             )
 
     def shift(self, y: int, x: int) -> MicropolImage:

@@ -15,7 +15,8 @@ def roi_from_polar(
     rho: list = None,
     theta=[0, 360],
     fill: float = 0.0,
-    return_boolean=False,
+    return_boolean: bool = False,
+    include_superpixels: bool = True,
 ) -> np.array:
     """Returns the input array in a circular selection, otherwise an arbitrary number. If a pixel is not in the selection the ENTIRE superpixel is considered out of selection. If return_boolean is True then a boolean array is returned instead (useful for mean/stdev operations).
 
@@ -26,6 +27,7 @@ def roi_from_polar(
         theta (list, optional): polar selection angle, 0 is horizonta, anti-clockwise direction. Defaults to [0, 360].
         fill (float, optional): number to fill the outer selection. Defaults to 0.0.
         return_boolean (bool, optional): if set to true, function returns a boolean array of the roi. Defaults to False.
+        include_superpixels (bool, optional): if set to true then exclude entire superpixel if one pixel is in the occulter
 
     Returns:
         np.array: array containing the input data inside the selection, and fill otherwise
@@ -35,32 +37,44 @@ def roi_from_polar(
     rho_min, rho_max = rho
     if center is None:
         center = [int(height / 2), int(width / 2)]
+    else:
+        center = list(center)
+
     if rho is None:
         rho_max = np.min([height - center[0], width - center[1]])
         rho = [0.0, rho_max]
 
-    # make a map that is HALF THE SIZE, do condition, then resize to make all the superpixel outside selection
+    if include_superpixels:
+        # make a map that is HALF THE SIZE, do condition, then resize to make all the superpixel outside selection
+        height = int(height / 2)
+        width = int(width / 2)
+        rho_min = int(rho_min / 2)
+        rho_max = int(rho_max / 2)
+        center[0] = int(center[0] / 2)
+        center[1] = int(center[1] / 2)
+
     rho_coords, phi_coords = map_polar_coordinates(
-        int(height / 2),
-        int(width / 2),
-        tuple([int(center[0] / 2), int(center[1] / 2)]),
+        height,
+        width,
+        tuple([center[0], center[1]]),
     )  # cast it to a tuple (which is hashable)
 
     theta_condition = np.logical_and(
         phi_coords >= theta_min, phi_coords < theta_max
     )
     rho_condition = np.logical_and(
-        rho_coords > rho_min / 2, rho_coords <= rho_max / 2
+        rho_coords > rho_min, rho_coords <= rho_max
     )  # half the radius because half the map
     condition = np.logical_and(rho_condition, theta_condition)
 
-    # resize condition to correct shape
-    condition = condition.repeat(2, axis=0).repeat(2, axis=1)
+    if include_superpixels:
+        # resize condition to correct shape
+        condition = condition.repeat(2, axis=0).repeat(2, axis=1)
 
     if return_boolean:
         return np.where(condition, True, False)
-
-    return np.where(condition, data, fill)
+    else:
+        return np.where(condition, data, fill)
 
 
 def tile_double(a):
@@ -161,22 +175,21 @@ def nrgf(
     return newdata
 
 
-def find_occulter_hough(data: np.array) -> tuple:
-    """Uses Hough Gradient from cv2 and computes the coronagraph occulter coordinates
+def find_occulter_hough(data: np.array, **kwargs) -> tuple:
+    """Uses Hough Gradient from cv2 and computes the coronagraph occulter coordinates. Returns Y, X, Radius of the occulter.
 
     Args:
         data (np.array): input data
-        minr (int): minimum occulter radius
-        maxr (int): maximum occulter radius
 
     Returns:
-        tuple: occulter x, y, r
+        tuple: occulter y, x, r
     """
+    info("Searching occulter, this may take a while...")
     minr = 1
     maxr = np.max(data.shape)
     data = 255 * data / np.max(data)
     blurred = cv2.medianBlur(data.astype("uint8"), 5)
-    accumulator = 20
+    accumulator = 10
     circles = cv2.HoughCircles(
         image=blurred,
         method=cv2.HOUGH_GRADIENT,
@@ -187,13 +200,15 @@ def find_occulter_hough(data: np.array) -> tuple:
         minRadius=minr,
         maxRadius=maxr,
     )
+    if len(circles[0]) == 0:
+        print("Failed to find the occulter.")
     while len(circles[0]) > 1:
         print(f"{len(circles[0])} circles found, retrying...")
         accumulator += 5
         circles = cv2.HoughCircles(
             image=blurred,
             method=cv2.HOUGH_GRADIENT,
-            dp=1.5,
+            dp=1.2,
             minDist=maxr,
             param1=200,
             param2=accumulator,
@@ -201,7 +216,7 @@ def find_occulter_hough(data: np.array) -> tuple:
             maxRadius=maxr,
         )
     x, y, r = circles[0, 0]
-    return x, y, r
+    return y, x, r  # BEWARE OF THIS REVERSION: Y THEN X
 
 
 def find_occulter_position(

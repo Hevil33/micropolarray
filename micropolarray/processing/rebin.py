@@ -21,7 +21,7 @@ def print_trimming_info(height, width, new_height, new_width):
     )
 
 
-def micropolarray_rebin(data: np.ndarray, height: int, width: int, binning=2):
+def micropolarray_rebin(data: np.ndarray, binning=2):
     """Wrapper for the faster rebinning donw with numba. First deletes last row/column until binning is possible, then calls binning on the result shape.
 
     Args:
@@ -33,7 +33,7 @@ def micropolarray_rebin(data: np.ndarray, height: int, width: int, binning=2):
     Returns:
         ndarray: binned data, trimmed if necessary
     """
-    trimmed = False
+    height, width = data.shape
     new_height, new_width = trim_to_match_2xbinning(height, width, binning)
     new_height = int(new_height / binning)
     new_width = int(new_width / binning)
@@ -47,7 +47,6 @@ def micropolarray_jitrebin_old(data, height, width, binning=2):
     """Fast rebinning function for the micropolarray image."""
     # Skip last row/columns until they are divisible by binning,
     # allows any binning
-    trimmed = False
     new_height, new_width = trim_to_match_2xbinning(height, width, binning)
     new_height = int(new_height / binning)
     new_width = int(new_width / binning)
@@ -95,19 +94,17 @@ def standard_rebin(data, binning: int) -> np.array:
     Returns:
         np.array: binned data
     """
-    if (data.shape[0] % binning) or (data.shape[1] % binning):
-        raise KeyError(
-            "Invalid binning, must be divisor of both image height and width."
-        )
-    rebinned_data = standard_jitrebin(data, *data.shape, binning)
+    height, width = data.shape
+    new_height, new_width = trim_to_match_binning(height, width, binning)
+    new_height = int(new_height / binning)
+    new_width = int(new_width / binning)
+
+    rebinned_data = standard_jitrebin(data, new_height, new_width, binning)
     return rebinned_data
 
 
 @njit
-def standard_jitrebin(data, height, width, binning=2):
-    new_height, new_width = trim_to_match_2xbinning(height, width, binning)
-    new_height = int(new_height / binning)
-    new_width = int(new_width / binning)
+def standard_jitrebin(data, new_height, new_width, binning=2):
     new_data = np.zeros(shape=(new_height, new_width))
     for new_y in range(new_height):
         for new_x in range(new_width):
