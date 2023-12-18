@@ -15,13 +15,8 @@ from scipy.optimize import curve_fit
 from tqdm import tqdm
 
 from micropolarray.cameras import PolarCam
-from micropolarray.processing.chen_wan_liang_calibration import (
-    _ifov_jitcorrect,
-)
-from micropolarray.processing.nrgf import (
-    find_occulter_position,
-    roi_from_polar,
-)
+from micropolarray.processing.chen_wan_liang_calibration import _ifov_jitcorrect
+from micropolarray.processing.nrgf import find_occulter_position, roi_from_polar
 from micropolarray.processing.rebin import (
     micropolarray_rebin,
     standard_rebin,
@@ -63,15 +58,10 @@ class Demodulator:
             raise FileNotFoundError("self.demo_matrices_path not found.")
 
         # look for first matrix file and get dimensions
-        filenames_list = glob.glob(
-            self.demo_matrices_path + os.path.sep + "*.fits"
-        )
+        filenames_list = glob.glob(self.demo_matrices_path + os.path.sep + "*.fits")
 
         for filename in filenames_list:
-            if (
-                re.search("[0-9]{2}", filename.split(os.path.sep)[-1])
-                is not None
-            ):
+            if re.search("[0-9]{2}", filename.split(os.path.sep)[-1]) is not None:
                 with fits.open(filename) as firsthul:
                     sample_matrix = np.array(firsthul[0].data)
                 break
@@ -89,9 +79,7 @@ class Demodulator:
 
         matches = 0
         for filename in filenames_list:
-            pattern_query = re.search(
-                "[0-9]{2}", filename.split(os.path.sep)[-1]
-            )
+            pattern_query = re.search("[0-9]{2}", filename.split(os.path.sep)[-1])
             if pattern_query is not None:  # Exclude files not matching m/Mij
                 matches += 1
                 i, j = pattern_query.group()[
@@ -165,9 +153,9 @@ class Demodulator:
         )
         for j in range(new_demodulator.n_malus_params):
             for i in range(new_demodulator.n_pixels_in_superpix):
-                new_mij[j, i] = standard_rebin(
-                    new_demodulator.mij[j, i], binning
-                ) / (binning * binning)
+                new_mij[j, i] = standard_rebin(new_demodulator.mij[j, i], binning) / (
+                    binning * binning
+                )
         new_demodulator.mij = new_mij
 
         return new_demodulator
@@ -238,8 +226,7 @@ def calculate_demodulation_tensor(
         )  # for calculating normalizing_S
 
     polarizer_orientations, filenames_list = (
-        list(t)
-        for t in zip(*sorted(zip(polarizer_orientations, filenames_list)))
+        list(t) for t in zip(*sorted(zip(polarizer_orientations, filenames_list)))
     )
     micropol_phases_previsions = np.array(micropol_phases_previsions)
     rad_micropol_phases_previsions = np.deg2rad(micropol_phases_previsions)
@@ -272,12 +259,8 @@ def calculate_demodulation_tensor(
         )
         for super_y in range(0, occulter_flag.shape[0], 2):
             for super_x in range(0, occulter_flag.shape[1], 2):
-                if np.any(
-                    occulter_flag[super_y : super_y + 2, super_x : super_x + 2]
-                ):
-                    occulter_flag[
-                        super_y : super_y + 2, super_x : super_x + 2
-                    ] = 1
+                if np.any(occulter_flag[super_y : super_y + 2, super_x : super_x + 2]):
+                    occulter_flag[super_y : super_y + 2, super_x : super_x + 2] = 1
                     continue
     else:
         occulter_flag *= 0
@@ -333,9 +316,7 @@ def calculate_demodulation_tensor(
 
     if normalizing_S is None:
         info("Calculating normalization...")
-        S_max = np.zeros(
-            shape=(height, width)
-        )  # tk_sum = tk_0 + tk_45 + tk_90 + tk_45
+        S_max = np.zeros(shape=(height, width))  # tk_sum = tk_0 + tk_45 + tk_90 + tk_45
         for chosen_norm in available_norms:
             if np.all(np.isin(chosen_norm, polarizer_orientations)):
                 norm_S_angle_list = chosen_norm
@@ -384,19 +365,16 @@ def calculate_demodulation_tensor(
             yvalues,
             prediction,
         )
-        normalizing_S = (
-            params[1] + 4 * params[2]
-        )  # center of gaussian + 2sigma
+        normalizing_S = params[1] + 4 * params[2]  # center of gaussian + 2sigma
         # 3sigma -> P = 2.7e-3 outliers
         # 4sigma -> P = 6.3e-5 outliers
         # ----------------------------------------------
-    else:
+    elif type(normalizing_S) is not np.ndarray:  # its a number
+        print("NOOO")
         normalizing_S *= binning * binning  # account binning
-
-    if type(normalizing_S) is not np.ndarray:
-        normalizing_S = (
-            np.ones(shape=(height, width), dtype=float) * normalizing_S
-        )
+        normalizing_S = np.ones(shape=(height, width), dtype=float) * normalizing_S
+    elif type(normalizing_S) is np.ndarray:  # its an image
+        normalizing_S = micropolarray_rebin(normalizing_S, binning)
 
     # correct S=0 error
     normalizing_S = np.where(normalizing_S >= 0, normalizing_S, 1)
@@ -514,9 +492,7 @@ def calculate_demodulation_tensor(
 
     starting_time = time.perf_counter()
     loc_time = time.strftime("%H:%M:%S  (%Y/%m/%d)", time.localtime())
-    info(
-        f"Starting parallel calculation ({procs_grid[0]}x{procs_grid[1]}) processors"
-    )
+    info(f"Starting parallel calculation ({procs_grid[0]}x{procs_grid[1]}) processors")
 
     if procs_grid != [1, 1]:
         try:
@@ -630,9 +606,7 @@ def calculate_demodulation_tensor(
         ["transmittancies", "efficiences", "phases", "fit_found_flag"],
     ):
         hdu = fits.PrimaryHDU(data=parameter_data)
-        hdu.writeto(
-            output_str + "/" + parameter_name + ".fits", overwrite=True
-        )
+        hdu.writeto(output_str + "/" + parameter_name + ".fits", overwrite=True)
 
     info("Demodulation matrices and fit data successfully saved!")
 
@@ -711,10 +685,10 @@ def compute_demodulation_by_chunk(
     # occulter if present.
     if DEBUG:
         x_start, x_end = 100, 110
-        x_start, x_end = 500, 510
+        # x_start, x_end = 500, 510
         # x_start, x_end = 0, 2
         y_start, y_end = 100, 110
-        y_start, y_end = 500, 510
+        # y_start, y_end = 500, 510
         # y_start, y_end = 0, 2
     else:
         y_start, y_end = 0, height
@@ -735,9 +709,7 @@ def compute_demodulation_by_chunk(
         for super_x in range(x_start, x_end, 2):
             if not (
                 np.any(
-                    splitted_occulter_flag[
-                        super_y : super_y + 2, super_x : super_x + 2
-                    ]
+                    splitted_occulter_flag[super_y : super_y + 2, super_x : super_x + 2]
                 )
             ):
                 normalized_superpix_arr = splitted_normalized_dara_arr[
@@ -774,9 +746,7 @@ def compute_demodulation_by_chunk(
 
                 if DEBUG:  # DEBUG
                     colors = ["blue", "orange", "green", "red"]
-                    fig, ax = plt.subplots(
-                        figsize=(9, 9), constrained_layout=True
-                    )
+                    fig, ax = plt.subplots(figsize=(9, 9), constrained_layout=True)
                     for i in range(4):
                         ax.errorbar(
                             np.rad2deg(polarizations_rad),
@@ -799,9 +769,7 @@ def compute_demodulation_by_chunk(
                             label=f"t = {superpix_params[i,0]:2.2f}, e = {superpix_params[i, 1]:2.2f}, phi = {np.rad2deg(superpix_params[i, 2]):2.2f}",
                             color=colors[i],
                         )
-                        ax.set_title(
-                            f"super_y = {super_y}, super_x = {super_x},"
-                        )
+                        ax.set_title(f"super_y = {super_y}, super_x = {super_x},")
                         ax.set_xlabel("Prepolarizer orientations [deg]")
                         ax.set_ylabel("signal / S")
 
@@ -855,22 +823,18 @@ def compute_demodulation_by_chunk(
                     demodulation_matrix = theo_demodulation_matrix
                     fit_success = False
 
-                m_ij[
-                    :, :, int(super_y / 2), int(super_x / 2)
-                ] = demodulation_matrix
-                fit_found[int(super_y / 2), int(super_x / 2)] = (
-                    1.0 * fit_success
-                )
+                m_ij[:, :, int(super_y / 2), int(super_x / 2)] = demodulation_matrix
+                fit_found[int(super_y / 2), int(super_x / 2)] = 1.0 * fit_success
 
-                tk_data[
-                    super_y : super_y + 2, super_x : super_x + 2
-                ] = np.array(t, dtype=float).reshape(2, 2)
-                eff_data[
-                    super_y : super_y + 2, super_x : super_x + 2
-                ] = np.array(eff, dtype=float).reshape(2, 2)
-                phase_data[
-                    super_y : super_y + 2, super_x : super_x + 2
-                ] = np.array(phi, dtype=float).reshape(2, 2)
+                tk_data[super_y : super_y + 2, super_x : super_x + 2] = np.array(
+                    t, dtype=float
+                ).reshape(2, 2)
+                eff_data[super_y : super_y + 2, super_x : super_x + 2] = np.array(
+                    eff, dtype=float
+                ).reshape(2, 2)
+                phase_data[super_y : super_y + 2, super_x : super_x + 2] = np.array(
+                    phi, dtype=float
+                ).reshape(2, 2)
 
             else:  # pixel is in occulter region
                 m_ij[
@@ -879,18 +843,14 @@ def compute_demodulation_by_chunk(
                 phase_data[
                     super_y : super_y + 2, super_x : super_x + 2
                 ] = rad_micropol_phases_previsions.reshape(2, 2)
-                tk_data[
-                    super_y : super_y + 2, super_x : super_x + 2
-                ] = np.array(
+                tk_data[super_y : super_y + 2, super_x : super_x + 2] = np.array(
                     [
                         [tk_prediction, tk_prediction],
                         [tk_prediction, tk_prediction],
                     ],
                     dtype=float,
                 )
-                eff_data[
-                    super_y : super_y + 2, super_x : super_x + 2
-                ] = np.array(
+                eff_data[super_y : super_y + 2, super_x : super_x + 2] = np.array(
                     [
                         [efficiency_prediction, efficiency_prediction],
                         [efficiency_prediction, efficiency_prediction],

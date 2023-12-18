@@ -3,9 +3,7 @@ import logging
 from micropolarray.cameras import Antarticor, Kasi, PolarCam
 from micropolarray.image import Image
 from micropolarray.micropol_image import MicropolImage
-from micropolarray.micropol_image import (
-    MicropolImage as MicroPolarizerArrayImage,
-)
+from micropolarray.micropol_image import MicropolImage as MicroPolarizerArrayImage
 from micropolarray.micropol_image import MicropolImage as PolarcamImage
 from micropolarray.micropol_image import set_default_angles
 from micropolarray.processing.chen_wan_liang_calibration import (
@@ -17,6 +15,7 @@ from micropolarray.processing.convert import (
     average_rawfiles_to_fits,
     convert_rawfile_to_fits,
     convert_set,
+    merge_rawfiles_to_fits,
 )
 from micropolarray.processing.demodulation import (
     Demodulator,
@@ -50,6 +49,4 @@ logging.basicConfig(
     level=logging.INFO, format="%(levelname)s - %(asctime)s - %(message)s"
 )  # tempo, livello, messaggio. livello è warning, debug, info, error, critical
 
-__all__ = (
-    []
-)  # Imported modules when "from microppolarray_lib import *" is called
+__all__ = []  # Imported modules when "from microppolarray_lib import *" is called

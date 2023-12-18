@@ -55,10 +55,7 @@ def nparr_from_binary(filename):
         raise ValueError("Indivisible by chunks")
     chunk_size = int(chunk_size)
     splitted = np.array(
-        [
-            filecontent[i * chunk_size : (i + 1) * chunk_size]
-            for i in range(chunks_n)
-        ]
+        [filecontent[i * chunk_size : (i + 1) * chunk_size] for i in range(chunks_n)]
     )
     with mp.Pool(processes=chunks_n) as p:
         result = p.map(three_bytes_to_two_ints, splitted)
@@ -76,9 +73,7 @@ def convert_set(filenames, new_filename, height, width):
     """
     abs_new_filename = os.path.abspath(new_filename)
     if abs_new_filename.split(".")[-1] != "fits":
-        raise ValueError(
-            "Trying to save a .fits file to .bin, check new filename"
-        )
+        raise ValueError("Trying to save a .fits file to .bin, check new filename")
     if type(filenames) is not list:
         filenames = [
             filenames,
@@ -88,9 +83,9 @@ def convert_set(filenames, new_filename, height, width):
     for filename in tqdm.tqdm(filenames):
         arr += nparr_from_binary(filename) / images_n
     hdu = fits.PrimaryHDU(data=arr)
-    date_and_time = datetime.datetime.now(
-        tz=pytz.timezone("Australia/Perth")
-    ).strftime("%Y-%m-%dT%H:%M:%S%z")
+    date_and_time = datetime.datetime.now(tz=pytz.timezone("Australia/Perth")).strftime(
+        "%Y-%m-%dT%H:%M:%S%z"
+    )
     hdu.header["CREATED"] = (
         str(date_and_time),
         "Datetime conversion from bin to fits file (Dome C timezone).",
@@ -112,6 +107,15 @@ def average_rawfiles_to_fits(
     Raises:
         ValueError: trying to save in a file that does not end with .fits
     """
+    merge_rawfiles_to_fits(
+        filenames=filenames,
+        new_filename=new_filename,
+        height=height,
+        width=width,
+        mode="average",
+    )
+
+    """
     abs_new_filename = str(Path(new_filename).absolute())
     if abs_new_filename.split(".")[-1] != "fits":
         raise ValueError("Output filename must have a .fits extension.")
@@ -127,6 +131,49 @@ def average_rawfiles_to_fits(
         data = np.ndarray(shape=(height, width), dtype="<u2", buffer=buffer)
 
         arr += data / images_n
+    hdu = fits.PrimaryHDU(data=arr)
+    date_and_time = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S%z")
+    hdu.header["CREATED"] = (
+        str(date_and_time),
+        "Datetime conversion from bin to fits file (Dome C timezone).",
+    )
+    hdu.writeto(abs_new_filename, overwrite=True)
+    """
+
+
+def merge_rawfiles_to_fits(
+    filenames: list, new_filename: str, height: int, width: int, mode="sum"
+):
+    """Saves the average or sum of a list of rawfiles to a new fits file.
+
+    Args:
+        filenames (list): list of raw filenames
+        new_filename (str): new fits filename
+        height (int): image height in pix
+        width (int): image width in pix
+        mode (str): wether to "average" or "sum" the images. Defaults to "sum".
+
+    Raises:
+        ValueError: trying to save in a file that does not end with .fits
+    """
+    abs_new_filename = str(Path(new_filename).absolute())
+    if abs_new_filename.split(".")[-1] != "fits":
+        raise ValueError("Output filename must have a .fits extension.")
+    if type(filenames) is not list:
+        filenames = [
+            filenames,
+        ]
+    images_n = len(filenames)
+    arr = np.zeros(shape=(height, width))
+    for filename in tqdm.tqdm(filenames):
+        with open(filename, mode="rb") as file:
+            buffer = file.read()
+        data = np.ndarray(shape=(height, width), dtype="<u2", buffer=buffer)
+        arr += data
+
+    if mode == "average":
+        arr /= images_n
+
     hdu = fits.PrimaryHDU(data=arr)
     date_and_time = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S%z")
     hdu.header["CREATED"] = (
@@ -156,9 +203,7 @@ def convert_rawfile_to_fits(
         buffer = file.read()
     data = np.ndarray(shape=(height, width), dtype="<u2", buffer=buffer)
     HDU = fits.PrimaryHDU(data=data)
-    filename = os.path.abspath(
-        filename
-    )  # prevents bug when "../" is in filename
+    filename = os.path.abspath(filename)  # prevents bug when "../" is in filename
     new_filename = os.path.pathsep.join(filename.split(".")[:-1]) + ".fits"
     HDU.writeto(new_filename, overwrite=True)
     info(f'Image successfully saved to "{new_filename}".')

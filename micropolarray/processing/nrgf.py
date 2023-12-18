@@ -200,21 +200,22 @@ def find_occulter_hough(data: np.array, **kwargs) -> tuple:
         minRadius=minr,
         maxRadius=maxr,
     )
-    if len(circles[0]) == 0:
+    try:
+        while len(circles[0]) > 1:
+            print(f"{len(circles[0])} circles found, retrying...")
+            accumulator += 5
+            circles = cv2.HoughCircles(
+                image=blurred,
+                method=cv2.HOUGH_GRADIENT,
+                dp=1.2,
+                minDist=maxr,
+                param1=200,
+                param2=accumulator,
+                minRadius=minr,
+                maxRadius=maxr,
+            )
+    except TypeError:
         print("Failed to find the occulter.")
-    while len(circles[0]) > 1:
-        print(f"{len(circles[0])} circles found, retrying...")
-        accumulator += 5
-        circles = cv2.HoughCircles(
-            image=blurred,
-            method=cv2.HOUGH_GRADIENT,
-            dp=1.2,
-            minDist=maxr,
-            param1=200,
-            param2=accumulator,
-            minRadius=minr,
-            maxRadius=maxr,
-        )
     x, y, r = circles[0, 0]
     return y, x, r  # BEWARE OF THIS REVERSION: Y THEN X
 
