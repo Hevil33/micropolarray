@@ -92,7 +92,7 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="micropolarray_rebin"><a class="viewcode-back" href="../../../micropolarray.processing.html#micropolarray.processing.rebin.micropolarray_rebin">[docs]</a><span class="k">def</span> <span class="nf">micropolarray_rebin</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">height</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">width</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">binning</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+<div class="viewcode-block" id="micropolarray_rebin"><a class="viewcode-back" href="../../../micropolarray.processing.html#micropolarray.processing.rebin.micropolarray_rebin">[docs]</a><span class="k">def</span> <span class="nf">micropolarray_rebin</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">binning</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Wrapper for the faster rebinning donw with numba. First deletes last row/column until binning is possible, then calls binning on the result shape.</span>
 
 <span class="sd">    Args:</span>
@@ -104,7 +104,7 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        ndarray: binned data, trimmed if necessary</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">trimmed</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">height</span><span class="p">,</span> <span class="n">width</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span>
     <span class="n">new_height</span><span class="p">,</span> <span class="n">new_width</span> <span class="o">=</span> <span class="n">trim_to_match_2xbinning</span><span class="p">(</span><span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">binning</span><span class="p">)</span>
     <span class="n">new_height</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">new_height</span> <span class="o">/</span> <span class="n">binning</span><span class="p">)</span>
     <span class="n">new_width</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">new_width</span> <span class="o">/</span> <span class="n">binning</span><span class="p">)</span>
@@ -118,7 +118,6 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Fast rebinning function for the micropolarray image.&quot;&quot;&quot;</span>
     <span class="c1"># Skip last row/columns until they are divisible by binning,</span>
     <span class="c1"># allows any binning</span>
-    <span class="n">trimmed</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="n">new_height</span><span class="p">,</span> <span class="n">new_width</span> <span class="o">=</span> <span class="n">trim_to_match_2xbinning</span><span class="p">(</span><span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">binning</span><span class="p">)</span>
     <span class="n">new_height</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">new_height</span> <span class="o">/</span> <span class="n">binning</span><span class="p">)</span>
     <span class="n">new_width</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">new_width</span> <span class="o">/</span> <span class="n">binning</span><span class="p">)</span>
@@ -166,19 +165,17 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        np.array: binned data</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">%</span> <span class="n">binning</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">%</span> <span class="n">binning</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span>
-            <span class="s2">&quot;Invalid binning, must be divisor of both image height and width.&quot;</span>
-        <span class="p">)</span>
-    <span class="n">rebinned_data</span> <span class="o">=</span> <span class="n">standard_jitrebin</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="o">*</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">binning</span><span class="p">)</span>
+    <span class="n">height</span><span class="p">,</span> <span class="n">width</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">new_height</span><span class="p">,</span> <span class="n">new_width</span> <span class="o">=</span> <span class="n">trim_to_match_binning</span><span class="p">(</span><span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">binning</span><span class="p">)</span>
+    <span class="n">new_height</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">new_height</span> <span class="o">/</span> <span class="n">binning</span><span class="p">)</span>
+    <span class="n">new_width</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">new_width</span> <span class="o">/</span> <span class="n">binning</span><span class="p">)</span>
+
+    <span class="n">rebinned_data</span> <span class="o">=</span> <span class="n">standard_jitrebin</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">new_height</span><span class="p">,</span> <span class="n">new_width</span><span class="p">,</span> <span class="n">binning</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">rebinned_data</span></div>
 
 
 <div class="viewcode-block" id="standard_jitrebin"><a class="viewcode-back" href="../../../micropolarray.processing.html#micropolarray.processing.rebin.standard_jitrebin">[docs]</a><span class="nd">@njit</span>
-<span class="k">def</span> <span class="nf">standard_jitrebin</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">binning</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
-    <span class="n">new_height</span><span class="p">,</span> <span class="n">new_width</span> <span class="o">=</span> <span class="n">trim_to_match_2xbinning</span><span class="p">(</span><span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">binning</span><span class="p">)</span>
-    <span class="n">new_height</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">new_height</span> <span class="o">/</span> <span class="n">binning</span><span class="p">)</span>
-    <span class="n">new_width</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">new_width</span> <span class="o">/</span> <span class="n">binning</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">standard_jitrebin</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">new_height</span><span class="p">,</span> <span class="n">new_width</span><span class="p">,</span> <span class="n">binning</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
     <span class="n">new_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">new_height</span><span class="p">,</span> <span class="n">new_width</span><span class="p">))</span>
     <span class="k">for</span> <span class="n">new_y</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">new_height</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">new_x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">new_width</span><span class="p">):</span>

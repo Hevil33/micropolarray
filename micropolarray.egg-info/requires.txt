@@ -9,6 +9,7 @@ wheel
 tqdm
 pytest
 sphinx-rtd-theme
+opencv-python-headless
 
 [dev]
 black

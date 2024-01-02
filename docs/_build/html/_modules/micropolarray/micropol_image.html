@@ -96,7 +96,7 @@
     <span class="n">split_polarizations</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">micropolarray.processing.nrgf</span> <span class="kn">import</span> <span class="n">roi_from_polar</span>
-<span class="kn">from</span> <span class="nn">micropolarray.processing.rebin</span> <span class="kn">import</span> <span class="n">micropolarray_rebin</span>
+<span class="kn">from</span> <span class="nn">micropolarray.processing.rebin</span> <span class="kn">import</span> <span class="n">micropolarray_rebin</span><span class="p">,</span> <span class="n">standard_rebin</span>
 <span class="kn">from</span> <span class="nn">micropolarray.processing.shift</span> <span class="kn">import</span> <span class="n">shift_micropol</span>
 <span class="kn">from</span> <span class="nn">micropolarray.utils</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">_make_abs_and_create_dir</span><span class="p">,</span>
@@ -529,8 +529,12 @@
             <span class="n">vmin</span><span class="o">=</span><span class="n">avg</span> <span class="o">-</span> <span class="n">stdev</span><span class="p">,</span>
             <span class="n">vmax</span><span class="o">=</span><span class="n">avg</span> <span class="o">+</span> <span class="n">stdev</span><span class="p">,</span>
         <span class="p">)</span>
+        <span class="k">if</span> <span class="n">avg</span> <span class="o">&lt;</span> <span class="mf">1.0e5</span><span class="p">:</span>
+            <span class="nb">format</span> <span class="o">=</span> <span class="s2">&quot;3.2f&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">format</span> <span class="o">=</span> <span class="s2">&quot;.1e&quot;</span>
         <span class="n">imageax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Image data (avrg </span><span class="si">{</span><span class="n">avg</span><span class="si">:</span><span class="s2">3.2f</span><span class="si">}</span><span class="s2">+-</span><span class="si">{</span><span class="n">stdev</span><span class="si">:</span><span class="s2">3.2f</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">&quot;Image data (avrg </span><span class="si">{</span><span class="n">avg</span><span class="si">:{</span><span class="nb">format</span><span class="si">}}</span><span class="s2">+-</span><span class="si">{</span><span class="n">stdev</span><span class="si">:{</span><span class="nb">format</span><span class="si">}}</span><span class="s2">)&quot;</span><span class="p">,</span>
             <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">imageax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;x [px]&quot;</span><span class="p">)</span>
@@ -539,7 +543,7 @@
             <span class="n">mappable</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">imageax</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;[DN]&quot;</span><span class="p">,</span> <span class="n">fraction</span><span class="o">=</span><span class="n">data_ratio</span> <span class="o">*</span> <span class="mf">0.05</span>
         <span class="p">)</span>
         <span class="n">stokes_fig</span><span class="p">,</span> <span class="n">stokesax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span>
-            <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="mi">9</span><span class="p">),</span> <span class="n">constrained_layout</span><span class="o">=</span><span class="kc">True</span>
+            <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span> <span class="n">constrained_layout</span><span class="o">=</span><span class="kc">True</span>
         <span class="p">)</span>
 
         <span class="n">stokesax</span> <span class="o">=</span> <span class="n">stokesax</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
@@ -552,8 +556,12 @@
                 <span class="n">vmin</span><span class="o">=</span><span class="n">avg</span> <span class="o">-</span> <span class="n">stdev</span><span class="p">,</span>
                 <span class="n">vmax</span><span class="o">=</span><span class="n">avg</span> <span class="o">+</span> <span class="n">stdev</span><span class="p">,</span>
             <span class="p">)</span>
+            <span class="k">if</span> <span class="n">avg</span> <span class="o">&lt;</span> <span class="mf">1.0e5</span><span class="p">:</span>
+                <span class="nb">format</span> <span class="o">=</span> <span class="s2">&quot;3.2f&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="nb">format</span> <span class="o">=</span> <span class="s2">&quot;.1e&quot;</span>
             <span class="n">axis</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span>
-                <span class="n">parameter</span><span class="o">.</span><span class="n">title</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot; (avrg </span><span class="si">{</span><span class="n">avg</span><span class="si">:</span><span class="s2">3.2f</span><span class="si">}</span><span class="s2">+-</span><span class="si">{</span><span class="n">stdev</span><span class="si">:</span><span class="s2">3.2f</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">,</span>
+                <span class="n">parameter</span><span class="o">.</span><span class="n">title</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot; (avrg </span><span class="si">{</span><span class="n">avg</span><span class="si">:{</span><span class="nb">format</span><span class="si">}}</span><span class="s2">+-</span><span class="si">{</span><span class="n">stdev</span><span class="si">:{</span><span class="nb">format</span><span class="si">}}</span><span class="s2">)&quot;</span><span class="p">,</span>
                 <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="n">axis</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;x [px]&quot;</span><span class="p">)</span>
@@ -564,6 +572,7 @@
                 <span class="n">label</span><span class="o">=</span><span class="n">parameter</span><span class="o">.</span><span class="n">measure_unit</span><span class="p">,</span>
                 <span class="n">fraction</span><span class="o">=</span><span class="n">data_ratio</span> <span class="o">*</span> <span class="mf">0.05</span><span class="p">,</span>
             <span class="p">)</span>
+
         <span class="k">return</span> <span class="n">image_fig</span><span class="p">,</span> <span class="n">imageax</span><span class="p">,</span> <span class="n">stokes_fig</span><span class="p">,</span> <span class="n">stokesax</span></div>
 
 <div class="viewcode-block" id="MicropolImage.show_single_pol_images"><a class="viewcode-back" href="../../micropolarray.html#micropolarray.micropol_image.MicropolImage.show_single_pol_images">[docs]</a>    <span class="k">def</span> <span class="nf">show_single_pol_images</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;Greys_r&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -577,7 +586,7 @@
 <span class="sd">            tuple: a (figure, axis) couple same as matplotlib.pyplot.subplots</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">data_ratio</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-        <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">9</span><span class="p">),</span> <span class="n">constrained_layout</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">9</span><span class="p">),</span> <span class="n">constrained_layout</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
         <span class="n">polslist</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">pol0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pol45</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pol90</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pol_45</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">pol</span><span class="p">,</span> <span class="n">axis</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">polslist</span><span class="p">,</span> <span class="n">ax</span><span class="p">):</span>
@@ -607,7 +616,7 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_demosaiced</span><span class="p">:</span>
             <span class="n">error</span><span class="p">(</span><span class="s2">&quot;Image is not yet demosaiced.&quot;</span><span class="p">)</span>
         <span class="n">data_ratio</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-        <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">9</span><span class="p">),</span> <span class="n">constrained_layout</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">9</span><span class="p">),</span> <span class="n">constrained_layout</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
         <span class="n">demo_images_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">demosaiced_images</span>
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">single_demo_ax</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">ax</span><span class="p">):</span>
@@ -873,9 +882,22 @@
         <span class="n">rebinned_image</span> <span class="o">=</span> <span class="n">MicropolImage</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="n">rebinned_data</span> <span class="o">=</span> <span class="n">micropolarray_rebin</span><span class="p">(</span>
             <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">rebinned_image</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">),</span>
-            <span class="o">*</span><span class="n">rebinned_image</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span>
             <span class="n">binning</span><span class="p">,</span>
         <span class="p">)</span>
+
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        new_stokes = []</span>
+<span class="sd">        for i in range(3):</span>
+<span class="sd">            new_stokes.append(</span>
+<span class="sd">                standard_rebin(</span>
+<span class="sd">                    np.array(self.Stokes_vec[i], dtype=float),</span>
+<span class="sd">                    binning,</span>
+<span class="sd">                )</span>
+<span class="sd">            )</span>
+<span class="sd">        </span>
+<span class="sd">        rebinned_image.Stokes_vec = np.array(new_stokes, dtype=float)</span>
+<span class="sd">        rebinned_image.data = rebinned_data</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">rebinned_image</span><span class="o">.</span><span class="n">_update_data_and_Stokes</span><span class="p">(</span><span class="n">rebinned_data</span><span class="p">)</span>
 
@@ -953,7 +975,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">roi_from_polar</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
             <span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">),</span>
-            <span class="p">[</span><span class="n">r</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">))],</span>
+            <span class="p">[</span><span class="n">r</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">])],</span>
         <span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_demosaiced</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">demosaiced_images</span> <span class="o">=</span> <span class="p">[</span>
@@ -964,11 +986,17 @@
                 <span class="p">)</span>
                 <span class="k">for</span> <span class="n">data</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">demosaiced_images</span>
             <span class="p">]</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_demosaiced</span><span class="p">:</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">y</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">x</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">r</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">Stokes_vec</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">roi_from_polar</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">Stokes_vec</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
                 <span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">),</span>
-                <span class="p">[</span><span class="n">r</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">))],</span>
+                <span class="p">[</span><span class="n">r</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Stokes_vec</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">)],</span>
+                <span class="n">include_superpixels</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
             <span class="p">)</span></div>
 
 <div class="viewcode-block" id="MicropolImage.shift"><a class="viewcode-back" href="../../micropolarray.html#micropolarray.micropol_image.MicropolImage.shift">[docs]</a>    <span class="k">def</span> <span class="nf">shift</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MicropolImage</span><span class="p">:</span>

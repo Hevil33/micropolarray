@@ -126,10 +126,7 @@
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Indivisible by chunks&quot;</span><span class="p">)</span>
     <span class="n">chunk_size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">chunk_size</span><span class="p">)</span>
     <span class="n">splitted</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
-        <span class="p">[</span>
-            <span class="n">filecontent</span><span class="p">[</span><span class="n">i</span> <span class="o">*</span> <span class="n">chunk_size</span> <span class="p">:</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">chunk_size</span><span class="p">]</span>
-            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">chunks_n</span><span class="p">)</span>
-        <span class="p">]</span>
+        <span class="p">[</span><span class="n">filecontent</span><span class="p">[</span><span class="n">i</span> <span class="o">*</span> <span class="n">chunk_size</span> <span class="p">:</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">chunk_size</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">chunks_n</span><span class="p">)]</span>
     <span class="p">)</span>
     <span class="k">with</span> <span class="n">mp</span><span class="o">.</span><span class="n">Pool</span><span class="p">(</span><span class="n">processes</span><span class="o">=</span><span class="n">chunks_n</span><span class="p">)</span> <span class="k">as</span> <span class="n">p</span><span class="p">:</span>
         <span class="n">result</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">three_bytes_to_two_ints</span><span class="p">,</span> <span class="n">splitted</span><span class="p">)</span>
@@ -147,9 +144,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">abs_new_filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">new_filename</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">abs_new_filename</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;fits&quot;</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="s2">&quot;Trying to save a .fits file to .bin, check new filename&quot;</span>
-        <span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Trying to save a .fits file to .bin, check new filename&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">filenames</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="nb">list</span><span class="p">:</span>
         <span class="n">filenames</span> <span class="o">=</span> <span class="p">[</span>
             <span class="n">filenames</span><span class="p">,</span>
@@ -159,9 +154,9 @@
     <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="o">.</span><span class="n">tqdm</span><span class="p">(</span><span class="n">filenames</span><span class="p">):</span>
         <span class="n">arr</span> <span class="o">+=</span> <span class="n">nparr_from_binary</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span> <span class="o">/</span> <span class="n">images_n</span>
     <span class="n">hdu</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">PrimaryHDU</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">arr</span><span class="p">)</span>
-    <span class="n">date_and_time</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(</span>
-        <span class="n">tz</span><span class="o">=</span><span class="n">pytz</span><span class="o">.</span><span class="n">timezone</span><span class="p">(</span><span class="s2">&quot;Australia/Perth&quot;</span><span class="p">)</span>
-    <span class="p">)</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">T%H:%M:%S%z&quot;</span><span class="p">)</span>
+    <span class="n">date_and_time</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(</span><span class="n">tz</span><span class="o">=</span><span class="n">pytz</span><span class="o">.</span><span class="n">timezone</span><span class="p">(</span><span class="s2">&quot;Australia/Perth&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span>
+        <span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">T%H:%M:%S%z&quot;</span>
+    <span class="p">)</span>
     <span class="n">hdu</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="s2">&quot;CREATED&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
         <span class="nb">str</span><span class="p">(</span><span class="n">date_and_time</span><span class="p">),</span>
         <span class="s2">&quot;Datetime conversion from bin to fits file (Dome C timezone).&quot;</span><span class="p">,</span>
@@ -183,6 +178,55 @@
 <span class="sd">    Raises:</span>
 <span class="sd">        ValueError: trying to save in a file that does not end with .fits</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">merge_rawfiles_to_fits</span><span class="p">(</span>
+        <span class="n">filenames</span><span class="o">=</span><span class="n">filenames</span><span class="p">,</span>
+        <span class="n">new_filename</span><span class="o">=</span><span class="n">new_filename</span><span class="p">,</span>
+        <span class="n">height</span><span class="o">=</span><span class="n">height</span><span class="p">,</span>
+        <span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">,</span>
+        <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;average&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    abs_new_filename = str(Path(new_filename).absolute())</span>
+<span class="sd">    if abs_new_filename.split(&quot;.&quot;)[-1] != &quot;fits&quot;:</span>
+<span class="sd">        raise ValueError(&quot;Output filename must have a .fits extension.&quot;)</span>
+<span class="sd">    if type(filenames) is not list:</span>
+<span class="sd">        filenames = [</span>
+<span class="sd">            filenames,</span>
+<span class="sd">        ]</span>
+<span class="sd">    images_n = len(filenames)</span>
+<span class="sd">    arr = np.zeros(shape=(height, width))</span>
+<span class="sd">    for filename in tqdm.tqdm(filenames):</span>
+<span class="sd">        with open(filename, mode=&quot;rb&quot;) as file:</span>
+<span class="sd">            buffer = file.read()</span>
+<span class="sd">        data = np.ndarray(shape=(height, width), dtype=&quot;&lt;u2&quot;, buffer=buffer)</span>
+
+<span class="sd">        arr += data / images_n</span>
+<span class="sd">    hdu = fits.PrimaryHDU(data=arr)</span>
+<span class="sd">    date_and_time = datetime.datetime.now().strftime(&quot;%Y-%m-%dT%H:%M:%S%z&quot;)</span>
+<span class="sd">    hdu.header[&quot;CREATED&quot;] = (</span>
+<span class="sd">        str(date_and_time),</span>
+<span class="sd">        &quot;Datetime conversion from bin to fits file (Dome C timezone).&quot;,</span>
+<span class="sd">    )</span>
+<span class="sd">    hdu.writeto(abs_new_filename, overwrite=True)</span>
+<span class="sd">    &quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="merge_rawfiles_to_fits"><a class="viewcode-back" href="../../../micropolarray.processing.html#micropolarray.processing.convert.merge_rawfiles_to_fits">[docs]</a><span class="k">def</span> <span class="nf">merge_rawfiles_to_fits</span><span class="p">(</span>
+    <span class="n">filenames</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">new_filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">height</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">width</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;sum&quot;</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Saves the average or sum of a list of rawfiles to a new fits file.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        filenames (list): list of raw filenames</span>
+<span class="sd">        new_filename (str): new fits filename</span>
+<span class="sd">        height (int): image height in pix</span>
+<span class="sd">        width (int): image width in pix</span>
+<span class="sd">        mode (str): wether to &quot;average&quot; or &quot;sum&quot; the images. Defaults to &quot;sum&quot;.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ValueError: trying to save in a file that does not end with .fits</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">abs_new_filename</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">new_filename</span><span class="p">)</span><span class="o">.</span><span class="n">absolute</span><span class="p">())</span>
     <span class="k">if</span> <span class="n">abs_new_filename</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;fits&quot;</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Output filename must have a .fits extension.&quot;</span><span class="p">)</span>
@@ -196,8 +240,11 @@
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
             <span class="n">buffer</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
         <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;&lt;u2&quot;</span><span class="p">,</span> <span class="n">buffer</span><span class="o">=</span><span class="n">buffer</span><span class="p">)</span>
+        <span class="n">arr</span> <span class="o">+=</span> <span class="n">data</span>
 
-        <span class="n">arr</span> <span class="o">+=</span> <span class="n">data</span> <span class="o">/</span> <span class="n">images_n</span>
+    <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;average&quot;</span><span class="p">:</span>
+        <span class="n">arr</span> <span class="o">/=</span> <span class="n">images_n</span>
+
     <span class="n">hdu</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">PrimaryHDU</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">arr</span><span class="p">)</span>
     <span class="n">date_and_time</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">T%H:%M:%S%z&quot;</span><span class="p">)</span>
     <span class="n">hdu</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="s2">&quot;CREATED&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
@@ -227,9 +274,7 @@
         <span class="n">buffer</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
     <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;&lt;u2&quot;</span><span class="p">,</span> <span class="n">buffer</span><span class="o">=</span><span class="n">buffer</span><span class="p">)</span>
     <span class="n">HDU</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">PrimaryHDU</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
-    <span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span>
-        <span class="n">filename</span>
-    <span class="p">)</span>  <span class="c1"># prevents bug when &quot;../&quot; is in filename</span>
+    <span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>  <span class="c1"># prevents bug when &quot;../&quot; is in filename</span>
     <span class="n">new_filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">pathsep</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">filename</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">+</span> <span class="s2">&quot;.fits&quot;</span>
     <span class="n">HDU</span><span class="o">.</span><span class="n">writeto</span><span class="p">(</span><span class="n">new_filename</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Image successfully saved to &quot;</span><span class="si">{</span><span class="n">new_filename</span><span class="si">}</span><span class="s1">&quot;.&#39;</span><span class="p">)</span>

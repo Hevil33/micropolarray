@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: micropolarray
-Version: 1.1.9
+Version: 1.2.1
 Summary: micropolarizer array data utilities
 Home-page: https://github.com/Hevil33/micropolarray_master
 Author: Hervé Haudemand
@@ -55,6 +55,7 @@ Requires-Dist: wheel
 Requires-Dist: tqdm
 Requires-Dist: pytest
 Requires-Dist: sphinx-rtd-theme
+Requires-Dist: opencv-python-headless
 Provides-Extra: dev
 Requires-Dist: black; extra == "dev"
 Requires-Dist: bumpver; extra == "dev"

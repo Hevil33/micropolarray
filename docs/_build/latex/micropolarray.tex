@@ -64,7 +64,7 @@
 
 
 \title{micropolarray}
-\date{Oct 02, 2023}
+\date{Dec 18, 2023}
 \release{}
 \author{Herve Haudemand}
 \newcommand{\sphinxlogo}{\vbox{}}
@@ -338,6 +338,47 @@ ANTARTICOR ONLY: Sums a set of filenames and converts them to one fits file.
 \sphinxstyleliteralstrong{\sphinxupquote{new\_filename}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} new .fits file name
 
 \end{itemize}
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{merge\_rawfiles\_to\_fits() (in module micropolarray.processing.convert)@\spxentry{merge\_rawfiles\_to\_fits()}\spxextra{in module micropolarray.processing.convert}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{micropolarray.processing:micropolarray.processing.convert.merge_rawfiles_to_fits}}
+\pysigstartsignatures
+\pysiglinewithargsret{\sphinxcode{\sphinxupquote{micropolarray.processing.convert.}}\sphinxbfcode{\sphinxupquote{merge\_rawfiles\_to\_fits}}}{\sphinxparam{\DUrole{n,n}{filenames}\DUrole{p,p}{:}\DUrole{w,w}{  }\DUrole{n,n}{list}}\sphinxparamcomma \sphinxparam{\DUrole{n,n}{new\_filename}\DUrole{p,p}{:}\DUrole{w,w}{  }\DUrole{n,n}{str}}\sphinxparamcomma \sphinxparam{\DUrole{n,n}{height}\DUrole{p,p}{:}\DUrole{w,w}{  }\DUrole{n,n}{int}}\sphinxparamcomma \sphinxparam{\DUrole{n,n}{width}\DUrole{p,p}{:}\DUrole{w,w}{  }\DUrole{n,n}{int}}\sphinxparamcomma \sphinxparam{\DUrole{n,n}{mode}\DUrole{o,o}{=}\DUrole{default_value}{\textquotesingle{}sum\textquotesingle{}}}}{}
+\pysigstopsignatures
+\sphinxAtStartPar
+Saves the average or sum of a list of rawfiles to a new fits file.
+\begin{quote}\begin{description}
+\sphinxlineitem{Parameters}\begin{itemize}
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{filenames}} (\sphinxstyleliteralemphasis{\sphinxupquote{list}}) \textendash{} list of raw filenames
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{new\_filename}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} new fits filename
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{height}} (\sphinxstyleliteralemphasis{\sphinxupquote{int}}) \textendash{} image height in pix
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{width}} (\sphinxstyleliteralemphasis{\sphinxupquote{int}}) \textendash{} image width in pix
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{mode}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} wether to “average” or “sum” the images. Defaults to “sum”.
+
+\end{itemize}
+
+\sphinxlineitem{Raises}
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{ValueError}} \textendash{} trying to save in a file that does not end with .fits
 
 \end{description}\end{quote}
 
@@ -663,7 +704,33 @@ demo\_images{[}3{]} = data{[}y=1, x=1{]}
 
 
 \subsubsection{micropolarray.processing.nrgf module}
-\label{\detokenize{micropolarray.processing:module-micropolarray.processing.nrgf}}\label{\detokenize{micropolarray.processing:micropolarray-processing-nrgf-module}}\index{module@\spxentry{module}!micropolarray.processing.nrgf@\spxentry{micropolarray.processing.nrgf}}\index{micropolarray.processing.nrgf@\spxentry{micropolarray.processing.nrgf}!module@\spxentry{module}}\index{find\_occulter\_position() (in module micropolarray.processing.nrgf)@\spxentry{find\_occulter\_position()}\spxextra{in module micropolarray.processing.nrgf}}
+\label{\detokenize{micropolarray.processing:module-micropolarray.processing.nrgf}}\label{\detokenize{micropolarray.processing:micropolarray-processing-nrgf-module}}\index{module@\spxentry{module}!micropolarray.processing.nrgf@\spxentry{micropolarray.processing.nrgf}}\index{micropolarray.processing.nrgf@\spxentry{micropolarray.processing.nrgf}!module@\spxentry{module}}\index{find\_occulter\_hough() (in module micropolarray.processing.nrgf)@\spxentry{find\_occulter\_hough()}\spxextra{in module micropolarray.processing.nrgf}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{micropolarray.processing:micropolarray.processing.nrgf.find_occulter_hough}}
+\pysigstartsignatures
+\pysiglinewithargsret{\sphinxcode{\sphinxupquote{micropolarray.processing.nrgf.}}\sphinxbfcode{\sphinxupquote{find\_occulter\_hough}}}{\sphinxparam{\DUrole{n,n}{data}\DUrole{p,p}{:}\DUrole{w,w}{  }\DUrole{n,n}{array}}\sphinxparamcomma \sphinxparam{\DUrole{o,o}{**}\DUrole{n,n}{kwargs}}}{{ $\rightarrow$ tuple}}
+\pysigstopsignatures
+\sphinxAtStartPar
+Uses Hough Gradient from cv2 and computes the coronagraph occulter coordinates. Returns Y, X, Radius of the occulter.
+\begin{quote}\begin{description}
+\sphinxlineitem{Parameters}
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{data}} (\sphinxstyleliteralemphasis{\sphinxupquote{np.array}}) \textendash{} input data
+
+\sphinxlineitem{Returns}
+\sphinxAtStartPar
+occulter y, x, r
+
+\sphinxlineitem{Return type}
+\sphinxAtStartPar
+tuple
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{find\_occulter\_position() (in module micropolarray.processing.nrgf)@\spxentry{find\_occulter\_position()}\spxextra{in module micropolarray.processing.nrgf}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{micropolarray.processing:micropolarray.processing.nrgf.find_occulter_position}}
@@ -792,7 +859,7 @@ EXPERIMENTAL DO NOT USE, for improving fitting on occulter position
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{micropolarray.processing:micropolarray.processing.nrgf.roi_from_polar}}
 \pysigstartsignatures
-\pysiglinewithargsret{\sphinxcode{\sphinxupquote{micropolarray.processing.nrgf.}}\sphinxbfcode{\sphinxupquote{roi\_from\_polar}}}{\sphinxparam{\DUrole{n,n}{data}\DUrole{p,p}{:}\DUrole{w,w}{  }\DUrole{n,n}{array}}\sphinxparamcomma \sphinxparam{\DUrole{n,n}{center}\DUrole{p,p}{:}\DUrole{w,w}{  }\DUrole{n,n}{list\DUrole{w,w}{  }\DUrole{p,p}{|}\DUrole{w,w}{  }None}\DUrole{w,w}{  }\DUrole{o,o}{=}\DUrole{w,w}{  }\DUrole{default_value}{None}}\sphinxparamcomma \sphinxparam{\DUrole{n,n}{rho}\DUrole{p,p}{:}\DUrole{w,w}{  }\DUrole{n,n}{list\DUrole{w,w}{  }\DUrole{p,p}{|}\DUrole{w,w}{  }None}\DUrole{w,w}{  }\DUrole{o,o}{=}\DUrole{w,w}{  }\DUrole{default_value}{None}}\sphinxparamcomma \sphinxparam{\DUrole{n,n}{theta}\DUrole{o,o}{=}\DUrole{default_value}{{[}0, 360{]}}}\sphinxparamcomma \sphinxparam{\DUrole{n,n}{fill}\DUrole{p,p}{:}\DUrole{w,w}{  }\DUrole{n,n}{float}\DUrole{w,w}{  }\DUrole{o,o}{=}\DUrole{w,w}{  }\DUrole{default_value}{0.0}}\sphinxparamcomma \sphinxparam{\DUrole{n,n}{return\_boolean}\DUrole{o,o}{=}\DUrole{default_value}{False}}}{{ $\rightarrow$ array}}
+\pysiglinewithargsret{\sphinxcode{\sphinxupquote{micropolarray.processing.nrgf.}}\sphinxbfcode{\sphinxupquote{roi\_from\_polar}}}{\sphinxparam{\DUrole{n,n}{data}\DUrole{p,p}{:}\DUrole{w,w}{  }\DUrole{n,n}{array}}\sphinxparamcomma \sphinxparam{\DUrole{n,n}{center}\DUrole{p,p}{:}\DUrole{w,w}{  }\DUrole{n,n}{list\DUrole{w,w}{  }\DUrole{p,p}{|}\DUrole{w,w}{  }None}\DUrole{w,w}{  }\DUrole{o,o}{=}\DUrole{w,w}{  }\DUrole{default_value}{None}}\sphinxparamcomma \sphinxparam{\DUrole{n,n}{rho}\DUrole{p,p}{:}\DUrole{w,w}{  }\DUrole{n,n}{list\DUrole{w,w}{  }\DUrole{p,p}{|}\DUrole{w,w}{  }None}\DUrole{w,w}{  }\DUrole{o,o}{=}\DUrole{w,w}{  }\DUrole{default_value}{None}}\sphinxparamcomma \sphinxparam{\DUrole{n,n}{theta}\DUrole{o,o}{=}\DUrole{default_value}{{[}0, 360{]}}}\sphinxparamcomma \sphinxparam{\DUrole{n,n}{fill}\DUrole{p,p}{:}\DUrole{w,w}{  }\DUrole{n,n}{float}\DUrole{w,w}{  }\DUrole{o,o}{=}\DUrole{w,w}{  }\DUrole{default_value}{0.0}}\sphinxparamcomma \sphinxparam{\DUrole{n,n}{return\_boolean}\DUrole{p,p}{:}\DUrole{w,w}{  }\DUrole{n,n}{bool}\DUrole{w,w}{  }\DUrole{o,o}{=}\DUrole{w,w}{  }\DUrole{default_value}{False}}\sphinxparamcomma \sphinxparam{\DUrole{n,n}{include\_superpixels}\DUrole{p,p}{:}\DUrole{w,w}{  }\DUrole{n,n}{bool}\DUrole{w,w}{  }\DUrole{o,o}{=}\DUrole{w,w}{  }\DUrole{default_value}{True}}}{{ $\rightarrow$ array}}
 \pysigstopsignatures
 \sphinxAtStartPar
 Returns the input array in a circular selection, otherwise an arbitrary number. If a pixel is not in the selection the ENTIRE superpixel is considered out of selection. If return\_boolean is True then a boolean array is returned instead (useful for mean/stdev operations).
@@ -821,6 +888,10 @@ Returns the input array in a circular selection, otherwise an arbitrary number. 
 \item {} 
 \sphinxAtStartPar
 \sphinxstyleliteralstrong{\sphinxupquote{return\_boolean}} (\sphinxstyleliteralemphasis{\sphinxupquote{bool}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{optional}}) \textendash{} if set to true, function returns a boolean array of the roi. Defaults to False.
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{include\_superpixels}} (\sphinxstyleliteralemphasis{\sphinxupquote{bool}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{optional}}) \textendash{} if set to true then exclude entire superpixel if one pixel is in the occulter
 
 \end{itemize}
 
@@ -886,7 +957,7 @@ Fast rebinning function for the micropolarray image.
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{micropolarray.processing:micropolarray.processing.rebin.micropolarray_rebin}}
 \pysigstartsignatures
-\pysiglinewithargsret{\sphinxcode{\sphinxupquote{micropolarray.processing.rebin.}}\sphinxbfcode{\sphinxupquote{micropolarray\_rebin}}}{\sphinxparam{\DUrole{n,n}{data}\DUrole{p,p}{:}\DUrole{w,w}{  }\DUrole{n,n}{ndarray}}\sphinxparamcomma \sphinxparam{\DUrole{n,n}{height}\DUrole{p,p}{:}\DUrole{w,w}{  }\DUrole{n,n}{int}}\sphinxparamcomma \sphinxparam{\DUrole{n,n}{width}\DUrole{p,p}{:}\DUrole{w,w}{  }\DUrole{n,n}{int}}\sphinxparamcomma \sphinxparam{\DUrole{n,n}{binning}\DUrole{o,o}{=}\DUrole{default_value}{2}}}{}
+\pysiglinewithargsret{\sphinxcode{\sphinxupquote{micropolarray.processing.rebin.}}\sphinxbfcode{\sphinxupquote{micropolarray\_rebin}}}{\sphinxparam{\DUrole{n,n}{data}\DUrole{p,p}{:}\DUrole{w,w}{  }\DUrole{n,n}{ndarray}}\sphinxparamcomma \sphinxparam{\DUrole{n,n}{binning}\DUrole{o,o}{=}\DUrole{default_value}{2}}}{}
 \pysigstopsignatures
 \sphinxAtStartPar
 Wrapper for the faster rebinning donw with numba. First deletes last row/column until binning is possible, then calls binning on the result shape.
@@ -936,7 +1007,7 @@ ndarray
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{micropolarray.processing:micropolarray.processing.rebin.standard_jitrebin}}
 \pysigstartsignatures
-\pysiglinewithargsret{\sphinxcode{\sphinxupquote{micropolarray.processing.rebin.}}\sphinxbfcode{\sphinxupquote{standard\_jitrebin}}}{\sphinxparam{\DUrole{n,n}{data}}\sphinxparamcomma \sphinxparam{\DUrole{n,n}{height}}\sphinxparamcomma \sphinxparam{\DUrole{n,n}{width}}\sphinxparamcomma \sphinxparam{\DUrole{n,n}{binning}\DUrole{o,o}{=}\DUrole{default_value}{2}}}{}
+\pysiglinewithargsret{\sphinxcode{\sphinxupquote{micropolarray.processing.rebin.}}\sphinxbfcode{\sphinxupquote{standard\_jitrebin}}}{\sphinxparam{\DUrole{n,n}{data}}\sphinxparamcomma \sphinxparam{\DUrole{n,n}{new\_height}}\sphinxparamcomma \sphinxparam{\DUrole{n,n}{new\_width}}\sphinxparamcomma \sphinxparam{\DUrole{n,n}{binning}\DUrole{o,o}{=}\DUrole{default_value}{2}}}{}
 \pysigstopsignatures
 \end{fulllineitems}
 

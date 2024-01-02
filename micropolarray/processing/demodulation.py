@@ -184,6 +184,7 @@ def calculate_demodulation_tensor(
     dark_filename: str = None,
     flat_filename: str = None,
     normalizing_S=None,
+    tk_boundary: list = [0.5, 0.1, 1.0 - 1.0e-6],
     DEBUG: bool = False,
 ):
     """Calculates the demodulation tensor images and saves them. Requires a set of images with different polarizations to fit a Malus curve model.
@@ -200,6 +201,7 @@ def calculate_demodulation_tensor(
         dark_filename (str, optional): Dark image filename to correct input images. Defaults to None.
         flat_filename (str, optional): Flat image filename to correct input images. Defaults to None.
         normalizing_S (float or np.ndarray, optional): maximum signal used to normalize single pixel signal. If not set will be estimated as the 4sigma of the signal distribution.
+        tk_boundary (list): if provided, sets the transmittancy [initial guess, boundary_inf, boundary_sup] of the Malus curve (max value). Defaults to [0.5, 0.1, 1.-1.e-6].
 
     Raises:
         ValueError: Raised if any among [0, 45, 90, -45] is not included in the input polarizations.
@@ -485,6 +487,7 @@ def calculate_demodulation_tensor(
             splitted_occulter[i],
             polarizer_orientations,
             rad_micropol_phases_previsions,
+            tk_boundary,
             DEBUG,
         ]
         for i in range(chunks_n_y * chunks_n_x)
@@ -619,6 +622,7 @@ def compute_demodulation_by_chunk(
     splitted_occulter_flag,
     polarizer_orientations,
     rad_micropol_phases_previsions,
+    tk_boundary,
     DEBUG,
 ):
     """Utility function to parallelize calculations."""
@@ -647,7 +651,7 @@ def compute_demodulation_by_chunk(
         rad_micropol_phases_previsions, dtype=float
     )
     polarizations_rad = np.deg2rad(polarizer_orientations)
-    tk_prediction = 0.5
+    tk_prediction = tk_boundary[0]
     efficiency_prediction = 0.4
 
     all_zeros = np.zeros(shape=(num_of_points))
@@ -676,7 +680,7 @@ def compute_demodulation_by_chunk(
     predictions[:, 2] = rad_micropol_phases_previsions  # Angle prediction
 
     bounds = np.zeros(shape=(N_PIXELS_IN_SUPERPIX, 2, N_MALUS_PARAMS))
-    bounds[:, 0, 0], bounds[:, 1, 0] = 0.1, 0.9999999  # Throughput bounds
+    bounds[:, 0, 0], bounds[:, 1, 0] = tk_boundary[1:]  # Throughput bounds
     bounds[:, 0, 1], bounds[:, 1, 1] = 0.1, 0.9999999  # Efficiency bounds
     bounds[:, 0, 2] = rad_micropol_phases_previsions - 15  # Lower angle bounds
     bounds[:, 1, 2] = rad_micropol_phases_previsions + 15  # Upper angle bounds
@@ -684,10 +688,10 @@ def compute_demodulation_by_chunk(
     # Fit for each superpixel. Use theoretical demodulation matrix for
     # occulter if present.
     if DEBUG:
-        x_start, x_end = 100, 110
+        x_start, x_end = 100, 150
         # x_start, x_end = 500, 510
         # x_start, x_end = 0, 2
-        y_start, y_end = 100, 110
+        y_start, y_end = 100, 150
         # y_start, y_end = 500, 510
         # y_start, y_end = 0, 2
     else:
@@ -766,7 +770,7 @@ def compute_demodulation_by_chunk(
                         ax.plot(
                             np.rad2deg(x),
                             Malus(x, *superpix_params[i]),
-                            label=f"t = {superpix_params[i,0]:2.2f}, e = {superpix_params[i, 1]:2.2f}, phi = {np.rad2deg(superpix_params[i, 2]):2.2f}",
+                            label=f"t = {superpix_params[i,0]:2.4f}, e = {superpix_params[i, 1]:2.4f}, phi = {np.rad2deg(superpix_params[i, 2]):2.4f}",
                             color=colors[i],
                         )
                         ax.set_title(f"super_y = {super_y}, super_x = {super_x},")

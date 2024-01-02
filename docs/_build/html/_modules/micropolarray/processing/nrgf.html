@@ -73,6 +73,7 @@
 <span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">lru_cache</span>
 <span class="kn">from</span> <span class="nn">logging</span> <span class="kn">import</span> <span class="n">info</span>
 
+<span class="kn">import</span> <span class="nn">cv2</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">numpy.lib.stride_tricks</span> <span class="kn">import</span> <span class="n">as_strided</span>
@@ -85,7 +86,8 @@
     <span class="n">rho</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">theta</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">360</span><span class="p">],</span>
     <span class="n">fill</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
-    <span class="n">return_boolean</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">return_boolean</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">include_superpixels</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns the input array in a circular selection, otherwise an arbitrary number. If a pixel is not in the selection the ENTIRE superpixel is considered out of selection. If return_boolean is True then a boolean array is returned instead (useful for mean/stdev operations).</span>
 
@@ -96,6 +98,7 @@
 <span class="sd">        theta (list, optional): polar selection angle, 0 is horizonta, anti-clockwise direction. Defaults to [0, 360].</span>
 <span class="sd">        fill (float, optional): number to fill the outer selection. Defaults to 0.0.</span>
 <span class="sd">        return_boolean (bool, optional): if set to true, function returns a boolean array of the roi. Defaults to False.</span>
+<span class="sd">        include_superpixels (bool, optional): if set to true then exclude entire superpixel if one pixel is in the occulter</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        np.array: array containing the input data inside the selection, and fill otherwise</span>
@@ -105,32 +108,44 @@
     <span class="n">rho_min</span><span class="p">,</span> <span class="n">rho_max</span> <span class="o">=</span> <span class="n">rho</span>
     <span class="k">if</span> <span class="n">center</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">center</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">height</span> <span class="o">/</span> <span class="mi">2</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">width</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">center</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">center</span><span class="p">)</span>
+
     <span class="k">if</span> <span class="n">rho</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">rho_max</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">([</span><span class="n">height</span> <span class="o">-</span> <span class="n">center</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">width</span> <span class="o">-</span> <span class="n">center</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
         <span class="n">rho</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">rho_max</span><span class="p">]</span>
 
-    <span class="c1"># make a map that is HALF THE SIZE, do condition, then resize to make all the superpixel outside selection</span>
+    <span class="k">if</span> <span class="n">include_superpixels</span><span class="p">:</span>
+        <span class="c1"># make a map that is HALF THE SIZE, do condition, then resize to make all the superpixel outside selection</span>
+        <span class="n">height</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">height</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">width</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">width</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">rho_min</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">rho_min</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">rho_max</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">rho_max</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">center</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">center</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">center</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">center</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+
     <span class="n">rho_coords</span><span class="p">,</span> <span class="n">phi_coords</span> <span class="o">=</span> <span class="n">map_polar_coordinates</span><span class="p">(</span>
-        <span class="nb">int</span><span class="p">(</span><span class="n">height</span> <span class="o">/</span> <span class="mi">2</span><span class="p">),</span>
-        <span class="nb">int</span><span class="p">(</span><span class="n">width</span> <span class="o">/</span> <span class="mi">2</span><span class="p">),</span>
-        <span class="nb">tuple</span><span class="p">([</span><span class="nb">int</span><span class="p">(</span><span class="n">center</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="mi">2</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">center</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)]),</span>
+        <span class="n">height</span><span class="p">,</span>
+        <span class="n">width</span><span class="p">,</span>
+        <span class="nb">tuple</span><span class="p">([</span><span class="n">center</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">center</span><span class="p">[</span><span class="mi">1</span><span class="p">]]),</span>
     <span class="p">)</span>  <span class="c1"># cast it to a tuple (which is hashable)</span>
 
     <span class="n">theta_condition</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span>
         <span class="n">phi_coords</span> <span class="o">&gt;=</span> <span class="n">theta_min</span><span class="p">,</span> <span class="n">phi_coords</span> <span class="o">&lt;</span> <span class="n">theta_max</span>
     <span class="p">)</span>
     <span class="n">rho_condition</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span>
-        <span class="n">rho_coords</span> <span class="o">&gt;</span> <span class="n">rho_min</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">rho_coords</span> <span class="o">&lt;=</span> <span class="n">rho_max</span> <span class="o">/</span> <span class="mi">2</span>
+        <span class="n">rho_coords</span> <span class="o">&gt;</span> <span class="n">rho_min</span><span class="p">,</span> <span class="n">rho_coords</span> <span class="o">&lt;=</span> <span class="n">rho_max</span>
     <span class="p">)</span>  <span class="c1"># half the radius because half the map</span>
     <span class="n">condition</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">rho_condition</span><span class="p">,</span> <span class="n">theta_condition</span><span class="p">)</span>
 
-    <span class="c1"># resize condition to correct shape</span>
-    <span class="n">condition</span> <span class="o">=</span> <span class="n">condition</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">include_superpixels</span><span class="p">:</span>
+        <span class="c1"># resize condition to correct shape</span>
+        <span class="n">condition</span> <span class="o">=</span> <span class="n">condition</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">return_boolean</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">condition</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">condition</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">fill</span><span class="p">)</span></div>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">condition</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">fill</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="tile_double"><a class="viewcode-back" href="../../../micropolarray.processing.html#micropolarray.processing.nrgf.tile_double">[docs]</a><span class="k">def</span> <span class="nf">tile_double</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
@@ -229,6 +244,51 @@
             <span class="n">newdata</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">condition</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">newdata</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">newdata</span></div>
+
+
+<div class="viewcode-block" id="find_occulter_hough"><a class="viewcode-back" href="../../../micropolarray.processing.html#micropolarray.processing.nrgf.find_occulter_hough">[docs]</a><span class="k">def</span> <span class="nf">find_occulter_hough</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Uses Hough Gradient from cv2 and computes the coronagraph occulter coordinates. Returns Y, X, Radius of the occulter.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        data (np.array): input data</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        tuple: occulter y, x, r</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">info</span><span class="p">(</span><span class="s2">&quot;Searching occulter, this may take a while...&quot;</span><span class="p">)</span>
+    <span class="n">minr</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">maxr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="mi">255</span> <span class="o">*</span> <span class="n">data</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="n">blurred</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">medianBlur</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">&quot;uint8&quot;</span><span class="p">),</span> <span class="mi">5</span><span class="p">)</span>
+    <span class="n">accumulator</span> <span class="o">=</span> <span class="mi">10</span>
+    <span class="n">circles</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">HoughCircles</span><span class="p">(</span>
+        <span class="n">image</span><span class="o">=</span><span class="n">blurred</span><span class="p">,</span>
+        <span class="n">method</span><span class="o">=</span><span class="n">cv2</span><span class="o">.</span><span class="n">HOUGH_GRADIENT</span><span class="p">,</span>
+        <span class="n">dp</span><span class="o">=</span><span class="mf">1.2</span><span class="p">,</span>
+        <span class="n">minDist</span><span class="o">=</span><span class="n">maxr</span><span class="p">,</span>
+        <span class="n">param1</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span>
+        <span class="n">param2</span><span class="o">=</span><span class="n">accumulator</span><span class="p">,</span>
+        <span class="n">minRadius</span><span class="o">=</span><span class="n">minr</span><span class="p">,</span>
+        <span class="n">maxRadius</span><span class="o">=</span><span class="n">maxr</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">circles</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">circles</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="si">}</span><span class="s2"> circles found, retrying...&quot;</span><span class="p">)</span>
+            <span class="n">accumulator</span> <span class="o">+=</span> <span class="mi">5</span>
+            <span class="n">circles</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">HoughCircles</span><span class="p">(</span>
+                <span class="n">image</span><span class="o">=</span><span class="n">blurred</span><span class="p">,</span>
+                <span class="n">method</span><span class="o">=</span><span class="n">cv2</span><span class="o">.</span><span class="n">HOUGH_GRADIENT</span><span class="p">,</span>
+                <span class="n">dp</span><span class="o">=</span><span class="mf">1.2</span><span class="p">,</span>
+                <span class="n">minDist</span><span class="o">=</span><span class="n">maxr</span><span class="p">,</span>
+                <span class="n">param1</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span>
+                <span class="n">param2</span><span class="o">=</span><span class="n">accumulator</span><span class="p">,</span>
+                <span class="n">minRadius</span><span class="o">=</span><span class="n">minr</span><span class="p">,</span>
+                <span class="n">maxRadius</span><span class="o">=</span><span class="n">maxr</span><span class="p">,</span>
+            <span class="p">)</span>
+    <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Failed to find the occulter.&quot;</span><span class="p">)</span>
+    <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">r</span> <span class="o">=</span> <span class="n">circles</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">r</span>  <span class="c1"># BEWARE OF THIS REVERSION: Y THEN X</span></div>
 
 
 <div class="viewcode-block" id="find_occulter_position"><a class="viewcode-back" href="../../../micropolarray.processing.html#micropolarray.processing.nrgf.find_occulter_position">[docs]</a><span class="k">def</span> <span class="nf">find_occulter_position</span><span class="p">(</span>
