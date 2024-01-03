@@ -744,7 +744,7 @@ def compute_demodulation_by_chunk(
                             bounds=bounds[pixel_num],
                         )
                         fit_success = True
-                    except RuntimeError:
+                    except:  # catches all exceptions
                         fit_success = False
                         break
 

@@ -255,6 +255,7 @@
     <span class="n">dark_filename</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">flat_filename</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">normalizing_S</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">tk_boundary</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="mf">1.0e-6</span><span class="p">],</span>
     <span class="n">DEBUG</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculates the demodulation tensor images and saves them. Requires a set of images with different polarizations to fit a Malus curve model.</span>
@@ -271,6 +272,7 @@
 <span class="sd">        dark_filename (str, optional): Dark image filename to correct input images. Defaults to None.</span>
 <span class="sd">        flat_filename (str, optional): Flat image filename to correct input images. Defaults to None.</span>
 <span class="sd">        normalizing_S (float or np.ndarray, optional): maximum signal used to normalize single pixel signal. If not set will be estimated as the 4sigma of the signal distribution.</span>
+<span class="sd">        tk_boundary (list): if provided, sets the transmittancy [initial guess, boundary_inf, boundary_sup] of the Malus curve (max value). Defaults to [0.5, 0.1, 1.-1.e-6].</span>
 
 <span class="sd">    Raises:</span>
 <span class="sd">        ValueError: Raised if any among [0, 45, 90, -45] is not included in the input polarizations.</span>
@@ -556,6 +558,7 @@
             <span class="n">splitted_occulter</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
             <span class="n">polarizer_orientations</span><span class="p">,</span>
             <span class="n">rad_micropol_phases_previsions</span><span class="p">,</span>
+            <span class="n">tk_boundary</span><span class="p">,</span>
             <span class="n">DEBUG</span><span class="p">,</span>
         <span class="p">]</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">chunks_n_y</span> <span class="o">*</span> <span class="n">chunks_n_x</span><span class="p">)</span>
@@ -690,6 +693,7 @@
     <span class="n">splitted_occulter_flag</span><span class="p">,</span>
     <span class="n">polarizer_orientations</span><span class="p">,</span>
     <span class="n">rad_micropol_phases_previsions</span><span class="p">,</span>
+    <span class="n">tk_boundary</span><span class="p">,</span>
     <span class="n">DEBUG</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Utility function to parallelize calculations.&quot;&quot;&quot;</span>
@@ -718,7 +722,7 @@
         <span class="n">rad_micropol_phases_previsions</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span>
     <span class="p">)</span>
     <span class="n">polarizations_rad</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">polarizer_orientations</span><span class="p">)</span>
-    <span class="n">tk_prediction</span> <span class="o">=</span> <span class="mf">0.5</span>
+    <span class="n">tk_prediction</span> <span class="o">=</span> <span class="n">tk_boundary</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="n">efficiency_prediction</span> <span class="o">=</span> <span class="mf">0.4</span>
 
     <span class="n">all_zeros</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">num_of_points</span><span class="p">))</span>
@@ -747,7 +751,7 @@
     <span class="n">predictions</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">rad_micropol_phases_previsions</span>  <span class="c1"># Angle prediction</span>
 
     <span class="n">bounds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">N_PIXELS_IN_SUPERPIX</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">N_MALUS_PARAMS</span><span class="p">))</span>
-    <span class="n">bounds</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">bounds</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.9999999</span>  <span class="c1"># Throughput bounds</span>
+    <span class="n">bounds</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">bounds</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">tk_boundary</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>  <span class="c1"># Throughput bounds</span>
     <span class="n">bounds</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">bounds</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.9999999</span>  <span class="c1"># Efficiency bounds</span>
     <span class="n">bounds</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">rad_micropol_phases_previsions</span> <span class="o">-</span> <span class="mi">15</span>  <span class="c1"># Lower angle bounds</span>
     <span class="n">bounds</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">rad_micropol_phases_previsions</span> <span class="o">+</span> <span class="mi">15</span>  <span class="c1"># Upper angle bounds</span>
@@ -755,10 +759,10 @@
     <span class="c1"># Fit for each superpixel. Use theoretical demodulation matrix for</span>
     <span class="c1"># occulter if present.</span>
     <span class="k">if</span> <span class="n">DEBUG</span><span class="p">:</span>
-        <span class="n">x_start</span><span class="p">,</span> <span class="n">x_end</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">110</span>
+        <span class="n">x_start</span><span class="p">,</span> <span class="n">x_end</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">150</span>
         <span class="c1"># x_start, x_end = 500, 510</span>
         <span class="c1"># x_start, x_end = 0, 2</span>
-        <span class="n">y_start</span><span class="p">,</span> <span class="n">y_end</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">110</span>
+        <span class="n">y_start</span><span class="p">,</span> <span class="n">y_end</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">150</span>
         <span class="c1"># y_start, y_end = 500, 510</span>
         <span class="c1"># y_start, y_end = 0, 2</span>
     <span class="k">else</span><span class="p">:</span>
@@ -837,7 +841,7 @@
                         <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
                             <span class="n">np</span><span class="o">.</span><span class="n">rad2deg</span><span class="p">(</span><span class="n">x</span><span class="p">),</span>
                             <span class="n">Malus</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">*</span><span class="n">superpix_params</span><span class="p">[</span><span class="n">i</span><span class="p">]),</span>
-                            <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;t = </span><span class="si">{</span><span class="n">superpix_params</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">2.2f</span><span class="si">}</span><span class="s2">, e = </span><span class="si">{</span><span class="n">superpix_params</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">2.2f</span><span class="si">}</span><span class="s2">, phi = </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">rad2deg</span><span class="p">(</span><span class="n">superpix_params</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">])</span><span class="si">:</span><span class="s2">2.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                            <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;t = </span><span class="si">{</span><span class="n">superpix_params</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">2.4f</span><span class="si">}</span><span class="s2">, e = </span><span class="si">{</span><span class="n">superpix_params</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">2.4f</span><span class="si">}</span><span class="s2">, phi = </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">rad2deg</span><span class="p">(</span><span class="n">superpix_params</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">])</span><span class="si">:</span><span class="s2">2.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
                             <span class="n">color</span><span class="o">=</span><span class="n">colors</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
                         <span class="p">)</span>
                         <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;super_y = </span><span class="si">{</span><span class="n">super_y</span><span class="si">}</span><span class="s2">, super_x = </span><span class="si">{</span><span class="n">super_x</span><span class="si">}</span><span class="s2">,&quot;</span><span class="p">)</span>
