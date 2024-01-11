@@ -6,10 +6,10 @@
 \indexentry{micropolarray.processing.congrid@\spxentry{micropolarray.processing.congrid}!module@\spxentry{module}|hyperpage}{2}
 \indexentry{congrid() (in module micropolarray.processing.congrid)@\spxentry{congrid()}\spxextra{in module micropolarray.processing.congrid}|hyperpage}{2}
 \indexentry{micropolarray\_jitcongrid() (in module micropolarray.processing.congrid)@\spxentry{micropolarray\_jitcongrid()}\spxextra{in module micropolarray.processing.congrid}|hyperpage}{2}
-\indexentry{module@\spxentry{module}!micropolarray.processing.convert@\spxentry{micropolarray.processing.convert}|hyperpage}{2}
-\indexentry{micropolarray.processing.convert@\spxentry{micropolarray.processing.convert}!module@\spxentry{module}|hyperpage}{2}
-\indexentry{average\_rawfiles\_to\_fits() (in module micropolarray.processing.convert)@\spxentry{average\_rawfiles\_to\_fits()}\spxextra{in module micropolarray.processing.convert}|hyperpage}{2}
-\indexentry{convert\_rawfile\_to\_fits() (in module micropolarray.processing.convert)@\spxentry{convert\_rawfile\_to\_fits()}\spxextra{in module micropolarray.processing.convert}|hyperpage}{2}
+\indexentry{module@\spxentry{module}!micropolarray.processing.convert@\spxentry{micropolarray.processing.convert}|hyperpage}{3}
+\indexentry{micropolarray.processing.convert@\spxentry{micropolarray.processing.convert}!module@\spxentry{module}|hyperpage}{3}
+\indexentry{average\_rawfiles\_to\_fits() (in module micropolarray.processing.convert)@\spxentry{average\_rawfiles\_to\_fits()}\spxextra{in module micropolarray.processing.convert}|hyperpage}{3}
+\indexentry{convert\_rawfile\_to\_fits() (in module micropolarray.processing.convert)@\spxentry{convert\_rawfile\_to\_fits()}\spxextra{in module micropolarray.processing.convert}|hyperpage}{3}
 \indexentry{convert\_set() (in module micropolarray.processing.convert)@\spxentry{convert\_set()}\spxextra{in module micropolarray.processing.convert}|hyperpage}{3}
 \indexentry{merge\_rawfiles\_to\_fits() (in module micropolarray.processing.convert)@\spxentry{merge\_rawfiles\_to\_fits()}\spxextra{in module micropolarray.processing.convert}|hyperpage}{3}
 \indexentry{nparr\_from\_binary() (in module micropolarray.processing.convert)@\spxentry{nparr\_from\_binary()}\spxextra{in module micropolarray.processing.convert}|hyperpage}{3}
@@ -21,9 +21,9 @@
 \indexentry{rebin() (micropolarray.processing.demodulation.Demodulator method)@\spxentry{rebin()}\spxextra{micropolarray.processing.demodulation.Demodulator method}|hyperpage}{4}
 \indexentry{rot90() (micropolarray.processing.demodulation.Demodulator method)@\spxentry{rot90()}\spxextra{micropolarray.processing.demodulation.Demodulator method}|hyperpage}{4}
 \indexentry{show() (micropolarray.processing.demodulation.Demodulator method)@\spxentry{show()}\spxextra{micropolarray.processing.demodulation.Demodulator method}|hyperpage}{4}
-\indexentry{Malus() (in module micropolarray.processing.demodulation)@\spxentry{Malus()}\spxextra{in module micropolarray.processing.demodulation}|hyperpage}{4}
-\indexentry{calculate\_demodulation\_tensor() (in module micropolarray.processing.demodulation)@\spxentry{calculate\_demodulation\_tensor()}\spxextra{in module micropolarray.processing.demodulation}|hyperpage}{4}
-\indexentry{compute\_demodulation\_by\_chunk() (in module micropolarray.processing.demodulation)@\spxentry{compute\_demodulation\_by\_chunk()}\spxextra{in module micropolarray.processing.demodulation}|hyperpage}{5}
+\indexentry{Malus() (in module micropolarray.processing.demodulation)@\spxentry{Malus()}\spxextra{in module micropolarray.processing.demodulation}|hyperpage}{5}
+\indexentry{calculate\_demodulation\_tensor() (in module micropolarray.processing.demodulation)@\spxentry{calculate\_demodulation\_tensor()}\spxextra{in module micropolarray.processing.demodulation}|hyperpage}{5}
+\indexentry{compute\_demodulation\_by\_chunk() (in module micropolarray.processing.demodulation)@\spxentry{compute\_demodulation\_by\_chunk()}\spxextra{in module micropolarray.processing.demodulation}|hyperpage}{6}
 \indexentry{module@\spxentry{module}!micropolarray.processing.demosaic@\spxentry{micropolarray.processing.demosaic}|hyperpage}{6}
 \indexentry{micropolarray.processing.demosaic@\spxentry{micropolarray.processing.demosaic}!module@\spxentry{module}|hyperpage}{6}
 \indexentry{demosaic() (in module micropolarray.processing.demosaic)@\spxentry{demosaic()}\spxextra{in module micropolarray.processing.demosaic}|hyperpage}{6}
@@ -38,7 +38,7 @@
 \indexentry{micropolarray.processing.nrgf@\spxentry{micropolarray.processing.nrgf}!module@\spxentry{module}|hyperpage}{6}
 \indexentry{find\_occulter\_hough() (in module micropolarray.processing.nrgf)@\spxentry{find\_occulter\_hough()}\spxextra{in module micropolarray.processing.nrgf}|hyperpage}{6}
 \indexentry{find\_occulter\_position() (in module micropolarray.processing.nrgf)@\spxentry{find\_occulter\_position()}\spxextra{in module micropolarray.processing.nrgf}|hyperpage}{6}
-\indexentry{map\_polar\_coordinates() (in module micropolarray.processing.nrgf)@\spxentry{map\_polar\_coordinates()}\spxextra{in module micropolarray.processing.nrgf}|hyperpage}{6}
+\indexentry{map\_polar\_coordinates() (in module micropolarray.processing.nrgf)@\spxentry{map\_polar\_coordinates()}\spxextra{in module micropolarray.processing.nrgf}|hyperpage}{7}
 \indexentry{nrgf() (in module micropolarray.processing.nrgf)@\spxentry{nrgf()}\spxextra{in module micropolarray.processing.nrgf}|hyperpage}{7}
 \indexentry{reject\_outliers() (in module micropolarray.processing.nrgf)@\spxentry{reject\_outliers()}\spxextra{in module micropolarray.processing.nrgf}|hyperpage}{7}
 \indexentry{remove\_outliers\_simple() (in module micropolarray.processing.nrgf)@\spxentry{remove\_outliers\_simple()}\spxextra{in module micropolarray.processing.nrgf}|hyperpage}{7}
@@ -51,14 +51,14 @@
 \indexentry{micropolarray\_jitrebin\_old() (in module micropolarray.processing.rebin)@\spxentry{micropolarray\_jitrebin\_old()}\spxextra{in module micropolarray.processing.rebin}|hyperpage}{8}
 \indexentry{micropolarray\_rebin() (in module micropolarray.processing.rebin)@\spxentry{micropolarray\_rebin()}\spxextra{in module micropolarray.processing.rebin}|hyperpage}{8}
 \indexentry{print\_trimming\_info() (in module micropolarray.processing.rebin)@\spxentry{print\_trimming\_info()}\spxextra{in module micropolarray.processing.rebin}|hyperpage}{8}
-\indexentry{standard\_jitrebin() (in module micropolarray.processing.rebin)@\spxentry{standard\_jitrebin()}\spxextra{in module micropolarray.processing.rebin}|hyperpage}{8}
-\indexentry{standard\_rebin() (in module micropolarray.processing.rebin)@\spxentry{standard\_rebin()}\spxextra{in module micropolarray.processing.rebin}|hyperpage}{8}
+\indexentry{standard\_jitrebin() (in module micropolarray.processing.rebin)@\spxentry{standard\_jitrebin()}\spxextra{in module micropolarray.processing.rebin}|hyperpage}{9}
+\indexentry{standard\_rebin() (in module micropolarray.processing.rebin)@\spxentry{standard\_rebin()}\spxextra{in module micropolarray.processing.rebin}|hyperpage}{9}
 \indexentry{trim\_to\_match\_2xbinning() (in module micropolarray.processing.rebin)@\spxentry{trim\_to\_match\_2xbinning()}\spxextra{in module micropolarray.processing.rebin}|hyperpage}{9}
 \indexentry{trim\_to\_match\_binning() (in module micropolarray.processing.rebin)@\spxentry{trim\_to\_match\_binning()}\spxextra{in module micropolarray.processing.rebin}|hyperpage}{9}
-\indexentry{module@\spxentry{module}!micropolarray.processing.shift@\spxentry{micropolarray.processing.shift}|hyperpage}{9}
-\indexentry{micropolarray.processing.shift@\spxentry{micropolarray.processing.shift}!module@\spxentry{module}|hyperpage}{9}
-\indexentry{shift() (in module micropolarray.processing.shift)@\spxentry{shift()}\spxextra{in module micropolarray.processing.shift}|hyperpage}{9}
-\indexentry{shift\_micropol() (in module micropolarray.processing.shift)@\spxentry{shift\_micropol()}\spxextra{in module micropolarray.processing.shift}|hyperpage}{9}
+\indexentry{module@\spxentry{module}!micropolarray.processing.shift@\spxentry{micropolarray.processing.shift}|hyperpage}{10}
+\indexentry{micropolarray.processing.shift@\spxentry{micropolarray.processing.shift}!module@\spxentry{module}|hyperpage}{10}
+\indexentry{shift() (in module micropolarray.processing.shift)@\spxentry{shift()}\spxextra{in module micropolarray.processing.shift}|hyperpage}{10}
+\indexentry{shift\_micropol() (in module micropolarray.processing.shift)@\spxentry{shift\_micropol()}\spxextra{in module micropolarray.processing.shift}|hyperpage}{10}
 \indexentry{module@\spxentry{module}!micropolarray.processing@\spxentry{micropolarray.processing}|hyperpage}{10}
 \indexentry{micropolarray.processing@\spxentry{micropolarray.processing}!module@\spxentry{module}|hyperpage}{10}
 \indexentry{module@\spxentry{module}!micropolarray.cameras@\spxentry{micropolarray.cameras}|hyperpage}{10}
@@ -67,8 +67,8 @@
 \indexentry{Camera (class in micropolarray.cameras)@\spxentry{Camera}\spxextra{class in micropolarray.cameras}|hyperpage}{10}
 \indexentry{occulter\_mask() (micropolarray.cameras.Camera method)@\spxentry{occulter\_mask()}\spxextra{micropolarray.cameras.Camera method}|hyperpage}{10}
 \indexentry{occulter\_roi() (micropolarray.cameras.Camera method)@\spxentry{occulter\_roi()}\spxextra{micropolarray.cameras.Camera method}|hyperpage}{10}
-\indexentry{Kasi (class in micropolarray.cameras)@\spxentry{Kasi}\spxextra{class in micropolarray.cameras}|hyperpage}{10}
-\indexentry{PolarCam (class in micropolarray.cameras)@\spxentry{PolarCam}\spxextra{class in micropolarray.cameras}|hyperpage}{10}
+\indexentry{Kasi (class in micropolarray.cameras)@\spxentry{Kasi}\spxextra{class in micropolarray.cameras}|hyperpage}{11}
+\indexentry{PolarCam (class in micropolarray.cameras)@\spxentry{PolarCam}\spxextra{class in micropolarray.cameras}|hyperpage}{11}
 \indexentry{module@\spxentry{module}!micropolarray.image@\spxentry{micropolarray.image}|hyperpage}{11}
 \indexentry{micropolarray.image@\spxentry{micropolarray.image}!module@\spxentry{module}|hyperpage}{11}
 \indexentry{Image (class in micropolarray.image)@\spxentry{Image}\spxextra{class in micropolarray.image}|hyperpage}{11}
@@ -89,35 +89,35 @@
 \indexentry{congrid() (micropolarray.micropol\_image.MicropolImage method)@\spxentry{congrid()}\spxextra{micropolarray.micropol\_image.MicropolImage method}|hyperpage}{12}
 \indexentry{correct\_flat() (micropolarray.micropol\_image.MicropolImage method)@\spxentry{correct\_flat()}\spxextra{micropolarray.micropol\_image.MicropolImage method}|hyperpage}{12}
 \indexentry{correct\_ifov() (micropolarray.micropol\_image.MicropolImage method)@\spxentry{correct\_ifov()}\spxextra{micropolarray.micropol\_image.MicropolImage method}|hyperpage}{12}
-\indexentry{demodulate() (micropolarray.micropol\_image.MicropolImage method)@\spxentry{demodulate()}\spxextra{micropolarray.micropol\_image.MicropolImage method}|hyperpage}{12}
+\indexentry{demodulate() (micropolarray.micropol\_image.MicropolImage method)@\spxentry{demodulate()}\spxextra{micropolarray.micropol\_image.MicropolImage method}|hyperpage}{13}
 \indexentry{demosaic() (micropolarray.micropol\_image.MicropolImage method)@\spxentry{demosaic()}\spxextra{micropolarray.micropol\_image.MicropolImage method}|hyperpage}{13}
 \indexentry{first\_call (micropolarray.micropol\_image.MicropolImage attribute)@\spxentry{first\_call}\spxextra{micropolarray.micropol\_image.MicropolImage attribute}|hyperpage}{13}
 \indexentry{mask\_occulter() (micropolarray.micropol\_image.MicropolImage method)@\spxentry{mask\_occulter()}\spxextra{micropolarray.micropol\_image.MicropolImage method}|hyperpage}{13}
 \indexentry{pB (micropolarray.micropol\_image.MicropolImage property)@\spxentry{pB}\spxextra{micropolarray.micropol\_image.MicropolImage property}|hyperpage}{13}
-\indexentry{pol0 (micropolarray.micropol\_image.MicropolImage property)@\spxentry{pol0}\spxextra{micropolarray.micropol\_image.MicropolImage property}|hyperpage}{13}
-\indexentry{pol45 (micropolarray.micropol\_image.MicropolImage property)@\spxentry{pol45}\spxextra{micropolarray.micropol\_image.MicropolImage property}|hyperpage}{13}
-\indexentry{pol90 (micropolarray.micropol\_image.MicropolImage property)@\spxentry{pol90}\spxextra{micropolarray.micropol\_image.MicropolImage property}|hyperpage}{13}
-\indexentry{pol\_45 (micropolarray.micropol\_image.MicropolImage property)@\spxentry{pol\_45}\spxextra{micropolarray.micropol\_image.MicropolImage property}|hyperpage}{13}
+\indexentry{pol0 (micropolarray.micropol\_image.MicropolImage property)@\spxentry{pol0}\spxextra{micropolarray.micropol\_image.MicropolImage property}|hyperpage}{14}
+\indexentry{pol45 (micropolarray.micropol\_image.MicropolImage property)@\spxentry{pol45}\spxextra{micropolarray.micropol\_image.MicropolImage property}|hyperpage}{14}
+\indexentry{pol90 (micropolarray.micropol\_image.MicropolImage property)@\spxentry{pol90}\spxextra{micropolarray.micropol\_image.MicropolImage property}|hyperpage}{14}
+\indexentry{pol\_45 (micropolarray.micropol\_image.MicropolImage property)@\spxentry{pol\_45}\spxextra{micropolarray.micropol\_image.MicropolImage property}|hyperpage}{14}
 \indexentry{polparam\_list (micropolarray.micropol\_image.MicropolImage property)@\spxentry{polparam\_list}\spxextra{micropolarray.micropol\_image.MicropolImage property}|hyperpage}{14}
 \indexentry{rebin() (micropolarray.micropol\_image.MicropolImage method)@\spxentry{rebin()}\spxextra{micropolarray.micropol\_image.MicropolImage method}|hyperpage}{14}
 \indexentry{rotate() (micropolarray.micropol\_image.MicropolImage method)@\spxentry{rotate()}\spxextra{micropolarray.micropol\_image.MicropolImage method}|hyperpage}{14}
 \indexentry{save\_all\_pol\_params\_as\_fits() (micropolarray.micropol\_image.MicropolImage method)@\spxentry{save\_all\_pol\_params\_as\_fits()}\spxextra{micropolarray.micropol\_image.MicropolImage method}|hyperpage}{14}
 \indexentry{save\_demosaiced\_images\_as\_fits() (micropolarray.micropol\_image.MicropolImage method)@\spxentry{save\_demosaiced\_images\_as\_fits()}\spxextra{micropolarray.micropol\_image.MicropolImage method}|hyperpage}{14}
 \indexentry{save\_param\_as\_fits() (micropolarray.micropol\_image.MicropolImage method)@\spxentry{save\_param\_as\_fits()}\spxextra{micropolarray.micropol\_image.MicropolImage method}|hyperpage}{14}
-\indexentry{save\_single\_pol\_images() (micropolarray.micropol\_image.MicropolImage method)@\spxentry{save\_single\_pol\_images()}\spxextra{micropolarray.micropol\_image.MicropolImage method}|hyperpage}{14}
+\indexentry{save\_single\_pol\_images() (micropolarray.micropol\_image.MicropolImage method)@\spxentry{save\_single\_pol\_images()}\spxextra{micropolarray.micropol\_image.MicropolImage method}|hyperpage}{15}
 \indexentry{shift() (micropolarray.micropol\_image.MicropolImage method)@\spxentry{shift()}\spxextra{micropolarray.micropol\_image.MicropolImage method}|hyperpage}{15}
 \indexentry{show\_demo\_images() (micropolarray.micropol\_image.MicropolImage method)@\spxentry{show\_demo\_images()}\spxextra{micropolarray.micropol\_image.MicropolImage method}|hyperpage}{15}
 \indexentry{show\_pol\_param() (micropolarray.micropol\_image.MicropolImage method)@\spxentry{show\_pol\_param()}\spxextra{micropolarray.micropol\_image.MicropolImage method}|hyperpage}{15}
-\indexentry{show\_single\_pol\_images() (micropolarray.micropol\_image.MicropolImage method)@\spxentry{show\_single\_pol\_images()}\spxextra{micropolarray.micropol\_image.MicropolImage method}|hyperpage}{15}
+\indexentry{show\_single\_pol\_images() (micropolarray.micropol\_image.MicropolImage method)@\spxentry{show\_single\_pol\_images()}\spxextra{micropolarray.micropol\_image.MicropolImage method}|hyperpage}{16}
 \indexentry{show\_with\_pol\_params() (micropolarray.micropol\_image.MicropolImage method)@\spxentry{show\_with\_pol\_params()}\spxextra{micropolarray.micropol\_image.MicropolImage method}|hyperpage}{16}
 \indexentry{single\_pol\_subimages (micropolarray.micropol\_image.MicropolImage property)@\spxentry{single\_pol\_subimages}\spxextra{micropolarray.micropol\_image.MicropolImage property}|hyperpage}{16}
 \indexentry{subtract\_dark() (micropolarray.micropol\_image.MicropolImage method)@\spxentry{subtract\_dark()}\spxextra{micropolarray.micropol\_image.MicropolImage method}|hyperpage}{16}
 \indexentry{PolParam (class in micropolarray.micropol\_image)@\spxentry{PolParam}\spxextra{class in micropolarray.micropol\_image}|hyperpage}{16}
 \indexentry{ID (micropolarray.micropol\_image.PolParam attribute)@\spxentry{ID}\spxextra{micropolarray.micropol\_image.PolParam attribute}|hyperpage}{16}
 \indexentry{data (micropolarray.micropol\_image.PolParam attribute)@\spxentry{data}\spxextra{micropolarray.micropol\_image.PolParam attribute}|hyperpage}{16}
-\indexentry{fix\_data (micropolarray.micropol\_image.PolParam attribute)@\spxentry{fix\_data}\spxextra{micropolarray.micropol\_image.PolParam attribute}|hyperpage}{16}
-\indexentry{measure\_unit (micropolarray.micropol\_image.PolParam attribute)@\spxentry{measure\_unit}\spxextra{micropolarray.micropol\_image.PolParam attribute}|hyperpage}{16}
-\indexentry{title (micropolarray.micropol\_image.PolParam attribute)@\spxentry{title}\spxextra{micropolarray.micropol\_image.PolParam attribute}|hyperpage}{16}
+\indexentry{fix\_data (micropolarray.micropol\_image.PolParam attribute)@\spxentry{fix\_data}\spxextra{micropolarray.micropol\_image.PolParam attribute}|hyperpage}{17}
+\indexentry{measure\_unit (micropolarray.micropol\_image.PolParam attribute)@\spxentry{measure\_unit}\spxextra{micropolarray.micropol\_image.PolParam attribute}|hyperpage}{17}
+\indexentry{title (micropolarray.micropol\_image.PolParam attribute)@\spxentry{title}\spxextra{micropolarray.micropol\_image.PolParam attribute}|hyperpage}{17}
 \indexentry{set\_default\_angles() (in module micropolarray.micropol\_image)@\spxentry{set\_default\_angles()}\spxextra{in module micropolarray.micropol\_image}|hyperpage}{17}
 \indexentry{module@\spxentry{module}!micropolarray.polarization\_functions@\spxentry{micropolarray.polarization\_functions}|hyperpage}{17}
 \indexentry{micropolarray.polarization\_functions@\spxentry{micropolarray.polarization\_functions}!module@\spxentry{module}|hyperpage}{17}
@@ -128,13 +128,13 @@
 \indexentry{module@\spxentry{module}!micropolarray.utils@\spxentry{micropolarray.utils}|hyperpage}{17}
 \indexentry{micropolarray.utils@\spxentry{micropolarray.utils}!module@\spxentry{module}|hyperpage}{17}
 \indexentry{align\_keywords\_and\_data() (in module micropolarray.utils)@\spxentry{align\_keywords\_and\_data()}\spxextra{in module micropolarray.utils}|hyperpage}{17}
-\indexentry{fix\_data() (in module micropolarray.utils)@\spxentry{fix\_data()}\spxextra{in module micropolarray.utils}|hyperpage}{17}
-\indexentry{get\_Bsun\_units() (in module micropolarray.utils)@\spxentry{get\_Bsun\_units()}\spxextra{in module micropolarray.utils}|hyperpage}{17}
+\indexentry{fix\_data() (in module micropolarray.utils)@\spxentry{fix\_data()}\spxextra{in module micropolarray.utils}|hyperpage}{18}
+\indexentry{get\_Bsun\_units() (in module micropolarray.utils)@\spxentry{get\_Bsun\_units()}\spxextra{in module micropolarray.utils}|hyperpage}{18}
 \indexentry{get\_malus\_normalization() (in module micropolarray.utils)@\spxentry{get\_malus\_normalization()}\spxextra{in module micropolarray.utils}|hyperpage}{18}
 \indexentry{mean\_minus\_std() (in module micropolarray.utils)@\spxentry{mean\_minus\_std()}\spxextra{in module micropolarray.utils}|hyperpage}{18}
 \indexentry{mean\_plus\_std() (in module micropolarray.utils)@\spxentry{mean\_plus\_std()}\spxextra{in module micropolarray.utils}|hyperpage}{18}
 \indexentry{median\_minus\_std() (in module micropolarray.utils)@\spxentry{median\_minus\_std()}\spxextra{in module micropolarray.utils}|hyperpage}{18}
-\indexentry{median\_plus\_std() (in module micropolarray.utils)@\spxentry{median\_plus\_std()}\spxextra{in module micropolarray.utils}|hyperpage}{18}
+\indexentry{median\_plus\_std() (in module micropolarray.utils)@\spxentry{median\_plus\_std()}\spxextra{in module micropolarray.utils}|hyperpage}{19}
 \indexentry{normalize2pi() (in module micropolarray.utils)@\spxentry{normalize2pi()}\spxextra{in module micropolarray.utils}|hyperpage}{19}
 \indexentry{sigma\_DN() (in module micropolarray.utils)@\spxentry{sigma\_DN()}\spxextra{in module micropolarray.utils}|hyperpage}{19}
 \indexentry{timer() (in module micropolarray.utils)@\spxentry{timer()}\spxextra{in module micropolarray.utils}|hyperpage}{19}
