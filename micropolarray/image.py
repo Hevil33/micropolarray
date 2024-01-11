@@ -35,9 +35,7 @@ class Image:
         self.filename = "image.fits"
 
     def _init_image_from_file(self, filenames, averageimages) -> None:
-        filenames_list = (
-            [filenames] if type(filenames) is not list else filenames
-        )
+        filenames_list = [filenames] if type(filenames) is not list else filenames
 
         filenames_len = len(filenames_list)
         if filenames_len == 0:
@@ -64,8 +62,7 @@ class Image:
                             info(f"Summing {filenames_len} images...")
                         print_info_message = False
                     combined_data = combined_data + (
-                        hul[0].data
-                        / (1 + int(averageimages) * (filenames_len - 1))
+                        hul[0].data / (1 + int(averageimages) * (filenames_len - 1))
                     )  # divide by 1 if summing, either n if averaging
 
                 hul.verify("fix")
@@ -77,9 +74,7 @@ class Image:
                     )
                 except ValueError:  # antarticor format
                     datetimes[idx] = datetime.datetime.strptime(
-                        hul[0].header["DATE-OBS"]
-                        + "-"
-                        + hul[0].header["TIME-OBS"],
+                        hul[0].header["DATE-OBS"] + "-" + hul[0].header["TIME-OBS"],
                         "%Y-%m-%d-%H:%M:%S",
                     )
                 except KeyError:
@@ -212,27 +207,31 @@ class Image:
         )
         imageax.set_xlabel("x")
         imageax.set_ylabel("y")
-        image_fig.colorbar(
-            pos, ax=imageax, label="DN", fraction=data_ratio * 0.05
-        )
+        image_fig.colorbar(pos, ax=imageax, label="DN", fraction=data_ratio * 0.05)
 
         return image_fig, imageax
 
-    def show_histogram(self, bins: int = 1000) -> tuple:
+    def show_histogram(self, split_pols=False, **kwargs) -> tuple:
         """Print the histogram of the flattened image data
 
         Args:
-            bins (int, optional): Numbers of bin to compute the histogram from. Defaults to 1000.
+            split_pols (bool, optional): Whether to overplot histograms of same family pixels separately. Defaults to False.
+            **kwargs (int, optional): arguments to pass to numpy.histogram(), like bins and range.
 
         Returns:
             tuple: fig, ax tuple as returned by matplotlib.pyplot.subplots
         """
         fig, ax = plt.subplots(dpi=200, constrained_layout=True)
-        histo = np.histogram(self.data, bins=bins)
-        ax.stairs(*histo)
+        histo = np.histogram(self.data, **kwargs)
+        ax.stairs(*histo, label="Total histogram")
+        if split_pols:
+            for i, single_pol_subimage in enumerate(self.single_pol_subimages):
+                subhist = np.histogram(single_pol_subimage, **kwargs)
+                ax.stairs(*subhist, label=f"pixel {i}")
         ax.set_title("Image histogram", color="black")
         ax.set_xlabel("Signal [DN]")
         ax.set_ylabel("Number of pixels")
+        plt.legend()
 
         return fig, ax
 

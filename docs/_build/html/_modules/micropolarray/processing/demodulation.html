@@ -815,7 +815,7 @@
                             <span class="n">bounds</span><span class="o">=</span><span class="n">bounds</span><span class="p">[</span><span class="n">pixel_num</span><span class="p">],</span>
                         <span class="p">)</span>
                         <span class="n">fit_success</span> <span class="o">=</span> <span class="kc">True</span>
-                    <span class="k">except</span> <span class="ne">RuntimeError</span><span class="p">:</span>
+                    <span class="k">except</span><span class="p">:</span>  <span class="c1"># catches all exceptions</span>
                         <span class="n">fit_success</span> <span class="o">=</span> <span class="kc">False</span>
                         <span class="k">break</span>
 

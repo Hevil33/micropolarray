@@ -40,6 +40,43 @@ class Demodulator:
 
         self.mij, self.fit_found_flags = self._get_demodulation_tensor()
 
+        self.Cij = self._get_covariance_tensor(
+            glob.glob(os.path.join(demo_matrices_path, "covariance_tensor", "*"))
+        )
+
+    def _get_covariance_tensor(self, covariance_tensor_fnames):
+        if not covariance_tensor_fnames:
+            return None
+        with fits.open(covariance_tensor_fnames[0]) as firsthul:
+            sample_matrix = np.array(firsthul[0].data)
+
+        Cij = np.zeros(
+            shape=(
+                self.n_malus_params,
+                self.n_malus_params,
+                sample_matrix.shape[0],
+                sample_matrix.shape[1],
+            ),
+            dtype=float,
+        )
+
+        matches = 0
+        for filename in covariance_tensor_fnames:
+            pattern_query = re.search("[0-9]{2}", filename.split(os.path.sep)[-1])
+            if pattern_query is not None:  # Exclude files not matching m/Mij
+                matches += 1
+                i, j = pattern_query.group()[
+                    -2:
+                ]  # Searches for pattern ij as last string before .fits
+                i, j = int(i), int(j)
+                with fits.open(filename) as hul:
+                    Cij[i, j] = hul[0].data
+
+        if matches != (self.n_malus_params * self.n_malus_params):
+            raise ValueError("Incomplete covariance tensor in the selected folder. ")
+
+        return Cij
+
     def _get_demodulation_tensor(self):
         """Reads files "MIJ.fits" from path folder and returns a (3,4,y,x)
         numpy array representing the demodulation tensor.
@@ -59,6 +96,8 @@ class Demodulator:
 
         # look for first matrix file and get dimensions
         filenames_list = glob.glob(self.demo_matrices_path + os.path.sep + "*.fits")
+        if not filenames_list:
+            raise FileNotFoundError("No fits files in selected folder.")
 
         for filename in filenames_list:
             if re.search("[0-9]{2}", filename.split(os.path.sep)[-1]) is not None:
@@ -184,7 +223,7 @@ def calculate_demodulation_tensor(
     dark_filename: str = None,
     flat_filename: str = None,
     normalizing_S=None,
-    tk_boundary: list = [0.5, 0.1, 1.0 - 1.0e-6],
+    tk_boundary: list = None,
     DEBUG: bool = False,
 ):
     """Calculates the demodulation tensor images and saves them. Requires a set of images with different polarizations to fit a Malus curve model.
@@ -372,7 +411,6 @@ def calculate_demodulation_tensor(
         # 4sigma -> P = 6.3e-5 outliers
         # ----------------------------------------------
     elif type(normalizing_S) is not np.ndarray:  # its a number
-        print("NOOO")
         normalizing_S *= binning * binning  # account binning
         normalizing_S = np.ones(shape=(height, width), dtype=float) * normalizing_S
     elif type(normalizing_S) is np.ndarray:  # its an image
@@ -525,10 +563,6 @@ def calculate_demodulation_tensor(
     ending_time = time.perf_counter()
     info(f"Elapsed : {(ending_time - starting_time)/60:3.2f} mins")
 
-    # result == array [
-    # [chunk_id],
-    # [mij, t, eff, k]
-    # ]
     result = np.array(result, dtype=object)
     m_ij = np.zeros(
         shape=(
@@ -539,10 +573,12 @@ def calculate_demodulation_tensor(
         )
     )
     fit_found_flag = np.zeros(shape=(int(height / 2), int(width / 2)))
+    covariance_tensor = np.zeros(shape=(N_MALUS_PARAMS, N_MALUS_PARAMS, height, width))
 
     tks = np.zeros(shape=(height, width))
     efficiences = np.zeros(shape=(height, width))
     phases = np.zeros(shape=(height, width))
+    chisqs = np.zeros(shape=(height, width))
 
     def _merge_parameter(parameter: np.ndarray, param_ID: int):
         for i in range(chunks_n_y):
@@ -557,6 +593,7 @@ def calculate_demodulation_tensor(
     _merge_parameter(tks, 1)
     _merge_parameter(efficiences, 2)
     _merge_parameter(phases, 3)
+    _merge_parameter(chisqs, 6)
 
     half_chunk_size_y = int(chunk_size_y / 2)
     half_chunk_size_x = int(chunk_size_x / 2)
@@ -572,6 +609,7 @@ def calculate_demodulation_tensor(
                 half_chunk_size_x,
             )
 
+    # merge demodulation tensor
     for i in range(chunks_n_y):
         for j in range(chunks_n_x):
             shaped_result = result[i + chunks_n_y * j, 0].reshape(
@@ -587,29 +625,62 @@ def calculate_demodulation_tensor(
                 j * (half_chunk_size_x) : (j + 1) * half_chunk_size_x,
             ] = shaped_result
 
+    # merge covariance tensor
+    for i in range(chunks_n_y):
+        for j in range(chunks_n_x):
+            covariance_tensor[
+                :,
+                :,
+                i * (chunk_size_y) : (i + 1) * chunk_size_y,
+                j * (chunk_size_x) : (j + 1) * chunk_size_x,
+            ] = result[i + chunks_n_y * j, 5].reshape(
+                N_MALUS_PARAMS, N_MALUS_PARAMS, chunk_size_y, chunk_size_x
+            )
+
     phases = np.rad2deg(phases)
 
     if DEBUG:
         # prevents overwriting
         sys.exit()
 
-    if not os.path.exists(output_dir):
-        p = Path(output_dir)
-        # p.mkdir(parent=True, exist_ok=True)
-        os.makedirs(output_dir)
+    # if not os.path.exists(output_dir):
+    #    p = Path(output_dir)
+    #    # p.mkdir(parents=True, exist_ok=True)
+    #    os.makedirs(output_dir)
 
     output_str = str(output_path)
     for i in range(N_MALUS_PARAMS):
         for j in range(N_PIXELS_IN_SUPERPIX):
             hdu = fits.PrimaryHDU(data=m_ij[i, j])
-            hdu.writeto(output_str + f"/M{i}{j}.fits", overwrite=True)
+            hdu.writeto(output_str + os.path.sep + f"M{i}{j}.fits", overwrite=True)
+
+    Path(output_str + os.path.sep + "covariance_tensor").mkdir(
+        parents=True, exist_ok=True
+    )
+    for i in range(N_MALUS_PARAMS):
+        for j in range(N_MALUS_PARAMS):
+            hdu = fits.PrimaryHDU(data=covariance_tensor[i, j])
+            hdu.writeto(
+                output_str
+                + os.path.sep
+                + f"covariance_tensor"
+                + os.path.sep
+                + f"C{i}{j}.fits",
+                overwrite=True,
+            )
 
     for parameter_data, parameter_name in zip(
-        [tks, efficiences, phases, fit_found_flag],
-        ["transmittancies", "efficiences", "phases", "fit_found_flag"],
+        [tks, efficiences, phases, fit_found_flag, chisqs],
+        [
+            "transmittancies",
+            "efficiences",
+            "phases",
+            "fit_found_flag",
+            os.path.sep + "covariance_tensor" + os.path.sep + "reduced_chisquare",
+        ],
     ):
         hdu = fits.PrimaryHDU(data=parameter_data)
-        hdu.writeto(output_str + "/" + parameter_name + ".fits", overwrite=True)
+        hdu.writeto(output_str + os.path.sep + parameter_name + ".fits", overwrite=True)
 
     info("Demodulation matrices and fit data successfully saved!")
 
@@ -628,6 +699,11 @@ def compute_demodulation_by_chunk(
     """Utility function to parallelize calculations."""
     N_MALUS_PARAMS = 3
     N_PIXELS_IN_SUPERPIX = 4
+    if tk_boundary is None:
+        dof = len(polarizer_orientations) - 3
+        tk_boundary = [0.5, 0.1, 1.0 - 1.0e-6]
+    else:
+        dof = len(polarizer_orientations) - 2
     # Preemptly compute the theoretical demo matrix to save time
     theo_modulation_matrix = np.array(
         [
@@ -664,15 +740,21 @@ def compute_demodulation_by_chunk(
         )
     )  # demodulation matrix
     fit_found = np.zeros_like(m_ij[0, 0])
+    covariance_tensor = np.zeros(shape=(N_MALUS_PARAMS, N_MALUS_PARAMS, height, width))
     tk_data = np.ones(shape=(height, width)) * tk_prediction
     eff_data = np.ones(shape=(height, width)) * efficiency_prediction
     phase_data = np.zeros(shape=(height, width))
+    chisq_data = np.zeros(shape=(height, width))
     phase_data[0::2, 0::2] = rad_micropol_phases_previsions[0]
     phase_data[0::2, 1::2] = rad_micropol_phases_previsions[1]
     phase_data[1::2, 0::2] = rad_micropol_phases_previsions[2]
     phase_data[1::2, 1::2] = rad_micropol_phases_previsions[3]
 
     superpix_params = np.zeros(shape=(N_PIXELS_IN_SUPERPIX, N_MALUS_PARAMS))
+    superpix_covtensor = np.zeros(
+        shape=(N_MALUS_PARAMS, N_MALUS_PARAMS, N_PIXELS_IN_SUPERPIX)
+    )
+    chisq = np.zeros(shape=(4))
 
     predictions = np.zeros(shape=(N_PIXELS_IN_SUPERPIX, N_MALUS_PARAMS))
     predictions[:, 0] = tk_prediction  # Throughput prediction
@@ -681,7 +763,7 @@ def compute_demodulation_by_chunk(
 
     bounds = np.zeros(shape=(N_PIXELS_IN_SUPERPIX, 2, N_MALUS_PARAMS))
     bounds[:, 0, 0], bounds[:, 1, 0] = tk_boundary[1:]  # Throughput bounds
-    bounds[:, 0, 1], bounds[:, 1, 1] = 0.1, 0.9999999  # Efficiency bounds
+    bounds[:, 0, 1], bounds[:, 1, 1] = 0.1, 1.0  # Efficiency bounds
     bounds[:, 0, 2] = rad_micropol_phases_previsions - 15  # Lower angle bounds
     bounds[:, 1, 2] = rad_micropol_phases_previsions + 15  # Upper angle bounds
 
@@ -734,23 +816,35 @@ def compute_demodulation_by_chunk(
                     try:
                         (
                             superpix_params[pixel_num],
-                            superpix_pcov,
+                            superpix_covtensor[:, :, pixel_num],
+                            # superpix_pcov,
                         ) = curve_fit(
                             Malus,
                             polarizations_rad,
                             normalized_superpix_arr[:, pixel_num],
                             predictions[pixel_num],
                             sigma=sigma_pix[:, pixel_num],
+                            absolute_sigma=True,
                             bounds=bounds[pixel_num],
                         )
                         fit_success = True
+
+                        residuals = (
+                            Malus(polarizations_rad, *superpix_params[pixel_num])
+                            - normalized_superpix_arr[:, pixel_num]
+                        )
+                        chisq[pixel_num] = (
+                            np.sum((residuals * residuals) / sigma_pix[:, pixel_num])
+                            / dof
+                        )
+
                     except:  # catches all exceptions
                         fit_success = False
                         break
 
                 if DEBUG:  # DEBUG
                     colors = ["blue", "orange", "green", "red"]
-                    fig, ax = plt.subplots(figsize=(9, 9), constrained_layout=True)
+                    fig, ax = plt.subplots(dpi=200, constrained_layout=True)
                     for i in range(4):
                         ax.errorbar(
                             np.rad2deg(polarizations_rad),
@@ -763,16 +857,17 @@ def compute_demodulation_by_chunk(
                             linestyle="none",
                         )
                         min = np.min(polarizations_rad)
-                        # min = 225
                         max = np.max(polarizations_rad)
-                        # max = 405
                         x = np.arange(min, max, (max - min) / 100)
                         ax.plot(
                             np.rad2deg(x),
                             Malus(x, *superpix_params[i]),
-                            label=f"t = {superpix_params[i,0]:2.4f}, e = {superpix_params[i, 1]:2.4f}, phi = {np.rad2deg(superpix_params[i, 2]):2.4f}",
+                            label=f"t = {superpix_params[i, 0]:2.5f}, e = {superpix_params[i, 1]:2.5f}, phi = {np.rad2deg(superpix_params[i, 2]):2.4f}",
                             color=colors[i],
                         )
+                        print(Malus(superpix_params[i, 2], *superpix_params[i]))
+                        print(superpix_params)
+                        ax.axhline(1.0)
                         ax.set_title(f"super_y = {super_y}, super_x = {super_x},")
                         ax.set_xlabel("Prepolarizer orientations [deg]")
                         ax.set_ylabel("signal / S")
@@ -818,6 +913,15 @@ def compute_demodulation_by_chunk(
                     print(t)
                     print(eff)
                     print(phi)
+
+                    print()
+                    print("covariance matrix")
+                    for i in range(N_PIXELS_IN_SUPERPIX):
+                        print(superpix_covtensor[:, :, i])
+
+                    print()
+                    print("chi square")
+                    print(chisq)
                     print("---")
 
                 # Remove matrices with big numbers
@@ -829,6 +933,14 @@ def compute_demodulation_by_chunk(
 
                 m_ij[:, :, int(super_y / 2), int(super_x / 2)] = demodulation_matrix
                 fit_found[int(super_y / 2), int(super_x / 2)] = 1.0 * fit_success
+
+                covariance_tensor[
+                    :, :, super_y : super_y + 2, super_x : super_x + 2
+                ] = superpix_covtensor.reshape(N_MALUS_PARAMS, N_MALUS_PARAMS, 2, 2)
+
+                chisq_data[super_y : super_y + 2, super_x : super_x + 2] = np.array(
+                    chisq, dtype=float
+                ).reshape(2, 2)
 
                 tk_data[super_y : super_y + 2, super_x : super_x + 2] = np.array(
                     t, dtype=float
@@ -862,7 +974,7 @@ def compute_demodulation_by_chunk(
                     dtype=float,
                 )
 
-    return m_ij, tk_data, eff_data, phase_data, fit_found
+    return m_ij, tk_data, eff_data, phase_data, fit_found, covariance_tensor, chisq_data
 
 
 def Malus(angle, throughput, efficiency, phase):
