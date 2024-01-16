@@ -111,6 +111,43 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">mij</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fit_found_flags</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_demodulation_tensor</span><span class="p">()</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">Cij</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_covariance_tensor</span><span class="p">(</span>
+            <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">demo_matrices_path</span><span class="p">,</span> <span class="s2">&quot;covariance_tensor&quot;</span><span class="p">,</span> <span class="s2">&quot;*&quot;</span><span class="p">))</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_covariance_tensor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">covariance_tensor_fnames</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">covariance_tensor_fnames</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">with</span> <span class="n">fits</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">covariance_tensor_fnames</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="k">as</span> <span class="n">firsthul</span><span class="p">:</span>
+            <span class="n">sample_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">firsthul</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+
+        <span class="n">Cij</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
+            <span class="n">shape</span><span class="o">=</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">n_malus_params</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">n_malus_params</span><span class="p">,</span>
+                <span class="n">sample_matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                <span class="n">sample_matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+            <span class="p">),</span>
+            <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">matches</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">covariance_tensor_fnames</span><span class="p">:</span>
+            <span class="n">pattern_query</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;[0-9]</span><span class="si">{2}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">filename</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">sep</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">pattern_query</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># Exclude files not matching m/Mij</span>
+                <span class="n">matches</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="o">=</span> <span class="n">pattern_query</span><span class="o">.</span><span class="n">group</span><span class="p">()[</span>
+                    <span class="o">-</span><span class="mi">2</span><span class="p">:</span>
+                <span class="p">]</span>  <span class="c1"># Searches for pattern ij as last string before .fits</span>
+                <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">i</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">j</span><span class="p">)</span>
+                <span class="k">with</span> <span class="n">fits</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span> <span class="k">as</span> <span class="n">hul</span><span class="p">:</span>
+                    <span class="n">Cij</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">hul</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
+
+        <span class="k">if</span> <span class="n">matches</span> <span class="o">!=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_malus_params</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_malus_params</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Incomplete covariance tensor in the selected folder. &quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">Cij</span>
+
     <span class="k">def</span> <span class="nf">_get_demodulation_tensor</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Reads files &quot;MIJ.fits&quot; from path folder and returns a (3,4,y,x)</span>
 <span class="sd">        numpy array representing the demodulation tensor.</span>
@@ -130,6 +167,8 @@
 
         <span class="c1"># look for first matrix file and get dimensions</span>
         <span class="n">filenames_list</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">demo_matrices_path</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">sep</span> <span class="o">+</span> <span class="s2">&quot;*.fits&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">filenames_list</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="s2">&quot;No fits files in selected folder.&quot;</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">filenames_list</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;[0-9]</span><span class="si">{2}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">filename</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">sep</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -255,7 +294,7 @@
     <span class="n">dark_filename</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">flat_filename</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">normalizing_S</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">tk_boundary</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="mf">1.0e-6</span><span class="p">],</span>
+    <span class="n">tk_boundary</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">DEBUG</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculates the demodulation tensor images and saves them. Requires a set of images with different polarizations to fit a Malus curve model.</span>
@@ -443,7 +482,6 @@
         <span class="c1"># 4sigma -&gt; P = 6.3e-5 outliers</span>
         <span class="c1"># ----------------------------------------------</span>
     <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">normalizing_S</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>  <span class="c1"># its a number</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;NOOO&quot;</span><span class="p">)</span>
         <span class="n">normalizing_S</span> <span class="o">*=</span> <span class="n">binning</span> <span class="o">*</span> <span class="n">binning</span>  <span class="c1"># account binning</span>
         <span class="n">normalizing_S</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span> <span class="o">*</span> <span class="n">normalizing_S</span>
     <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">normalizing_S</span><span class="p">)</span> <span class="ow">is</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>  <span class="c1"># its an image</span>
@@ -596,10 +634,6 @@
     <span class="n">ending_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
     <span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Elapsed : </span><span class="si">{</span><span class="p">(</span><span class="n">ending_time</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">starting_time</span><span class="p">)</span><span class="o">/</span><span class="mi">60</span><span class="si">:</span><span class="s2">3.2f</span><span class="si">}</span><span class="s2"> mins&quot;</span><span class="p">)</span>
 
-    <span class="c1"># result == array [</span>
-    <span class="c1"># [chunk_id],</span>
-    <span class="c1"># [mij, t, eff, k]</span>
-    <span class="c1"># ]</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">object</span><span class="p">)</span>
     <span class="n">m_ij</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
         <span class="n">shape</span><span class="o">=</span><span class="p">(</span>
@@ -610,10 +644,12 @@
         <span class="p">)</span>
     <span class="p">)</span>
     <span class="n">fit_found_flag</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">height</span> <span class="o">/</span> <span class="mi">2</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">width</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)))</span>
+    <span class="n">covariance_tensor</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">N_MALUS_PARAMS</span><span class="p">,</span> <span class="n">N_MALUS_PARAMS</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">))</span>
 
     <span class="n">tks</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">))</span>
     <span class="n">efficiences</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">))</span>
     <span class="n">phases</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">))</span>
+    <span class="n">chisqs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">))</span>
 
     <span class="k">def</span> <span class="nf">_merge_parameter</span><span class="p">(</span><span class="n">parameter</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">param_ID</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">chunks_n_y</span><span class="p">):</span>
@@ -628,6 +664,7 @@
     <span class="n">_merge_parameter</span><span class="p">(</span><span class="n">tks</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
     <span class="n">_merge_parameter</span><span class="p">(</span><span class="n">efficiences</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
     <span class="n">_merge_parameter</span><span class="p">(</span><span class="n">phases</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+    <span class="n">_merge_parameter</span><span class="p">(</span><span class="n">chisqs</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
 
     <span class="n">half_chunk_size_y</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">chunk_size_y</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
     <span class="n">half_chunk_size_x</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">chunk_size_x</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
@@ -643,6 +680,7 @@
                 <span class="n">half_chunk_size_x</span><span class="p">,</span>
             <span class="p">)</span>
 
+    <span class="c1"># merge demodulation tensor</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">chunks_n_y</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">chunks_n_x</span><span class="p">):</span>
             <span class="n">shaped_result</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="n">chunks_n_y</span> <span class="o">*</span> <span class="n">j</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span>
@@ -658,29 +696,62 @@
                 <span class="n">j</span> <span class="o">*</span> <span class="p">(</span><span class="n">half_chunk_size_x</span><span class="p">)</span> <span class="p">:</span> <span class="p">(</span><span class="n">j</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">half_chunk_size_x</span><span class="p">,</span>
             <span class="p">]</span> <span class="o">=</span> <span class="n">shaped_result</span>
 
+    <span class="c1"># merge covariance tensor</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">chunks_n_y</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">chunks_n_x</span><span class="p">):</span>
+            <span class="n">covariance_tensor</span><span class="p">[</span>
+                <span class="p">:,</span>
+                <span class="p">:,</span>
+                <span class="n">i</span> <span class="o">*</span> <span class="p">(</span><span class="n">chunk_size_y</span><span class="p">)</span> <span class="p">:</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">chunk_size_y</span><span class="p">,</span>
+                <span class="n">j</span> <span class="o">*</span> <span class="p">(</span><span class="n">chunk_size_x</span><span class="p">)</span> <span class="p">:</span> <span class="p">(</span><span class="n">j</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">chunk_size_x</span><span class="p">,</span>
+            <span class="p">]</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="n">chunks_n_y</span> <span class="o">*</span> <span class="n">j</span><span class="p">,</span> <span class="mi">5</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span>
+                <span class="n">N_MALUS_PARAMS</span><span class="p">,</span> <span class="n">N_MALUS_PARAMS</span><span class="p">,</span> <span class="n">chunk_size_y</span><span class="p">,</span> <span class="n">chunk_size_x</span>
+            <span class="p">)</span>
+
     <span class="n">phases</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">rad2deg</span><span class="p">(</span><span class="n">phases</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">DEBUG</span><span class="p">:</span>
         <span class="c1"># prevents overwriting</span>
         <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
 
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">output_dir</span><span class="p">):</span>
-        <span class="n">p</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">output_dir</span><span class="p">)</span>
-        <span class="c1"># p.mkdir(parent=True, exist_ok=True)</span>
-        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">output_dir</span><span class="p">)</span>
+    <span class="c1"># if not os.path.exists(output_dir):</span>
+    <span class="c1">#    p = Path(output_dir)</span>
+    <span class="c1">#    # p.mkdir(parents=True, exist_ok=True)</span>
+    <span class="c1">#    os.makedirs(output_dir)</span>
 
     <span class="n">output_str</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">output_path</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N_MALUS_PARAMS</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N_PIXELS_IN_SUPERPIX</span><span class="p">):</span>
             <span class="n">hdu</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">PrimaryHDU</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">m_ij</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">])</span>
-            <span class="n">hdu</span><span class="o">.</span><span class="n">writeto</span><span class="p">(</span><span class="n">output_str</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;/M</span><span class="si">{</span><span class="n">i</span><span class="si">}{</span><span class="n">j</span><span class="si">}</span><span class="s2">.fits&quot;</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">hdu</span><span class="o">.</span><span class="n">writeto</span><span class="p">(</span><span class="n">output_str</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">sep</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;M</span><span class="si">{</span><span class="n">i</span><span class="si">}{</span><span class="n">j</span><span class="si">}</span><span class="s2">.fits&quot;</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">Path</span><span class="p">(</span><span class="n">output_str</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">sep</span> <span class="o">+</span> <span class="s2">&quot;covariance_tensor&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span>
+        <span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span>
+    <span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N_MALUS_PARAMS</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N_MALUS_PARAMS</span><span class="p">):</span>
+            <span class="n">hdu</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">PrimaryHDU</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">covariance_tensor</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">])</span>
+            <span class="n">hdu</span><span class="o">.</span><span class="n">writeto</span><span class="p">(</span>
+                <span class="n">output_str</span>
+                <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">sep</span>
+                <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;covariance_tensor&quot;</span>
+                <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">sep</span>
+                <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;C</span><span class="si">{</span><span class="n">i</span><span class="si">}{</span><span class="n">j</span><span class="si">}</span><span class="s2">.fits&quot;</span><span class="p">,</span>
+                <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="p">)</span>
 
     <span class="k">for</span> <span class="n">parameter_data</span><span class="p">,</span> <span class="n">parameter_name</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
-        <span class="p">[</span><span class="n">tks</span><span class="p">,</span> <span class="n">efficiences</span><span class="p">,</span> <span class="n">phases</span><span class="p">,</span> <span class="n">fit_found_flag</span><span class="p">],</span>
-        <span class="p">[</span><span class="s2">&quot;transmittancies&quot;</span><span class="p">,</span> <span class="s2">&quot;efficiences&quot;</span><span class="p">,</span> <span class="s2">&quot;phases&quot;</span><span class="p">,</span> <span class="s2">&quot;fit_found_flag&quot;</span><span class="p">],</span>
+        <span class="p">[</span><span class="n">tks</span><span class="p">,</span> <span class="n">efficiences</span><span class="p">,</span> <span class="n">phases</span><span class="p">,</span> <span class="n">fit_found_flag</span><span class="p">,</span> <span class="n">chisqs</span><span class="p">],</span>
+        <span class="p">[</span>
+            <span class="s2">&quot;transmittancies&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;efficiences&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;phases&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;fit_found_flag&quot;</span><span class="p">,</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">sep</span> <span class="o">+</span> <span class="s2">&quot;covariance_tensor&quot;</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">sep</span> <span class="o">+</span> <span class="s2">&quot;reduced_chisquare&quot;</span><span class="p">,</span>
+        <span class="p">],</span>
     <span class="p">):</span>
         <span class="n">hdu</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">PrimaryHDU</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">parameter_data</span><span class="p">)</span>
-        <span class="n">hdu</span><span class="o">.</span><span class="n">writeto</span><span class="p">(</span><span class="n">output_str</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">parameter_name</span> <span class="o">+</span> <span class="s2">&quot;.fits&quot;</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">hdu</span><span class="o">.</span><span class="n">writeto</span><span class="p">(</span><span class="n">output_str</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">sep</span> <span class="o">+</span> <span class="n">parameter_name</span> <span class="o">+</span> <span class="s2">&quot;.fits&quot;</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="n">info</span><span class="p">(</span><span class="s2">&quot;Demodulation matrices and fit data successfully saved!&quot;</span><span class="p">)</span>
 
@@ -699,6 +770,11 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Utility function to parallelize calculations.&quot;&quot;&quot;</span>
     <span class="n">N_MALUS_PARAMS</span> <span class="o">=</span> <span class="mi">3</span>
     <span class="n">N_PIXELS_IN_SUPERPIX</span> <span class="o">=</span> <span class="mi">4</span>
+    <span class="k">if</span> <span class="n">tk_boundary</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">dof</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">polarizer_orientations</span><span class="p">)</span> <span class="o">-</span> <span class="mi">3</span>
+        <span class="n">tk_boundary</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="mf">1.0e-6</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">dof</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">polarizer_orientations</span><span class="p">)</span> <span class="o">-</span> <span class="mi">2</span>
     <span class="c1"># Preemptly compute the theoretical demo matrix to save time</span>
     <span class="n">theo_modulation_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
         <span class="p">[</span>
@@ -735,15 +811,21 @@
         <span class="p">)</span>
     <span class="p">)</span>  <span class="c1"># demodulation matrix</span>
     <span class="n">fit_found</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">m_ij</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+    <span class="n">covariance_tensor</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">N_MALUS_PARAMS</span><span class="p">,</span> <span class="n">N_MALUS_PARAMS</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">))</span>
     <span class="n">tk_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">))</span> <span class="o">*</span> <span class="n">tk_prediction</span>
     <span class="n">eff_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">))</span> <span class="o">*</span> <span class="n">efficiency_prediction</span>
     <span class="n">phase_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">))</span>
+    <span class="n">chisq_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">))</span>
     <span class="n">phase_data</span><span class="p">[</span><span class="mi">0</span><span class="p">::</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">::</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">rad_micropol_phases_previsions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="n">phase_data</span><span class="p">[</span><span class="mi">0</span><span class="p">::</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">::</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">rad_micropol_phases_previsions</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
     <span class="n">phase_data</span><span class="p">[</span><span class="mi">1</span><span class="p">::</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">::</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">rad_micropol_phases_previsions</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
     <span class="n">phase_data</span><span class="p">[</span><span class="mi">1</span><span class="p">::</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">::</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">rad_micropol_phases_previsions</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
 
     <span class="n">superpix_params</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">N_PIXELS_IN_SUPERPIX</span><span class="p">,</span> <span class="n">N_MALUS_PARAMS</span><span class="p">))</span>
+    <span class="n">superpix_covtensor</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
+        <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">N_MALUS_PARAMS</span><span class="p">,</span> <span class="n">N_MALUS_PARAMS</span><span class="p">,</span> <span class="n">N_PIXELS_IN_SUPERPIX</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">chisq</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="p">))</span>
 
     <span class="n">predictions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">N_PIXELS_IN_SUPERPIX</span><span class="p">,</span> <span class="n">N_MALUS_PARAMS</span><span class="p">))</span>
     <span class="n">predictions</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">tk_prediction</span>  <span class="c1"># Throughput prediction</span>
@@ -752,7 +834,7 @@
 
     <span class="n">bounds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">N_PIXELS_IN_SUPERPIX</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">N_MALUS_PARAMS</span><span class="p">))</span>
     <span class="n">bounds</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">bounds</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">tk_boundary</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>  <span class="c1"># Throughput bounds</span>
-    <span class="n">bounds</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">bounds</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.9999999</span>  <span class="c1"># Efficiency bounds</span>
+    <span class="n">bounds</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">bounds</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">1.0</span>  <span class="c1"># Efficiency bounds</span>
     <span class="n">bounds</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">rad_micropol_phases_previsions</span> <span class="o">-</span> <span class="mi">15</span>  <span class="c1"># Lower angle bounds</span>
     <span class="n">bounds</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">rad_micropol_phases_previsions</span> <span class="o">+</span> <span class="mi">15</span>  <span class="c1"># Upper angle bounds</span>
 
@@ -805,23 +887,35 @@
                     <span class="k">try</span><span class="p">:</span>
                         <span class="p">(</span>
                             <span class="n">superpix_params</span><span class="p">[</span><span class="n">pixel_num</span><span class="p">],</span>
-                            <span class="n">superpix_pcov</span><span class="p">,</span>
+                            <span class="n">superpix_covtensor</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">pixel_num</span><span class="p">],</span>
+                            <span class="c1"># superpix_pcov,</span>
                         <span class="p">)</span> <span class="o">=</span> <span class="n">curve_fit</span><span class="p">(</span>
                             <span class="n">Malus</span><span class="p">,</span>
                             <span class="n">polarizations_rad</span><span class="p">,</span>
                             <span class="n">normalized_superpix_arr</span><span class="p">[:,</span> <span class="n">pixel_num</span><span class="p">],</span>
                             <span class="n">predictions</span><span class="p">[</span><span class="n">pixel_num</span><span class="p">],</span>
                             <span class="n">sigma</span><span class="o">=</span><span class="n">sigma_pix</span><span class="p">[:,</span> <span class="n">pixel_num</span><span class="p">],</span>
+                            <span class="n">absolute_sigma</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                             <span class="n">bounds</span><span class="o">=</span><span class="n">bounds</span><span class="p">[</span><span class="n">pixel_num</span><span class="p">],</span>
                         <span class="p">)</span>
                         <span class="n">fit_success</span> <span class="o">=</span> <span class="kc">True</span>
+
+                        <span class="n">residuals</span> <span class="o">=</span> <span class="p">(</span>
+                            <span class="n">Malus</span><span class="p">(</span><span class="n">polarizations_rad</span><span class="p">,</span> <span class="o">*</span><span class="n">superpix_params</span><span class="p">[</span><span class="n">pixel_num</span><span class="p">])</span>
+                            <span class="o">-</span> <span class="n">normalized_superpix_arr</span><span class="p">[:,</span> <span class="n">pixel_num</span><span class="p">]</span>
+                        <span class="p">)</span>
+                        <span class="n">chisq</span><span class="p">[</span><span class="n">pixel_num</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                            <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="n">residuals</span> <span class="o">*</span> <span class="n">residuals</span><span class="p">)</span> <span class="o">/</span> <span class="n">sigma_pix</span><span class="p">[:,</span> <span class="n">pixel_num</span><span class="p">])</span>
+                            <span class="o">/</span> <span class="n">dof</span>
+                        <span class="p">)</span>
+
                     <span class="k">except</span><span class="p">:</span>  <span class="c1"># catches all exceptions</span>
                         <span class="n">fit_success</span> <span class="o">=</span> <span class="kc">False</span>
                         <span class="k">break</span>
 
                 <span class="k">if</span> <span class="n">DEBUG</span><span class="p">:</span>  <span class="c1"># DEBUG</span>
                     <span class="n">colors</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;blue&quot;</span><span class="p">,</span> <span class="s2">&quot;orange&quot;</span><span class="p">,</span> <span class="s2">&quot;green&quot;</span><span class="p">,</span> <span class="s2">&quot;red&quot;</span><span class="p">]</span>
-                    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">9</span><span class="p">),</span> <span class="n">constrained_layout</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">dpi</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">constrained_layout</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
                     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">):</span>
                         <span class="n">ax</span><span class="o">.</span><span class="n">errorbar</span><span class="p">(</span>
                             <span class="n">np</span><span class="o">.</span><span class="n">rad2deg</span><span class="p">(</span><span class="n">polarizations_rad</span><span class="p">),</span>
@@ -834,16 +928,17 @@
                             <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;none&quot;</span><span class="p">,</span>
                         <span class="p">)</span>
                         <span class="nb">min</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">polarizations_rad</span><span class="p">)</span>
-                        <span class="c1"># min = 225</span>
                         <span class="nb">max</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">polarizations_rad</span><span class="p">)</span>
-                        <span class="c1"># max = 405</span>
                         <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">min</span><span class="p">,</span> <span class="nb">max</span><span class="p">,</span> <span class="p">(</span><span class="nb">max</span> <span class="o">-</span> <span class="nb">min</span><span class="p">)</span> <span class="o">/</span> <span class="mi">100</span><span class="p">)</span>
                         <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
                             <span class="n">np</span><span class="o">.</span><span class="n">rad2deg</span><span class="p">(</span><span class="n">x</span><span class="p">),</span>
                             <span class="n">Malus</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">*</span><span class="n">superpix_params</span><span class="p">[</span><span class="n">i</span><span class="p">]),</span>
-                            <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;t = </span><span class="si">{</span><span class="n">superpix_params</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">2.4f</span><span class="si">}</span><span class="s2">, e = </span><span class="si">{</span><span class="n">superpix_params</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">2.4f</span><span class="si">}</span><span class="s2">, phi = </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">rad2deg</span><span class="p">(</span><span class="n">superpix_params</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">])</span><span class="si">:</span><span class="s2">2.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                            <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;t = </span><span class="si">{</span><span class="n">superpix_params</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">2.5f</span><span class="si">}</span><span class="s2">, e = </span><span class="si">{</span><span class="n">superpix_params</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">2.5f</span><span class="si">}</span><span class="s2">, phi = </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">rad2deg</span><span class="p">(</span><span class="n">superpix_params</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">])</span><span class="si">:</span><span class="s2">2.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
                             <span class="n">color</span><span class="o">=</span><span class="n">colors</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
                         <span class="p">)</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="n">Malus</span><span class="p">(</span><span class="n">superpix_params</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="o">*</span><span class="n">superpix_params</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="n">superpix_params</span><span class="p">)</span>
+                        <span class="n">ax</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span>
                         <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;super_y = </span><span class="si">{</span><span class="n">super_y</span><span class="si">}</span><span class="s2">, super_x = </span><span class="si">{</span><span class="n">super_x</span><span class="si">}</span><span class="s2">,&quot;</span><span class="p">)</span>
                         <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Prepolarizer orientations [deg]&quot;</span><span class="p">)</span>
                         <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;signal / S&quot;</span><span class="p">)</span>
@@ -889,6 +984,15 @@
                     <span class="nb">print</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
                     <span class="nb">print</span><span class="p">(</span><span class="n">eff</span><span class="p">)</span>
                     <span class="nb">print</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span>
+
+                    <span class="nb">print</span><span class="p">()</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;covariance matrix&quot;</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N_PIXELS_IN_SUPERPIX</span><span class="p">):</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="n">superpix_covtensor</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">i</span><span class="p">])</span>
+
+                    <span class="nb">print</span><span class="p">()</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;chi square&quot;</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="n">chisq</span><span class="p">)</span>
                     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;---&quot;</span><span class="p">)</span>
 
                 <span class="c1"># Remove matrices with big numbers</span>
@@ -900,6 +1004,14 @@
 
                 <span class="n">m_ij</span><span class="p">[:,</span> <span class="p">:,</span> <span class="nb">int</span><span class="p">(</span><span class="n">super_y</span> <span class="o">/</span> <span class="mi">2</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">super_x</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)]</span> <span class="o">=</span> <span class="n">demodulation_matrix</span>
                 <span class="n">fit_found</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">super_y</span> <span class="o">/</span> <span class="mi">2</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">super_x</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)]</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">*</span> <span class="n">fit_success</span>
+
+                <span class="n">covariance_tensor</span><span class="p">[</span>
+                    <span class="p">:,</span> <span class="p">:,</span> <span class="n">super_y</span> <span class="p">:</span> <span class="n">super_y</span> <span class="o">+</span> <span class="mi">2</span><span class="p">,</span> <span class="n">super_x</span> <span class="p">:</span> <span class="n">super_x</span> <span class="o">+</span> <span class="mi">2</span>
+                <span class="p">]</span> <span class="o">=</span> <span class="n">superpix_covtensor</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">N_MALUS_PARAMS</span><span class="p">,</span> <span class="n">N_MALUS_PARAMS</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+
+                <span class="n">chisq_data</span><span class="p">[</span><span class="n">super_y</span> <span class="p">:</span> <span class="n">super_y</span> <span class="o">+</span> <span class="mi">2</span><span class="p">,</span> <span class="n">super_x</span> <span class="p">:</span> <span class="n">super_x</span> <span class="o">+</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+                    <span class="n">chisq</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span>
+                <span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
 
                 <span class="n">tk_data</span><span class="p">[</span><span class="n">super_y</span> <span class="p">:</span> <span class="n">super_y</span> <span class="o">+</span> <span class="mi">2</span><span class="p">,</span> <span class="n">super_x</span> <span class="p">:</span> <span class="n">super_x</span> <span class="o">+</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
                     <span class="n">t</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span>
@@ -933,7 +1045,7 @@
                     <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
                 <span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">m_ij</span><span class="p">,</span> <span class="n">tk_data</span><span class="p">,</span> <span class="n">eff_data</span><span class="p">,</span> <span class="n">phase_data</span><span class="p">,</span> <span class="n">fit_found</span></div>
+    <span class="k">return</span> <span class="n">m_ij</span><span class="p">,</span> <span class="n">tk_data</span><span class="p">,</span> <span class="n">eff_data</span><span class="p">,</span> <span class="n">phase_data</span><span class="p">,</span> <span class="n">fit_found</span><span class="p">,</span> <span class="n">covariance_tensor</span><span class="p">,</span> <span class="n">chisq_data</span></div>
 
 
 <div class="viewcode-block" id="Malus"><a class="viewcode-back" href="../../../micropolarray.processing.html#micropolarray.processing.demodulation.Malus">[docs]</a><span class="k">def</span> <span class="nf">Malus</span><span class="p">(</span><span class="n">angle</span><span class="p">,</span> <span class="n">throughput</span><span class="p">,</span> <span class="n">efficiency</span><span class="p">,</span> <span class="n">phase</span><span class="p">):</span>

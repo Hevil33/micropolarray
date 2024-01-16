@@ -14,9 +14,7 @@ from PIL import Image as PILImage
 from micropolarray.cameras import Camera, PolarCam
 from micropolarray.image import Image
 from micropolarray.polarization_functions import AoLP, DoLP, pB
-from micropolarray.processing.chen_wan_liang_calibration import (
-    _ifov_jitcorrect,
-)
+from micropolarray.processing.chen_wan_liang_calibration import _ifov_jitcorrect
 from micropolarray.processing.congrid import congrid
 from micropolarray.processing.demodulation import Demodulator
 from micropolarray.processing.demosaic import (
@@ -25,7 +23,7 @@ from micropolarray.processing.demosaic import (
     split_polarizations,
 )
 from micropolarray.processing.nrgf import roi_from_polar
-from micropolarray.processing.rebin import micropolarray_rebin, standard_rebin
+from micropolarray.processing.rebin import micropolarray_rebin
 from micropolarray.processing.shift import shift_micropol
 from micropolarray.utils import (
     _make_abs_and_create_dir,
@@ -140,21 +138,15 @@ class MicropolImage(Image):
 
     @property
     def I(self) -> PolParam:
-        return PolParam(
-            "I", self.Stokes_vec[0], "Stokes I", "DN", fix_data=False
-        )
+        return PolParam("I", self.Stokes_vec[0], "Stokes I", "DN", fix_data=False)
 
     @property
     def Q(self) -> PolParam:
-        return PolParam(
-            "Q", self.Stokes_vec[1], "Stokes Q", "DN", fix_data=False
-        )
+        return PolParam("Q", self.Stokes_vec[1], "Stokes Q", "DN", fix_data=False)
 
     @property
     def U(self) -> PolParam:
-        return PolParam(
-            "U", self.Stokes_vec[2], "Stokes U", "DN", fix_data=False
-        )
+        return PolParam("U", self.Stokes_vec[2], "Stokes U", "DN", fix_data=False)
 
     @property
     def pB(self) -> PolParam:
@@ -244,7 +236,9 @@ class MicropolImage(Image):
         self.Stokes_vec = self._get_theo_Stokes_vec_components()
 
     def demodulate(
-        self, demodulator: Demodulator, demosaicing: bool = False
+        self,
+        demodulator: Demodulator,
+        demosaicing: bool = False,
     ) -> MicropolImage:
         """Returns a MicropolImage with polarization parameters calculated from the demodulation tensor provided.
 
@@ -261,10 +255,8 @@ class MicropolImage(Image):
 
         info("Demodulating...")
         demodulated_image = MicropolImage(self)
-        demodulated_image.Stokes_vec = (
-            demodulated_image._get_Stokes_from_demodulator(
-                demodulator, demosaicing
-            )
+        demodulated_image.Stokes_vec = demodulated_image._get_Stokes_from_demodulator(
+            demodulator, demosaicing
         )
         demodulated_image._is_demodulated = True
 
@@ -333,15 +325,9 @@ class MicropolImage(Image):
             mij = demodulator.mij
             splitted_pols = self.single_pol_subimages
 
-        # IMG = np.array(
-        #    [
-        #        demosaiced_images[self.angle_dic[0]],
-        #        demosaiced_images[self.angle_dic[45]],
-        #        demosaiced_images[self.angle_dic[-45]],
-        #        demosaiced_images[self.angle_dic[90]],
-        #    ],
-        #    dtype=float,
-        # )  # Liberatore article/thesis
+        """
+        print(mij.shape)
+        print(splitted_pols.shape)
 
         pixel_values = np.array(
             [splitted_pol for splitted_pol in splitted_pols],
@@ -371,6 +357,15 @@ class MicropolImage(Image):
         I = T_ij[0, 0] + T_ij[0, 1] + T_ij[0, 2] + T_ij[0, 3]
         Q = T_ij[1, 0] + T_ij[1, 1] + T_ij[1, 2] + T_ij[1, 3]
         U = T_ij[2, 0] + T_ij[2, 1] + T_ij[2, 2] + T_ij[2, 3]
+        """
+
+        I, Q, U = np.matmul(
+            mij,
+            np.expand_dims(splitted_pols, axis=0),
+            axes=[(-4, -3), (-3, -4), (-4, -3)],
+        )[
+            :, 0
+        ]  # expand dims needed for matmul, output [3, 1, y, x]
 
         S = np.array([I, Q, U], dtype=float)
 
@@ -754,9 +749,7 @@ class MicropolImage(Image):
         filepath = Path(_make_abs_and_create_dir(filename))
         group_filename = str(filepath.joinpath(filepath.parent, filepath.stem))
         for i, demo_image in enumerate(self.demosaiced_images):
-            POL_ID = list(self.angle_dic.keys())[
-                list(self.angle_dic.values()).index(i)
-            ]
+            POL_ID = list(self.angle_dic.keys())[list(self.angle_dic.values()).index(i)]
             imageHdr["POL"] = (int(POL_ID), "Micropolarizer orientation")
             if fixto:
                 data = fix_data(demo_image, *fixto)
@@ -770,9 +763,7 @@ class MicropolImage(Image):
             )
             new_filename = group_filename + "_POL" + str(POL_ID) + ".fits"
             hdu.writeto(new_filename, overwrite=True)
-        info(
-            f'Demosaiced images successfully saved to "{group_filename}_POLX.fits"'
-        )
+        info(f'Demosaiced images successfully saved to "{group_filename}_POLX.fits"')
 
     # ----------------------------------------------------------------
     # -------------------- DATA MANIPULATION -------------------------
@@ -845,9 +836,7 @@ class MicropolImage(Image):
         new_subdims = [int(newdim_y / 2), int(newdim_x / 2)]
         congridded_pol_images = np.zeros(shape=(4, *new_subdims), dtype=float)
         for subimage_i, pol_subimage in enumerate(self.single_pol_subimages):
-            congridded_pol_images[subimage_i] = congrid(
-                pol_subimage, new_subdims
-            )
+            congridded_pol_images[subimage_i] = congrid(pol_subimage, new_subdims)
         newdata = merge_polarizations(congridded_pol_images)
         newimage = MicropolImage(self)
         newimage.data = newdata
@@ -956,15 +945,10 @@ class MicropolImage(Image):
         """
         subimages = self.single_pol_subimages
         blurred_subimages = np.array(
-            [
-                scipy.ndimage.median_filter(subimage, size=2)
-                for subimage in subimages
-            ]
+            [scipy.ndimage.median_filter(subimage, size=2) for subimage in subimages]
         )
         flagged_subimages = flagged_hot_pix_map.single_pol_subimages
-        subimages = np.where(
-            flagged_subimages == 1, blurred_subimages, subimages
-        )
+        subimages = np.where(flagged_subimages == 1, blurred_subimages, subimages)
 
         newimage = MicropolImage(self)
         newimage._update_data_and_Stokes(merge_polarizations(subimages))
@@ -1005,9 +989,7 @@ class MicropolImage(Image):
 
     def __truediv__(self, second) -> MicropolImage:
         if type(self) is type(second):
-            newdata = np.divide(
-                self.data, second.data, where=second.data != 0.0
-            )
+            newdata = np.divide(self.data, second.data, where=second.data != 0.0)
             newimage = MicropolImage(self)
             newimage._update_data_and_Stokes(newdata)
             return newimage

@@ -21,6 +21,7 @@ dependencies = [
     "numba",
     "dataclasses",
     "astropy",
+    "itertools",
     "matplotlib",
     "scipy",
     "wheel",

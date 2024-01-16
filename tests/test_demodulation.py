@@ -43,9 +43,7 @@ class TestDemodulation:
         demo_image = image.demodulate(demodulator=demodulator)
         assert np.all(np.round(demo_image.Q.data, 5) == (1.0 - 4.0))
         assert np.all(np.round(demo_image.U.data, 5) == (2.0 - 3.0))
-        assert np.all(
-            np.round(demo_image.I.data, 5) == (0.5 * (1.0 + 2.0 + 3.0 + 4.0))
-        )
+        assert np.all(np.round(demo_image.I.data, 5) == (0.5 * (1.0 + 2.0 + 3.0 + 4.0)))
 
     # TODO refactor calling angles with fixtures
     def test_demodulation_computation(self, tmp_path):
@@ -124,6 +122,23 @@ class TestDemodulation:
 
         demodulator = ml.Demodulator(output_str)
 
+        assert demodulator.eff.shape == ones.shape
+        assert np.all(np.round(demodulator.eff, 2) == np.round(eff * ones, 2))
+        assert np.all(np.round(demodulator.tk, 2) == np.round(t * ones, 2))
+        assert np.all(
+            np.round(demodulator.phi, 2)
+            == np.round(
+                ml.merge_polarizations(
+                    [
+                        np.rad2deg(angles[i])
+                        * np.ones(shape=(int(side / 2), int(side / 2)))
+                        for i in range(4)
+                    ]
+                ),
+                2,
+            )
+        )
+
         assert (
             demodulator.fit_found_flags.shape == demodulator.mij[0, 0].shape
         )  # after September 2023
@@ -141,8 +156,7 @@ class TestDemodulation:
             Malus(test_angle, 1, 1, 0) - Malus(test_angle, 1, 1, np.pi / 2)
         )
         U = input_signal * (
-            Malus(test_angle, 1, 1, np.pi / 4)
-            - Malus(test_angle, 1, 1, -np.pi / 4)
+            Malus(test_angle, 1, 1, np.pi / 4) - Malus(test_angle, 1, 1, -np.pi / 4)
         )
         S = [I, Q, U]
         dolp = np.round(DoLP(S), 5)
@@ -151,9 +165,7 @@ class TestDemodulation:
 
         # test demodulation without demosaicing
         no_demosaic_image = ml.MicropolImage(example_image)
-        no_demosaic_image = no_demosaic_image.demodulate(
-            demodulator, demosaicing=False
-        )
+        no_demosaic_image = no_demosaic_image.demodulate(demodulator, demosaicing=False)
         assert np.all(np.round(no_demosaic_image.pB.data, 5) == pb)
         assert (
             no_demosaic_image.pB.data.shape
@@ -187,9 +199,7 @@ class TestDemodulation:
         # for dummy_angle in np.arange(-np.pi / 2, np.pi / 2, 0.1):
         for dummy_angle in np.arange(-np.pi, np.pi, 0.1):
             polarized_image = ml.MicropolImage(
-                generate_polarized_data(
-                    shape, input_signal, dummy_angle, t, eff
-                )
+                generate_polarized_data(shape, input_signal, dummy_angle, t, eff)
             )
 
             simple = np.round(np.mean(polarized_image.AoLP.data), 1)

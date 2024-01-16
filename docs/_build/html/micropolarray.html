@@ -392,11 +392,14 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="micropolarray.image.Image.show_histogram">
-<span class="sig-name descname"><span class="pre">show_histogram</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bins</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1000</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="reference internal" href="_modules/micropolarray/image.html#Image.show_histogram"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#micropolarray.image.Image.show_histogram" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">show_histogram</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">split_pols</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="reference internal" href="_modules/micropolarray/image.html#Image.show_histogram"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#micropolarray.image.Image.show_histogram" title="Permalink to this definition"></a></dt>
 <dd><p>Print the histogram of the flattened image data</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>bins</strong> (<em>int</em><em>, </em><em>optional</em>) – Numbers of bin to compute the histogram from. Defaults to 1000.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>split_pols</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to overplot histograms of same family pixels separately. Defaults to False.</p></li>
+<li><p><strong>**kwargs</strong> (<em>int</em><em>, </em><em>optional</em>) – arguments to pass to numpy.histogram(), like bins and range.</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>fig, ax tuple as returned by matplotlib.pyplot.subplots</p>

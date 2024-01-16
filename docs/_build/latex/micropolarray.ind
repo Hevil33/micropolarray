@@ -6,7 +6,7 @@
 
   \bigletter A
   \item \spxentry{align\_keywords\_and\_data()}\spxextra{in module micropolarray.utils}, 
-		\hyperpage{17}
+		\hyperpage{18}
   \item \spxentry{Antarticor}\spxextra{class in micropolarray.cameras}, \hyperpage{10}
   \item \spxentry{AoLP}\spxextra{micropolarray.micropol\_image.MicropolImage property}, 
 		\hyperpage{12}
@@ -37,12 +37,12 @@
   \item \spxentry{correct\_flat()}\spxextra{micropolarray.micropol\_image.MicropolImage method}, 
 		\hyperpage{12}
   \item \spxentry{correct\_ifov()}\spxextra{micropolarray.micropol\_image.MicropolImage method}, 
-		\hyperpage{12}
+		\hyperpage{13}
 
   \indexspace
   \bigletter D
   \item \spxentry{data}\spxextra{micropolarray.image.Image property}, \hyperpage{11}
-  \item \spxentry{data}\spxextra{micropolarray.micropol\_image.PolParam attribute}, \hyperpage{16}
+  \item \spxentry{data}\spxextra{micropolarray.micropol\_image.PolParam attribute}, \hyperpage{17}
   \item \spxentry{demodulate()}\spxextra{micropolarray.micropol\_image.MicropolImage method}, 
 		\hyperpage{13}
   \item \spxentry{Demodulator}\spxextra{class in micropolarray.processing.demodulation}, 
@@ -83,7 +83,7 @@
   \indexspace
   \bigletter I
   \item \spxentry{I}\spxextra{micropolarray.micropol\_image.MicropolImage property}, \hyperpage{12}
-  \item \spxentry{ID}\spxextra{micropolarray.micropol\_image.PolParam attribute}, \hyperpage{16}
+  \item \spxentry{ID}\spxextra{micropolarray.micropol\_image.PolParam attribute}, \hyperpage{17}
   \item \spxentry{Image}\spxextra{class in micropolarray.image}, \hyperpage{11}
 
   \indexspace
@@ -101,7 +101,7 @@
   \item \spxentry{mean\_plus\_std()}\spxextra{in module micropolarray.utils}, \hyperpage{18}
   \item \spxentry{measure\_unit}\spxextra{micropolarray.micropol\_image.PolParam attribute}, 
 		\hyperpage{17}
-  \item \spxentry{median\_minus\_std()}\spxextra{in module micropolarray.utils}, \hyperpage{18}
+  \item \spxentry{median\_minus\_std()}\spxextra{in module micropolarray.utils}, \hyperpage{19}
   \item \spxentry{median\_plus\_std()}\spxextra{in module micropolarray.utils}, \hyperpage{19}
   \item \spxentry{merge\_polarizations()}\spxextra{in module micropolarray.processing.demosaic}, 
 		\hyperpage{6}
@@ -138,7 +138,7 @@
   \item \spxentry{micropolarray.processing.shift}
     \subitem \spxentry{module}, \hyperpage{10}
   \item \spxentry{micropolarray.utils}
-    \subitem \spxentry{module}, \hyperpage{17}
+    \subitem \spxentry{module}, \hyperpage{18}
   \item \spxentry{micropolarray\_jitcongrid()}\spxextra{in module micropolarray.processing.congrid}, 
 		\hyperpage{2}
   \item \spxentry{micropolarray\_jitrebin()}\spxextra{in module micropolarray.processing.rebin}, 
@@ -164,7 +164,7 @@
     \subitem \spxentry{micropolarray.processing.nrgf}, \hyperpage{6}
     \subitem \spxentry{micropolarray.processing.rebin}, \hyperpage{8}
     \subitem \spxentry{micropolarray.processing.shift}, \hyperpage{10}
-    \subitem \spxentry{micropolarray.utils}, \hyperpage{17}
+    \subitem \spxentry{micropolarray.utils}, \hyperpage{18}
 
   \indexspace
   \bigletter N
@@ -183,7 +183,7 @@
   \indexspace
   \bigletter P
   \item \spxentry{pB}\spxextra{micropolarray.micropol\_image.MicropolImage property}, 
-		\hyperpage{13}
+		\hyperpage{14}
   \item \spxentry{pB()}\spxextra{in module micropolarray.polarization\_functions}, \hyperpage{17}
   \item \spxentry{pol0}\spxextra{micropolarray.micropol\_image.MicropolImage property}, 
 		\hyperpage{14}

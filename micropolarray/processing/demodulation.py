@@ -40,11 +40,12 @@ class Demodulator:
 
         self.mij, self.fit_found_flags = self._get_demodulation_tensor()
 
-        self.Cij = self._get_covariance_tensor(
-            glob.glob(os.path.join(demo_matrices_path, "covariance_tensor", "*"))
+    @property
+    def Cij(self) -> np.ndarray:
+        covariance_tensor_fnames = glob.glob(
+            os.path.join(self.demo_matrices_path, "covariance_tensor", "*")
         )
 
-    def _get_covariance_tensor(self, covariance_tensor_fnames):
         if not covariance_tensor_fnames:
             return None
         with fits.open(covariance_tensor_fnames[0]) as firsthul:
@@ -76,6 +77,30 @@ class Demodulator:
             raise ValueError("Incomplete covariance tensor in the selected folder. ")
 
         return Cij
+
+    @property
+    def eff(self) -> np.ndarray:
+        with fits.open(
+            os.path.join(self.demo_matrices_path, "efficiences.fits")
+        ) as firsthul:
+            _ = np.array(firsthul[0].data)
+        return _
+
+    @property
+    def tk(self) -> np.ndarray:
+        with fits.open(
+            os.path.join(self.demo_matrices_path, "transmittancies.fits")
+        ) as firsthul:
+            _ = np.array(firsthul[0].data)
+        return _
+
+    @property
+    def phi(self) -> np.ndarray:
+        with fits.open(
+            os.path.join(self.demo_matrices_path, "phases.fits")
+        ) as firsthul:
+            _ = np.array(firsthul[0].data)
+        return _
 
     def _get_demodulation_tensor(self):
         """Reads files "MIJ.fits" from path folder and returns a (3,4,y,x)

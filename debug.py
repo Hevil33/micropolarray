@@ -10,21 +10,28 @@ import numpy as np
 import numpy.linalg
 
 import micropolarray as ml
+from micropolarray.processing.demodulation_errors import *
 from micropolarray.processing.nrgf import remove_outliers_simple
 
 
 def main():
-    image = ml.MicroPolarizerArrayImage(
-        "/home/herve/dottorato/cormag/2023_flight/L1/volo fase 3 (post reboot)/seq.  1/sum_notilted.fits"
+    demodulator = ml.Demodulator(
+        "/home/herve/dottorato/cormag/2023_flight/post_flight_calibration/polarimetria/demo_matrices_computation/demo_matrices/notilt/4"
     )
+    image = ml.MicropolImage(
+        "/home/herve/dottorato/cormag/2023_flight/post_flight_calibration/polarimetria/demo_matrices_computation/input_data/notilt/p0_sum.fits"
+    ).rebin(4)
 
-    # y, x, r = ml.find_occulter_hough(image.data)
-    image = image.demosaic()
-    # image = image.rebin(8)
+    image = image.demodulate(demodulator)
+    error_S = get_error_on_demodulation(np.sqrt(image.data / 2.75), demodulator)
 
-    image.mask_occulter(*ml.find_occulter_hough(image.data))
-    fig, ax, fig2, ax2 = image.show_with_pol_params()
-    # ax.add_artist(plt.Circle((x, y), r, alpha=0.5))
+    fig, ax = image.show_histogram(split_pols=True, bins=1000)
+    fig.set_dpi(200)
+
+    fig, ax = plt.subplots(dpi=200)
+    hist = np.histogram(error_S[0] / image.I.data, bins=1000)
+    ax.stairs(*hist)
+
     plt.show()
 
 
