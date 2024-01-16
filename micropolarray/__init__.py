@@ -1,5 +1,7 @@
 import logging
 
+from processing.demodulation_errors import get_error_on_demodulation
+
 from micropolarray.cameras import Antarticor, Kasi, PolarCam
 from micropolarray.image import Image
 from micropolarray.micropol_image import MicropolImage
