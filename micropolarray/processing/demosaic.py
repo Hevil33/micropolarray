@@ -35,9 +35,7 @@ def demosaicmean(data):
             for y_super in range(0, data.shape[0], 2):
                 for x_super in range(0, data.shape[1], 2):
                     mean = data[y_super + j, x_super + i] * 0.25
-                    temp_data[
-                        y_super : y_super + 2, x_super : x_super + 2
-                    ] = mean
+                    temp_data[y_super : y_super + 2, x_super : x_super + 2] = mean
             demo_images[counter] = temp_data.copy()
             counter += 1
 
@@ -84,6 +82,9 @@ def demosaicadjacent(data):
 
 
 def split_polarizations(data: np.ndarray):
+    if (data.shape[0] % 2) or (data.shape[1] % 2):
+        raise ValueError("Odd number of pixels, can't split polarizations.")
+
     single_pol_images = np.array(
         [data[j::2, i::2] for j in range(2) for i in range(2)],
         # [

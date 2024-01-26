@@ -1,7 +1,5 @@
 import logging
 
-from processing.demodulation_errors import get_error_on_demodulation
-
 from micropolarray.cameras import Antarticor, Kasi, PolarCam
 from micropolarray.image import Image
 from micropolarray.micropol_image import MicropolImage
@@ -23,6 +21,7 @@ from micropolarray.processing.demodulation import (
     Demodulator,
     calculate_demodulation_tensor,
 )
+from micropolarray.processing.demodulation_errors import MicropolImageError
 from micropolarray.processing.demosaic import (
     demosaic,
     merge_polarizations,
@@ -35,6 +34,7 @@ from micropolarray.processing.nrgf import (
     nrgf,
     roi_from_polar,
 )
+from micropolarray.processing.rebin import trim_to_match_binning
 from micropolarray.utils import (
     align_keywords_and_data,
     get_Bsun_units,

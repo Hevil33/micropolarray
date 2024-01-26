@@ -23,16 +23,19 @@ def main():
     ).rebin(4)
 
     image = image.demodulate(demodulator)
-    error_S = get_error_on_demodulation(np.sqrt(image.data / 2.75), demodulator)
 
-    fig, ax = image.show_histogram(split_pols=True, bins=1000)
-    fig.set_dpi(200)
+    image_error = MicropolImageError(
+        image, image_error=(np.sqrt(image.data / 2.75)), demodulator=demodulator
+    )
 
-    fig, ax = plt.subplots(dpi=200)
-    hist = np.histogram(error_S[0] / image.I.data, bins=1000)
-    ax.stairs(*hist)
-
-    plt.show()
+    print(f"{image_error.sigma_S / image.Stokes_vec.data = }")
+    print()
+    print(f"{image_error.sigma_AoLP / image.AoLP.data = }")
+    print()
+    print(f"{image_error.sigma_DoLP / image.DoLP.data = }")
+    print()
+    print(f"{image_error.sigma_pB / image.pB.data = }")
+    print()
 
 
 if __name__ == "__main__":

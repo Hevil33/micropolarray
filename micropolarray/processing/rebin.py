@@ -54,9 +54,7 @@ def micropolarray_jitrebin_old(data, height, width, binning=2):
     for new_y in range(new_height):
         for new_x in range(new_width):
             for y_scaler in range((new_y % 2), (new_y % 2) + 2 * binning, 2):
-                for x_scaler in range(
-                    (new_x % 2), (new_x % 2) + 2 * binning, 2
-                ):
+                for x_scaler in range((new_x % 2), (new_x % 2) + 2 * binning, 2):
                     i = (new_y - new_y % 2) * binning + y_scaler
                     j = (new_x - new_x % 2) * binning + x_scaler
                     new_data[new_y, new_x] += data[i, j]
@@ -71,9 +69,7 @@ def micropolarray_jitrebin(data, new_height, new_width, binning=2):
     for new_y in range(new_height):
         for new_x in range(new_width):
             for y_scaler in range((new_y % 2), (new_y % 2) + 2 * binning, 2):
-                for x_scaler in range(
-                    (new_x % 2), (new_x % 2) + 2 * binning, 2
-                ):
+                for x_scaler in range((new_x % 2), (new_x % 2) + 2 * binning, 2):
                     i = (new_y - new_y % 2) * binning + y_scaler
                     j = (new_x - new_x % 2) * binning + x_scaler
                     new_data[new_y, new_x] += data[i, j]

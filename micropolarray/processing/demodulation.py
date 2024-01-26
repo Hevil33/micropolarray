@@ -15,13 +15,13 @@ from scipy.optimize import curve_fit
 from tqdm import tqdm
 
 from micropolarray.cameras import PolarCam
-from micropolarray.processing.chen_wan_liang_calibration import _ifov_jitcorrect
-from micropolarray.processing.nrgf import find_occulter_position, roi_from_polar
-from micropolarray.processing.rebin import (
-    micropolarray_rebin,
-    standard_rebin,
-    trim_to_match_binning,
-)
+from micropolarray.processing.chen_wan_liang_calibration import \
+    _ifov_jitcorrect
+from micropolarray.processing.nrgf import (find_occulter_position,
+                                           roi_from_polar)
+from micropolarray.processing.rebin import (micropolarray_rebin,
+                                            standard_rebin,
+                                            trim_to_match_binning)
 from micropolarray.utils import mean_plus_std, merge_polarizations
 
 # Shape of the demodulation matrix
@@ -438,8 +438,18 @@ def calculate_demodulation_tensor(
     elif type(normalizing_S) is not np.ndarray:  # its a number
         normalizing_S *= binning * binning  # account binning
         normalizing_S = np.ones(shape=(height, width), dtype=float) * normalizing_S
-    elif type(normalizing_S) is np.ndarray:  # its an image
+    elif (
+        type(normalizing_S) is np.ndarray and len(normalizing_S.shape) == 2
+    ):  # its an image
         normalizing_S = micropolarray_rebin(normalizing_S, binning)
+    elif (
+        type(normalizing_S) is np.ndarray and len(normalizing_S.shape) == 3
+    ):  # series of images
+        S_n = normalizing_S.shape[0]
+        _ = []
+        for i in range(S_n):
+            _.append(micropolarray_rebin(normalizing_S[i], binning))
+        normalizing_S = np.array(_)
 
     # correct S=0 error
     normalizing_S = np.where(normalizing_S >= 0, normalizing_S, 1)
