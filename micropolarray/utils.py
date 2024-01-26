@@ -10,10 +10,7 @@ from scipy import constants
 from scipy.optimize import curve_fit
 
 from micropolarray.cameras import PolarCam
-from micropolarray.processing.demosaic import (
-    merge_polarizations,
-    split_polarizations,
-)
+from micropolarray.processing.demosaic import merge_polarizations, split_polarizations
 
 
 # timer decorator
@@ -28,9 +25,7 @@ def timer(func):
         start = time.time()
         result = func(*args, **kwargs)
         end = time.time()
-        print(
-            f"Function {func.__name__} took {round(end - start, 4)} s to run"
-        )
+        print(f"Function {func.__name__} took {round(end - start, 4)} s to run")
         return result
 
     return wrapper
@@ -216,10 +211,7 @@ def get_Bsun_units(
     diffusion_solid_angle = 1.083 * 1.0e-5
     diffuser_transmittancy = 0.28
     Bsun_unit = (
-        diffusion_solid_angle
-        * diffuser_transmittancy
-        * texp_diffuser
-        / texp_image
+        diffusion_solid_angle * diffuser_transmittancy * texp_diffuser / texp_image
     )
     Bsun_unit = (
         (1.0 / texp_image)
@@ -232,18 +224,14 @@ def get_Bsun_units(
 
 
 def get_malus_normalization(four_peaks_images, show_hist=False):
-    S_max = np.zeros_like(
-        four_peaks_images[0]
-    )  # tk_sum = tk_0 + tk_45 + tk_90 + tk_45
+    S_max = np.zeros_like(four_peaks_images[0])  # tk_sum = tk_0 + tk_45 + tk_90 + tk_45
     S_max = 0.5 * np.sum(four_peaks_images, axis=0)
     # Normalizing S, has a spike of which maximum is taken
     bins = 1000
     histo = np.histogram(S_max, bins=bins)
     maxvalue = np.max(histo[0])
     index = np.where(histo[0] == maxvalue)[0][0]
-    normalizing_S = (
-        histo[1][index] + histo[1][index + 1] + histo[1][index - 1]
-    ) / 3
+    normalizing_S = (histo[1][index] + histo[1][index + 1] + histo[1][index - 1]) / 3
     # normalizing_S = np.max(S_max) # old
 
     # ----------------------------------------------

@@ -129,11 +129,13 @@ class TestDemodulation:
             np.round(demodulator.phi, 2)
             == np.round(
                 ml.merge_polarizations(
-                    [
-                        np.rad2deg(angles[i])
-                        * np.ones(shape=(int(side / 2), int(side / 2)))
-                        for i in range(4)
-                    ]
+                    np.array(
+                        [
+                            np.rad2deg(angles[i])
+                            * np.ones(shape=(int(side / 2), int(side / 2)))
+                            for i in range(4)
+                        ]
+                    )
                 ),
                 2,
             )

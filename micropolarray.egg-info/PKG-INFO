@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: micropolarray
-Version: 1.2.5
+Version: 1.2.6
 Summary: micropolarizer array data utilities
 Home-page: https://github.com/Hevil33/micropolarray_master
 Author: Hervé Haudemand
@@ -49,7 +49,6 @@ Requires-Dist: pandas
 Requires-Dist: numba
 Requires-Dist: dataclasses
 Requires-Dist: astropy
-Requires-Dist: itertools
 Requires-Dist: matplotlib
 Requires-Dist: scipy
 Requires-Dist: wheel

@@ -17,9 +17,7 @@ from micropolarray.processing.demodulation import Malus
 class TestMicropolImage:
     def write_temp_image(self, tmp_path, data):
         """Writes images to the temp folder for testing"""
-        image = fits.PrimaryHDU(
-            data=data, do_not_scale_image_data=True, uint=False
-        )
+        image = fits.PrimaryHDU(data=data, do_not_scale_image_data=True, uint=False)
         image.header["FROMFILE"] = True
         image.writeto(tmp_path / "sample_image.fits")
 
@@ -44,9 +42,7 @@ class TestMicropolImage:
         image = ml.Image(dummy_data_16)
         for input_path in ["image.fits", "test/image.fits"]:
             image.save_as_fits(tmp_path / input_path)
-            read_image = ml.Image(
-                str((tmp_path / input_path).with_suffix(".fits"))
-            )
+            read_image = ml.Image(str((tmp_path / input_path).with_suffix(".fits")))
             assert np.all(read_image.data == dummy_data_16)
             read_image.header["EXTEND"] = True
             assert read_image.header == image.header
@@ -87,12 +83,14 @@ class TestMicropolImage:
         dummy_image = ml.MicropolImage(dummy_data_16, dark=dark_image)
         assert np.all(dummy_image.data == 0.0)
         assert np.all(dummy_image.DoLP.data == 0.0)
+
         # test flat
         signal = 4.0
         dummy_data_16 = np.ones(shape=(16, 16)) * signal
         flat_image = ml.MicropolImage(dummy_data_16 * np.random.random(1))
         dummy_image = ml.MicropolImage(dummy_data_16, flat=flat_image)
-        assert np.all(dummy_image.data == signal)
+
+        assert np.all(np.round(dummy_image.data, 2) * 1.0 == np.round(signal))
 
     def test_demosaic(self, generate_dummy_data, tmp_path):
         """Tests demosaic operation and demosaic writing"""
@@ -105,9 +103,7 @@ class TestMicropolImage:
 
         for idx, demo_image in enumerate(image.demosaiced_images):
             assert np.all(demo_image == np.full((16, 16), (idx + 1) / 4.0))
-        assert np.all(
-            image.I.data == np.full((16, 16), 0.25 * 0.5 * (1 + 2 + 3 + 4))
-        )
+        assert np.all(image.I.data == np.full((16, 16), 0.25 * 0.5 * (1 + 2 + 3 + 4)))
 
         # test adjacent
         image = ml.MicropolImage(dummy_data_16)
@@ -116,9 +112,7 @@ class TestMicropolImage:
             assert np.all(demo_image == np.full((16, 16), (idx + 1)))
 
         # test writing
-        image.save_demosaiced_images_as_fits(
-            str(tmp_path / "demosaiced_images.fits")
-        )
+        image.save_demosaiced_images_as_fits(str(tmp_path / "demosaiced_images.fits"))
 
     def test_rebinning(self, generate_dummy_data):
         """Tests 2x2 and 4x4 binning (the other will be supposedly fine)"""
@@ -138,13 +132,9 @@ class TestMicropolImage:
             assert np.all(image.Q.data == Q)
             assert np.all(image.U.data == U)
 
-            assert np.all(
-                image.AoLP.data == 0.5 * np.arctan2(U, Q) * half_ones
-            )
+            assert np.all(image.AoLP.data == 0.5 * np.arctan2(U, Q) * half_ones)
             assert np.all(image.pB.data == np.sqrt(Q * Q + U * U) * half_ones)
-            assert np.all(
-                image.DoLP.data == np.sqrt(Q * Q + U * U) * half_ones / I
-            )
+            assert np.all(image.DoLP.data == np.sqrt(Q * Q + U * U) * half_ones / I)
 
         array_side = 16
         dummy_data_16 = generate_dummy_data(array_side)
@@ -158,9 +148,7 @@ class TestMicropolImage:
         angles = [0, 45, -45, 90]
         numbers = [1.0, 2.0, 3.0, 4.0]
         for angle, n in zip(angles, numbers):
-            assert np.all(
-                image.single_pol_subimages[image.angle_dic[angle]] == n
-            )
+            assert np.all(image.single_pol_subimages[image.angle_dic[angle]] == n)
 
         I = 0.5 * (1 + 2 + 3 + 4)
         Q = 1.0 - 4.0

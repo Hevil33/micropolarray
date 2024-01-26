@@ -59,9 +59,7 @@ def roi_from_polar(
         tuple([center[0], center[1]]),
     )  # cast it to a tuple (which is hashable)
 
-    theta_condition = np.logical_and(
-        phi_coords >= theta_min, phi_coords < theta_max
-    )
+    theta_condition = np.logical_and(phi_coords >= theta_min, phi_coords < theta_max)
     rho_condition = np.logical_and(
         rho_coords > rho_min, rho_coords <= rho_max
     )  # half the radius because half the map
@@ -91,12 +89,9 @@ def map_polar_coordinates(height, width, center):
     i_list, j_list = np.arange(width), np.arange(height)
     x_coords, y_coords = np.meshgrid(i_list, j_list)
     # Map polar coordinates, 0 = horizontal dx, anti-clockwise angles
-    rho_coords = np.sqrt(
-        (x_coords - x_center) ** 2 + (y_coords - y_center) ** 2
-    )
+    rho_coords = np.sqrt((x_coords - x_center) ** 2 + (y_coords - y_center) ** 2)
     phi_coords = (
-        (np.arctan2(y_coords - y_center, x_coords - x_center) * 180 / np.pi)
-        + 360
+        (np.arctan2(y_coords - y_center, x_coords - x_center) * 180 / np.pi) + 360
     ) % 360
 
     return rho_coords, phi_coords
@@ -155,9 +150,7 @@ def nrgf(
 
     print("Applying nrgf filter...")
     for r in range(rho_min, rho_max, rho_step):
-        rho_condition = np.logical_and(
-            rho_coords > r, rho_coords <= r + rho_step
-        )
+        rho_condition = np.logical_and(rho_coords > r, rho_coords <= r + rho_step)
         condition = np.logical_and(rho_condition, out_phi_condition)
         # condition = np.logical_and(rho_condition, mean_phi_condition)
         mean_condition = np.logical_and(rho_condition, mean_phi_condition)

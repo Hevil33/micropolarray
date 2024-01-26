@@ -4,6 +4,7 @@ from logging import info
 
 import numpy as np
 from numba import njit
+from numba.typed import List
 
 from micropolarray.processing.congrid import congrid
 

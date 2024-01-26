@@ -92,7 +92,7 @@ class MicropolImage(Image):
             angle_dic = DEFAULT_ANGLES_DIC
         self.angle_dic = angle_dic
 
-        if type(initializer) is str and len(initializer) > 1:
+        if type(initializer) is list and len(initializer) > 1:
             self._num_of_images = len(initializer)
         else:
             self._num_of_images = 1
@@ -400,7 +400,7 @@ class MicropolImage(Image):
         Returns:
             MicropolImage: copy of input image corrected by flat
         """
-        normalized_flat = flat.data / np.max(flat.data)
+        normalized_flat = flat.data / np.mean(flat.data)
 
         self.data = np.divide(
             self.data,
