@@ -33,6 +33,7 @@ micropolarray/processing/chen_wan_liang_calibration.py
 micropolarray/processing/congrid.py
 micropolarray/processing/convert.py
 micropolarray/processing/demodulation.py
+micropolarray/processing/demodulation_errors.py
 micropolarray/processing/demosaic.py
 micropolarray/processing/hotpix_cleaning.py
 micropolarray/processing/nrgf.py

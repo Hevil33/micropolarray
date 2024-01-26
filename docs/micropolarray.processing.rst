@@ -36,6 +36,14 @@ micropolarray.processing.demodulation module
    :undoc-members:
    :show-inheritance:
 
+micropolarray.processing.demodulation\_errors module
+----------------------------------------------------
+
+.. automodule:: micropolarray.processing.demodulation_errors
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 micropolarray.processing.demosaic module
 ----------------------------------------
 

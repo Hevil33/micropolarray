@@ -85,9 +85,7 @@
 <span class="kn">from</span> <span class="nn">micropolarray.cameras</span> <span class="kn">import</span> <span class="n">Camera</span><span class="p">,</span> <span class="n">PolarCam</span>
 <span class="kn">from</span> <span class="nn">micropolarray.image</span> <span class="kn">import</span> <span class="n">Image</span>
 <span class="kn">from</span> <span class="nn">micropolarray.polarization_functions</span> <span class="kn">import</span> <span class="n">AoLP</span><span class="p">,</span> <span class="n">DoLP</span><span class="p">,</span> <span class="n">pB</span>
-<span class="kn">from</span> <span class="nn">micropolarray.processing.chen_wan_liang_calibration</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">_ifov_jitcorrect</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">micropolarray.processing.chen_wan_liang_calibration</span> <span class="kn">import</span> <span class="n">_ifov_jitcorrect</span>
 <span class="kn">from</span> <span class="nn">micropolarray.processing.congrid</span> <span class="kn">import</span> <span class="n">congrid</span>
 <span class="kn">from</span> <span class="nn">micropolarray.processing.demodulation</span> <span class="kn">import</span> <span class="n">Demodulator</span>
 <span class="kn">from</span> <span class="nn">micropolarray.processing.demosaic</span> <span class="kn">import</span> <span class="p">(</span>
@@ -96,7 +94,7 @@
     <span class="n">split_polarizations</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">micropolarray.processing.nrgf</span> <span class="kn">import</span> <span class="n">roi_from_polar</span>
-<span class="kn">from</span> <span class="nn">micropolarray.processing.rebin</span> <span class="kn">import</span> <span class="n">micropolarray_rebin</span><span class="p">,</span> <span class="n">standard_rebin</span>
+<span class="kn">from</span> <span class="nn">micropolarray.processing.rebin</span> <span class="kn">import</span> <span class="n">micropolarray_rebin</span>
 <span class="kn">from</span> <span class="nn">micropolarray.processing.shift</span> <span class="kn">import</span> <span class="n">shift_micropol</span>
 <span class="kn">from</span> <span class="nn">micropolarray.utils</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">_make_abs_and_create_dir</span><span class="p">,</span>
@@ -211,21 +209,15 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">I</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PolParam</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">PolParam</span><span class="p">(</span>
-            <span class="s2">&quot;I&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Stokes_vec</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;Stokes I&quot;</span><span class="p">,</span> <span class="s2">&quot;DN&quot;</span><span class="p">,</span> <span class="n">fix_data</span><span class="o">=</span><span class="kc">False</span>
-        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">PolParam</span><span class="p">(</span><span class="s2">&quot;I&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Stokes_vec</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;Stokes I&quot;</span><span class="p">,</span> <span class="s2">&quot;DN&quot;</span><span class="p">,</span> <span class="n">fix_data</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">Q</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PolParam</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">PolParam</span><span class="p">(</span>
-            <span class="s2">&quot;Q&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Stokes_vec</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;Stokes Q&quot;</span><span class="p">,</span> <span class="s2">&quot;DN&quot;</span><span class="p">,</span> <span class="n">fix_data</span><span class="o">=</span><span class="kc">False</span>
-        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">PolParam</span><span class="p">(</span><span class="s2">&quot;Q&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Stokes_vec</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;Stokes Q&quot;</span><span class="p">,</span> <span class="s2">&quot;DN&quot;</span><span class="p">,</span> <span class="n">fix_data</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">U</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PolParam</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">PolParam</span><span class="p">(</span>
-            <span class="s2">&quot;U&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Stokes_vec</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="s2">&quot;Stokes U&quot;</span><span class="p">,</span> <span class="s2">&quot;DN&quot;</span><span class="p">,</span> <span class="n">fix_data</span><span class="o">=</span><span class="kc">False</span>
-        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">PolParam</span><span class="p">(</span><span class="s2">&quot;U&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Stokes_vec</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="s2">&quot;Stokes U&quot;</span><span class="p">,</span> <span class="s2">&quot;DN&quot;</span><span class="p">,</span> <span class="n">fix_data</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">pB</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PolParam</span><span class="p">:</span>
@@ -315,7 +307,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">Stokes_vec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_theo_Stokes_vec_components</span><span class="p">()</span>
 
 <div class="viewcode-block" id="MicropolImage.demodulate"><a class="viewcode-back" href="../../micropolarray.html#micropolarray.micropol_image.MicropolImage.demodulate">[docs]</a>    <span class="k">def</span> <span class="nf">demodulate</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">demodulator</span><span class="p">:</span> <span class="n">Demodulator</span><span class="p">,</span> <span class="n">demosaicing</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">demodulator</span><span class="p">:</span> <span class="n">Demodulator</span><span class="p">,</span>
+        <span class="n">demosaicing</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MicropolImage</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a MicropolImage with polarization parameters calculated from the demodulation tensor provided.</span>
 
@@ -332,10 +326,8 @@
 
         <span class="n">info</span><span class="p">(</span><span class="s2">&quot;Demodulating...&quot;</span><span class="p">)</span>
         <span class="n">demodulated_image</span> <span class="o">=</span> <span class="n">MicropolImage</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-        <span class="n">demodulated_image</span><span class="o">.</span><span class="n">Stokes_vec</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">demodulated_image</span><span class="o">.</span><span class="n">_get_Stokes_from_demodulator</span><span class="p">(</span>
-                <span class="n">demodulator</span><span class="p">,</span> <span class="n">demosaicing</span>
-            <span class="p">)</span>
+        <span class="n">demodulated_image</span><span class="o">.</span><span class="n">Stokes_vec</span> <span class="o">=</span> <span class="n">demodulated_image</span><span class="o">.</span><span class="n">_get_Stokes_from_demodulator</span><span class="p">(</span>
+            <span class="n">demodulator</span><span class="p">,</span> <span class="n">demosaicing</span>
         <span class="p">)</span>
         <span class="n">demodulated_image</span><span class="o">.</span><span class="n">_is_demodulated</span> <span class="o">=</span> <span class="kc">True</span>
 
@@ -404,44 +396,47 @@
             <span class="n">mij</span> <span class="o">=</span> <span class="n">demodulator</span><span class="o">.</span><span class="n">mij</span>
             <span class="n">splitted_pols</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">single_pol_subimages</span>
 
-        <span class="c1"># IMG = np.array(</span>
-        <span class="c1">#    [</span>
-        <span class="c1">#        demosaiced_images[self.angle_dic[0]],</span>
-        <span class="c1">#        demosaiced_images[self.angle_dic[45]],</span>
-        <span class="c1">#        demosaiced_images[self.angle_dic[-45]],</span>
-        <span class="c1">#        demosaiced_images[self.angle_dic[90]],</span>
-        <span class="c1">#    ],</span>
-        <span class="c1">#    dtype=float,</span>
-        <span class="c1"># )  # Liberatore article/thesis</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        print(mij.shape)</span>
+<span class="sd">        print(splitted_pols.shape)</span>
 
-        <span class="n">pixel_values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
-            <span class="p">[</span><span class="n">splitted_pol</span> <span class="k">for</span> <span class="n">splitted_pol</span> <span class="ow">in</span> <span class="n">splitted_pols</span><span class="p">],</span>
-            <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
-        <span class="p">)</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">mij</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">pixel_values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="ow">or</span> <span class="p">(</span>
-            <span class="n">mij</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">pixel_values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-        <span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;demodulation matrix </span><span class="si">{</span><span class="n">mij</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2"> and images </span><span class="si">{</span><span class="n">pixel_values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2"> have different shapes. Check that binning is correct.&quot;</span>
-            <span class="p">)</span>  <span class="c1"># sanity check</span>
+<span class="sd">        pixel_values = np.array(</span>
+<span class="sd">            [splitted_pol for splitted_pol in splitted_pols],</span>
+<span class="sd">            dtype=float,</span>
+<span class="sd">        )</span>
+<span class="sd">        if (mij[0, 0].shape[0] != pixel_values[0].shape[0]) or (</span>
+<span class="sd">            mij[0, 0].shape[1] != pixel_values[0].shape[1]</span>
+<span class="sd">        ):</span>
+<span class="sd">            raise ValueError(</span>
+<span class="sd">                f&quot;demodulation matrix {mij[0,0].shape} and images {pixel_values[0].shape} have different shapes. Check that binning is correct.&quot;</span>
+<span class="sd">            )  # sanity check</span>
 
-        <span class="n">T_ij</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
-            <span class="n">shape</span><span class="o">=</span><span class="p">(</span>
-                <span class="n">num_of_malus_parameters</span><span class="p">,</span>
-                <span class="n">pixels_in_superpix</span><span class="p">,</span>
-                <span class="o">*</span><span class="n">splitted_pols</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span>
-            <span class="p">)</span>
-        <span class="p">)</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_of_malus_parameters</span><span class="p">):</span>
-            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">pixels_in_superpix</span><span class="p">):</span>
-                <span class="n">temp_tij</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span>
-                    <span class="n">mij</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:],</span> <span class="n">pixel_values</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span>
-                <span class="p">)</span>  <span class="c1"># Matrix product</span>
-                <span class="n">T_ij</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">temp_tij</span>
+<span class="sd">        T_ij = np.zeros(</span>
+<span class="sd">            shape=(</span>
+<span class="sd">                num_of_malus_parameters,</span>
+<span class="sd">                pixels_in_superpix,</span>
+<span class="sd">                *splitted_pols[0].shape,</span>
+<span class="sd">            )</span>
+<span class="sd">        )</span>
+<span class="sd">        for i in range(num_of_malus_parameters):</span>
+<span class="sd">            for j in range(pixels_in_superpix):</span>
+<span class="sd">                temp_tij = np.multiply(</span>
+<span class="sd">                    mij[i, j, :, :], pixel_values[j, :, :]</span>
+<span class="sd">                )  # Matrix product</span>
+<span class="sd">                T_ij[i, j, :, :] = temp_tij</span>
 
-        <span class="n">I</span> <span class="o">=</span> <span class="n">T_ij</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">T_ij</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">T_ij</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="n">T_ij</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
-        <span class="n">Q</span> <span class="o">=</span> <span class="n">T_ij</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">T_ij</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">T_ij</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="n">T_ij</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
-        <span class="n">U</span> <span class="o">=</span> <span class="n">T_ij</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">T_ij</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">T_ij</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="n">T_ij</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
+<span class="sd">        I = T_ij[0, 0] + T_ij[0, 1] + T_ij[0, 2] + T_ij[0, 3]</span>
+<span class="sd">        Q = T_ij[1, 0] + T_ij[1, 1] + T_ij[1, 2] + T_ij[1, 3]</span>
+<span class="sd">        U = T_ij[2, 0] + T_ij[2, 1] + T_ij[2, 2] + T_ij[2, 3]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">I</span><span class="p">,</span> <span class="n">Q</span><span class="p">,</span> <span class="n">U</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span>
+            <span class="n">mij</span><span class="p">,</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">splitted_pols</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
+            <span class="n">axes</span><span class="o">=</span><span class="p">[(</span><span class="o">-</span><span class="mi">4</span><span class="p">,</span> <span class="o">-</span><span class="mi">3</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span> <span class="o">-</span><span class="mi">4</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">4</span><span class="p">,</span> <span class="o">-</span><span class="mi">3</span><span class="p">)],</span>
+        <span class="p">)[</span>
+            <span class="p">:,</span> <span class="mi">0</span>
+        <span class="p">]</span>  <span class="c1"># expand dims needed for matmul, output [3, 1, y, x]</span>
 
         <span class="n">S</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">I</span><span class="p">,</span> <span class="n">Q</span><span class="p">,</span> <span class="n">U</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
 
@@ -825,9 +820,7 @@
         <span class="n">filepath</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">_make_abs_and_create_dir</span><span class="p">(</span><span class="n">filename</span><span class="p">))</span>
         <span class="n">group_filename</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">filepath</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="n">filepath</span><span class="o">.</span><span class="n">parent</span><span class="p">,</span> <span class="n">filepath</span><span class="o">.</span><span class="n">stem</span><span class="p">))</span>
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">demo_image</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">demosaiced_images</span><span class="p">):</span>
-            <span class="n">POL_ID</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">angle_dic</span><span class="o">.</span><span class="n">keys</span><span class="p">())[</span>
-                <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">angle_dic</span><span class="o">.</span><span class="n">values</span><span class="p">())</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
-            <span class="p">]</span>
+            <span class="n">POL_ID</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">angle_dic</span><span class="o">.</span><span class="n">keys</span><span class="p">())[</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">angle_dic</span><span class="o">.</span><span class="n">values</span><span class="p">())</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">i</span><span class="p">)]</span>
             <span class="n">imageHdr</span><span class="p">[</span><span class="s2">&quot;POL&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">POL_ID</span><span class="p">),</span> <span class="s2">&quot;Micropolarizer orientation&quot;</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">fixto</span><span class="p">:</span>
                 <span class="n">data</span> <span class="o">=</span> <span class="n">fix_data</span><span class="p">(</span><span class="n">demo_image</span><span class="p">,</span> <span class="o">*</span><span class="n">fixto</span><span class="p">)</span>
@@ -841,9 +834,7 @@
             <span class="p">)</span>
             <span class="n">new_filename</span> <span class="o">=</span> <span class="n">group_filename</span> <span class="o">+</span> <span class="s2">&quot;_POL&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">POL_ID</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;.fits&quot;</span>
             <span class="n">hdu</span><span class="o">.</span><span class="n">writeto</span><span class="p">(</span><span class="n">new_filename</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="n">info</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s1">&#39;Demosaiced images successfully saved to &quot;</span><span class="si">{</span><span class="n">group_filename</span><span class="si">}</span><span class="s1">_POLX.fits&quot;&#39;</span>
-        <span class="p">)</span></div>
+        <span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Demosaiced images successfully saved to &quot;</span><span class="si">{</span><span class="n">group_filename</span><span class="si">}</span><span class="s1">_POLX.fits&quot;&#39;</span><span class="p">)</span></div>
 
     <span class="c1"># ----------------------------------------------------------------</span>
     <span class="c1"># -------------------- DATA MANIPULATION -------------------------</span>
@@ -916,9 +907,7 @@
         <span class="n">new_subdims</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">newdim_y</span> <span class="o">/</span> <span class="mi">2</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">newdim_x</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)]</span>
         <span class="n">congridded_pol_images</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="o">*</span><span class="n">new_subdims</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">subimage_i</span><span class="p">,</span> <span class="n">pol_subimage</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">single_pol_subimages</span><span class="p">):</span>
-            <span class="n">congridded_pol_images</span><span class="p">[</span><span class="n">subimage_i</span><span class="p">]</span> <span class="o">=</span> <span class="n">congrid</span><span class="p">(</span>
-                <span class="n">pol_subimage</span><span class="p">,</span> <span class="n">new_subdims</span>
-            <span class="p">)</span>
+            <span class="n">congridded_pol_images</span><span class="p">[</span><span class="n">subimage_i</span><span class="p">]</span> <span class="o">=</span> <span class="n">congrid</span><span class="p">(</span><span class="n">pol_subimage</span><span class="p">,</span> <span class="n">new_subdims</span><span class="p">)</span>
         <span class="n">newdata</span> <span class="o">=</span> <span class="n">merge_polarizations</span><span class="p">(</span><span class="n">congridded_pol_images</span><span class="p">)</span>
         <span class="n">newimage</span> <span class="o">=</span> <span class="n">MicropolImage</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="n">newimage</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">newdata</span>
@@ -1027,15 +1016,10 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">subimages</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">single_pol_subimages</span>
         <span class="n">blurred_subimages</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
-            <span class="p">[</span>
-                <span class="n">scipy</span><span class="o">.</span><span class="n">ndimage</span><span class="o">.</span><span class="n">median_filter</span><span class="p">(</span><span class="n">subimage</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-                <span class="k">for</span> <span class="n">subimage</span> <span class="ow">in</span> <span class="n">subimages</span>
-            <span class="p">]</span>
+            <span class="p">[</span><span class="n">scipy</span><span class="o">.</span><span class="n">ndimage</span><span class="o">.</span><span class="n">median_filter</span><span class="p">(</span><span class="n">subimage</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span> <span class="k">for</span> <span class="n">subimage</span> <span class="ow">in</span> <span class="n">subimages</span><span class="p">]</span>
         <span class="p">)</span>
         <span class="n">flagged_subimages</span> <span class="o">=</span> <span class="n">flagged_hot_pix_map</span><span class="o">.</span><span class="n">single_pol_subimages</span>
-        <span class="n">subimages</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
-            <span class="n">flagged_subimages</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="n">blurred_subimages</span><span class="p">,</span> <span class="n">subimages</span>
-        <span class="p">)</span>
+        <span class="n">subimages</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">flagged_subimages</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="n">blurred_subimages</span><span class="p">,</span> <span class="n">subimages</span><span class="p">)</span>
 
         <span class="n">newimage</span> <span class="o">=</span> <span class="n">MicropolImage</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="n">newimage</span><span class="o">.</span><span class="n">_update_data_and_Stokes</span><span class="p">(</span><span class="n">merge_polarizations</span><span class="p">(</span><span class="n">subimages</span><span class="p">))</span>
@@ -1076,9 +1060,7 @@
 
     <span class="k">def</span> <span class="fm">__truediv__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">second</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MicropolImage</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">type</span><span class="p">(</span><span class="n">second</span><span class="p">):</span>
-            <span class="n">newdata</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">divide</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">second</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="n">second</span><span class="o">.</span><span class="n">data</span> <span class="o">!=</span> <span class="mf">0.0</span>
-            <span class="p">)</span>
+            <span class="n">newdata</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">divide</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">second</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="n">second</span><span class="o">.</span><span class="n">data</span> <span class="o">!=</span> <span class="mf">0.0</span><span class="p">)</span>
             <span class="n">newimage</span> <span class="o">=</span> <span class="n">MicropolImage</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
             <span class="n">newimage</span><span class="o">.</span><span class="n">_update_data_and_Stokes</span><span class="p">(</span><span class="n">newdata</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">newimage</span>

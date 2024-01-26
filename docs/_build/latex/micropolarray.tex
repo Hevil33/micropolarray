@@ -64,7 +64,7 @@
 
 
 \title{micropolarray}
-\date{Jan 11, 2024}
+\date{Jan 26, 2024}
 \release{}
 \author{Herve Haudemand}
 \newcommand{\sphinxlogo}{\vbox{}}
@@ -469,12 +469,39 @@ Bases: \sphinxcode{\sphinxupquote{object}}
 \sphinxAtStartPar
 Demodulation class needed for MicropolImage
 demodulation.
+\index{Cij (micropolarray.processing.demodulation.Demodulator property)@\spxentry{Cij}\spxextra{micropolarray.processing.demodulation.Demodulator property}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{micropolarray.processing:micropolarray.processing.demodulation.Demodulator.Cij}}
+\pysigstartsignatures
+\pysigline{\sphinxbfcode{\sphinxupquote{property\DUrole{w,w}{  }}}\sphinxbfcode{\sphinxupquote{Cij}}\sphinxbfcode{\sphinxupquote{\DUrole{p,p}{:}\DUrole{w,w}{  }ndarray}}}
+\pysigstopsignatures
+\end{fulllineitems}
+
+\index{eff (micropolarray.processing.demodulation.Demodulator property)@\spxentry{eff}\spxextra{micropolarray.processing.demodulation.Demodulator property}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{micropolarray.processing:micropolarray.processing.demodulation.Demodulator.eff}}
+\pysigstartsignatures
+\pysigline{\sphinxbfcode{\sphinxupquote{property\DUrole{w,w}{  }}}\sphinxbfcode{\sphinxupquote{eff}}\sphinxbfcode{\sphinxupquote{\DUrole{p,p}{:}\DUrole{w,w}{  }ndarray}}}
+\pysigstopsignatures
+\end{fulllineitems}
+
 \index{flip() (micropolarray.processing.demodulation.Demodulator method)@\spxentry{flip()}\spxextra{micropolarray.processing.demodulation.Demodulator method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{micropolarray.processing:micropolarray.processing.demodulation.Demodulator.flip}}
 \pysigstartsignatures
 \pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{flip}}}{\sphinxparam{\DUrole{n,n}{axis}}}{}
+\pysigstopsignatures
+\end{fulllineitems}
+
+\index{phi (micropolarray.processing.demodulation.Demodulator property)@\spxentry{phi}\spxextra{micropolarray.processing.demodulation.Demodulator property}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{micropolarray.processing:micropolarray.processing.demodulation.Demodulator.phi}}
+\pysigstartsignatures
+\pysigline{\sphinxbfcode{\sphinxupquote{property\DUrole{w,w}{  }}}\sphinxbfcode{\sphinxupquote{phi}}\sphinxbfcode{\sphinxupquote{\DUrole{p,p}{:}\DUrole{w,w}{  }ndarray}}}
 \pysigstopsignatures
 \end{fulllineitems}
 
@@ -534,6 +561,15 @@ tuple
 
 \end{description}\end{quote}
 
+\end{fulllineitems}
+
+\index{tk (micropolarray.processing.demodulation.Demodulator property)@\spxentry{tk}\spxextra{micropolarray.processing.demodulation.Demodulator property}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{micropolarray.processing:micropolarray.processing.demodulation.Demodulator.tk}}
+\pysigstartsignatures
+\pysigline{\sphinxbfcode{\sphinxupquote{property\DUrole{w,w}{  }}}\sphinxbfcode{\sphinxupquote{tk}}\sphinxbfcode{\sphinxupquote{\DUrole{p,p}{:}\DUrole{w,w}{  }ndarray}}}
+\pysigstopsignatures
 \end{fulllineitems}
 
 
@@ -631,6 +667,82 @@ In the binning process the sum of values is considered, which is ok because data
 \sphinxAtStartPar
 Utility function to parallelize calculations.
 
+\end{fulllineitems}
+
+
+
+\subsubsection{micropolarray.processing.demodulation\_errors module}
+\label{\detokenize{micropolarray.processing:module-micropolarray.processing.demodulation_errors}}\label{\detokenize{micropolarray.processing:micropolarray-processing-demodulation-errors-module}}\index{module@\spxentry{module}!micropolarray.processing.demodulation\_errors@\spxentry{micropolarray.processing.demodulation\_errors}}\index{micropolarray.processing.demodulation\_errors@\spxentry{micropolarray.processing.demodulation\_errors}!module@\spxentry{module}}\index{MicropolImageError (class in micropolarray.processing.demodulation\_errors)@\spxentry{MicropolImageError}\spxextra{class in micropolarray.processing.demodulation\_errors}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{micropolarray.processing:micropolarray.processing.demodulation_errors.MicropolImageError}}
+\pysigstartsignatures
+\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class\DUrole{w,w}{  }}}\sphinxcode{\sphinxupquote{micropolarray.processing.demodulation\_errors.}}\sphinxbfcode{\sphinxupquote{MicropolImageError}}}{\sphinxparam{\DUrole{n,n}{image}\DUrole{p,p}{:}\DUrole{w,w}{  }\DUrole{n,n}{{\hyperref[\detokenize{micropolarray:micropolarray.micropol_image.MicropolImage}]{\sphinxcrossref{MicropolImage}}}}}\sphinxparamcomma \sphinxparam{\DUrole{n,n}{image\_error}\DUrole{p,p}{:}\DUrole{w,w}{  }\DUrole{n,n}{ndarray}}\sphinxparamcomma \sphinxparam{\DUrole{n,n}{demodulator}\DUrole{p,p}{:}\DUrole{w,w}{  }\DUrole{n,n}{{\hyperref[\detokenize{micropolarray.processing:micropolarray.processing.demodulation.Demodulator}]{\sphinxcrossref{Demodulator}}}}}}{}
+\pysigstopsignatures
+\sphinxAtStartPar
+Bases: \sphinxcode{\sphinxupquote{object}}
+
+\end{fulllineitems}
+
+\index{get\_error\_on\_AoLP() (in module micropolarray.processing.demodulation\_errors)@\spxentry{get\_error\_on\_AoLP()}\spxextra{in module micropolarray.processing.demodulation\_errors}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{micropolarray.processing:micropolarray.processing.demodulation_errors.get_error_on_AoLP}}
+\pysigstartsignatures
+\pysiglinewithargsret{\sphinxcode{\sphinxupquote{micropolarray.processing.demodulation\_errors.}}\sphinxbfcode{\sphinxupquote{get\_error\_on\_AoLP}}}{\sphinxparam{\DUrole{n,n}{S}\DUrole{p,p}{:}\DUrole{w,w}{  }\DUrole{n,n}{ndarray}}\sphinxparamcomma \sphinxparam{\DUrole{n,n}{sigma\_S}\DUrole{p,p}{:}\DUrole{w,w}{  }\DUrole{n,n}{ndarray}}}{{ $\rightarrow$ ndarray}}
+\pysigstopsignatures
+\end{fulllineitems}
+
+\index{get\_error\_on\_DoLP() (in module micropolarray.processing.demodulation\_errors)@\spxentry{get\_error\_on\_DoLP()}\spxextra{in module micropolarray.processing.demodulation\_errors}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{micropolarray.processing:micropolarray.processing.demodulation_errors.get_error_on_DoLP}}
+\pysigstartsignatures
+\pysiglinewithargsret{\sphinxcode{\sphinxupquote{micropolarray.processing.demodulation\_errors.}}\sphinxbfcode{\sphinxupquote{get\_error\_on\_DoLP}}}{\sphinxparam{\DUrole{n,n}{S}\DUrole{p,p}{:}\DUrole{w,w}{  }\DUrole{n,n}{ndarray}}\sphinxparamcomma \sphinxparam{\DUrole{n,n}{sigma\_S}\DUrole{p,p}{:}\DUrole{w,w}{  }\DUrole{n,n}{ndarray}}}{{ $\rightarrow$ ndarray}}
+\pysigstopsignatures
+\end{fulllineitems}
+
+\index{get\_error\_on\_Stokes() (in module micropolarray.processing.demodulation\_errors)@\spxentry{get\_error\_on\_Stokes()}\spxextra{in module micropolarray.processing.demodulation\_errors}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{micropolarray.processing:micropolarray.processing.demodulation_errors.get_error_on_Stokes}}
+\pysigstartsignatures
+\pysiglinewithargsret{\sphinxcode{\sphinxupquote{micropolarray.processing.demodulation\_errors.}}\sphinxbfcode{\sphinxupquote{get\_error\_on\_Stokes}}}{\sphinxparam{\DUrole{n,n}{image\_error}\DUrole{p,p}{:}\DUrole{w,w}{  }\DUrole{n,n}{ndarray}}\sphinxparamcomma \sphinxparam{\DUrole{n,n}{demodulator}\DUrole{p,p}{:}\DUrole{w,w}{  }\DUrole{n,n}{{\hyperref[\detokenize{micropolarray.processing:micropolarray.processing.demodulation.Demodulator}]{\sphinxcrossref{Demodulator}}}}}}{{ $\rightarrow$ ndarray}}
+\pysigstopsignatures
+\sphinxAtStartPar
+Returns the error on the image, propagated through the demodulation matrix. If M{[}i, j{]} is the demodulation matrix, sigma\_I{[}k{]} are the four pixel values in a superpixel, and S{[}i, j{]} is the Stokes vector, returns the matrix product
+sqrt(M\textasciicircum{}2 @ I\textasciicircum{}2)
+\begin{quote}\begin{description}
+\sphinxlineitem{Parameters}\begin{itemize}
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{image\_error}} (\sphinxstyleliteralemphasis{\sphinxupquote{np.ndarray}}) \textendash{} array containing the pixel by pixel error to propagate.
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{demodulator}} ({\hyperref[\detokenize{micropolarray.processing:micropolarray.processing.demodulation.Demodulator}]{\sphinxcrossref{\sphinxstyleliteralemphasis{\sphinxupquote{Demodulator}}}}}) \textendash{} demodulator containing the demodulation matrix.
+
+\end{itemize}
+
+\sphinxlineitem{Returns}
+\sphinxAtStartPar
+errors of the computed Stokes vector as a {[}3, y, x{]} array.
+
+\sphinxlineitem{Return type}
+\sphinxAtStartPar
+np.ndarray
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{get\_error\_on\_pB() (in module micropolarray.processing.demodulation\_errors)@\spxentry{get\_error\_on\_pB()}\spxextra{in module micropolarray.processing.demodulation\_errors}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{micropolarray.processing:micropolarray.processing.demodulation_errors.get_error_on_pB}}
+\pysigstartsignatures
+\pysiglinewithargsret{\sphinxcode{\sphinxupquote{micropolarray.processing.demodulation\_errors.}}\sphinxbfcode{\sphinxupquote{get\_error\_on\_pB}}}{\sphinxparam{\DUrole{n,n}{S}\DUrole{p,p}{:}\DUrole{w,w}{  }\DUrole{n,n}{ndarray}}\sphinxparamcomma \sphinxparam{\DUrole{n,n}{sigma\_S}\DUrole{p,p}{:}\DUrole{w,w}{  }\DUrole{n,n}{ndarray}}}{{ $\rightarrow$ ndarray}}
+\pysigstopsignatures
 \end{fulllineitems}
 
 
@@ -2581,6 +2693,7 @@ Use this to time function execution
 \item\relax\sphinxstyleindexentry{micropolarray.processing.congrid}\sphinxstyleindexpageref{micropolarray.processing:\detokenize{module-micropolarray.processing.congrid}}
 \item\relax\sphinxstyleindexentry{micropolarray.processing.convert}\sphinxstyleindexpageref{micropolarray.processing:\detokenize{module-micropolarray.processing.convert}}
 \item\relax\sphinxstyleindexentry{micropolarray.processing.demodulation}\sphinxstyleindexpageref{micropolarray.processing:\detokenize{module-micropolarray.processing.demodulation}}
+\item\relax\sphinxstyleindexentry{micropolarray.processing.demodulation\_errors}\sphinxstyleindexpageref{micropolarray.processing:\detokenize{module-micropolarray.processing.demodulation_errors}}
 \item\relax\sphinxstyleindexentry{micropolarray.processing.demosaic}\sphinxstyleindexpageref{micropolarray.processing:\detokenize{module-micropolarray.processing.demosaic}}
 \item\relax\sphinxstyleindexentry{micropolarray.processing.hotpix\_cleaning}\sphinxstyleindexpageref{micropolarray.processing:\detokenize{module-micropolarray.processing.hotpix_cleaning}}
 \item\relax\sphinxstyleindexentry{micropolarray.processing.nrgf}\sphinxstyleindexpageref{micropolarray.processing:\detokenize{module-micropolarray.processing.nrgf}}
