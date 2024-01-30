@@ -168,7 +168,9 @@ def nrgf(
     return newdata
 
 
-def find_occulter_hough(data: np.array, **kwargs) -> tuple:
+def find_occulter_hough(
+    data: np.array, minr: float = 1, maxr: float = None, **kwargs
+) -> tuple:
     """Uses Hough Gradient from cv2 and computes the coronagraph occulter coordinates. Returns Y, X, Radius of the occulter.
 
     Args:
@@ -178,8 +180,10 @@ def find_occulter_hough(data: np.array, **kwargs) -> tuple:
         tuple: occulter y, x, r
     """
     info("Searching occulter, this may take a while...")
-    minr = 1
-    maxr = np.max(data.shape)
+    if maxr is None:
+        maxr = np.max(data.shape)
+    minDist = np.max(data.shape)  # minimum distance between circles
+
     data = 255 * data / np.max(data)
     blurred = cv2.medianBlur(data.astype("uint8"), 5)
     accumulator = 10
@@ -187,7 +191,7 @@ def find_occulter_hough(data: np.array, **kwargs) -> tuple:
         image=blurred,
         method=cv2.HOUGH_GRADIENT,
         dp=1.2,
-        minDist=maxr,
+        minDist=minDist,
         param1=200,
         param2=accumulator,
         minRadius=minr,
@@ -201,7 +205,7 @@ def find_occulter_hough(data: np.array, **kwargs) -> tuple:
                 image=blurred,
                 method=cv2.HOUGH_GRADIENT,
                 dp=1.2,
-                minDist=maxr,
+                minDist=minDist,
                 param1=200,
                 param2=accumulator,
                 minRadius=minr,
