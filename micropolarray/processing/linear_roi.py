@@ -14,8 +14,8 @@ def linear_roi_from_polar(
 ) -> list:
     """Returns a linear roi starting from the center and extending
     to r or to the edge of the input data array.
-    Angles start vertically and rotate anti-clockwise (0deg
-    corresponds to fixed x and increasing y).
+    Angles start horizontally and rotate anti-clockwise (0deg
+    corresponds to fixed y and increasing x).
 
     Args:
         data (np.ndarray): input array from which to select a roi
@@ -38,6 +38,8 @@ def linear_roi_from_polar(
     if r is None:
         r = 1.0e18
 
+    theta_rad = np.deg2rad(theta)
+
     while (
         (y2 < data.shape[0] - 1)
         and (y2 > 1)
@@ -45,8 +47,8 @@ def linear_roi_from_polar(
         and (x2 > 1)
         and (np.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2) < r - 1)
     ):
-        y2 = y2 - np.sin(theta)
-        x2 = x2 - np.cos(theta)
+        y2 = y2 - np.sin(theta_rad)
+        x2 = x2 + np.cos(theta_rad)
 
     ys, xs, points_density = DDA((y1, x1), (y2, x2))
     while (

@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>micropolarray.processing.linear_roi &mdash; micropolarray  documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=b3ba4146"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            micropolarray
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../micropolarray.html">micropolarray package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">micropolarray</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">micropolarray.processing.linear_roi</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for micropolarray.processing.linear_roi</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">micropolarray.utils</span> <span class="kn">import</span> <span class="n">normalize2pi</span>
+
+
+<div class="viewcode-block" id="linear_roi_from_polar"><a class="viewcode-back" href="../../../micropolarray.processing.html#micropolarray.processing.linear_roi.linear_roi_from_polar">[docs]</a><span class="k">def</span> <span class="nf">linear_roi_from_polar</span><span class="p">(</span>
+    <span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">center</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
+    <span class="n">theta</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">r</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns a linear roi starting from the center and extending</span>
+<span class="sd">    to r or to the edge of the input data array.</span>
+<span class="sd">    Angles start vertically and rotate anti-clockwise (0deg</span>
+<span class="sd">    corresponds to fixed x and increasing y).</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        data (np.ndarray): input array from which to select a roi</span>
+<span class="sd">        center (list): center coordinates</span>
+<span class="sd">        theta (float): angle of the linear roi</span>
+<span class="sd">        r (list, optional): Maximum radius for the roi. Defaults to</span>
+<span class="sd">        None.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        np.ndarray: 1-dimensional array containing the selected values</span>
+<span class="sd">        from data</span>
+<span class="sd">        np.ndarray: roi indexes along the first (y) dimension of data</span>
+<span class="sd">        np.ndarray: roi indexes along the second (x) dimension of data</span>
+<span class="sd">        float: ratio between the pixel lenght and the lenght of the</span>
+<span class="sd">        returned roi (see linear_roi.DDA)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">y1</span><span class="p">,</span> <span class="n">x1</span> <span class="o">=</span> <span class="n">center</span>
+    <span class="n">y2</span><span class="p">,</span> <span class="n">x2</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">y1</span><span class="p">),</span> <span class="nb">float</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">r</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="mf">1.0e18</span>
+
+    <span class="k">while</span> <span class="p">(</span>
+        <span class="p">(</span><span class="n">y2</span> <span class="o">&lt;</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="ow">and</span> <span class="p">(</span><span class="n">y2</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="ow">and</span> <span class="p">(</span><span class="n">x2</span> <span class="o">&lt;</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="ow">and</span> <span class="p">(</span><span class="n">x2</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="ow">and</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="n">x2</span> <span class="o">-</span> <span class="n">x1</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">y2</span> <span class="o">-</span> <span class="n">y1</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">r</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="p">):</span>
+        <span class="n">y2</span> <span class="o">=</span> <span class="n">y2</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span>
+        <span class="n">x2</span> <span class="o">=</span> <span class="n">x2</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span>
+
+    <span class="n">ys</span><span class="p">,</span> <span class="n">xs</span><span class="p">,</span> <span class="n">points_density</span> <span class="o">=</span> <span class="n">DDA</span><span class="p">((</span><span class="n">y1</span><span class="p">,</span> <span class="n">x1</span><span class="p">),</span> <span class="p">(</span><span class="n">y2</span><span class="p">,</span> <span class="n">x2</span><span class="p">))</span>
+    <span class="k">while</span> <span class="p">(</span>
+        <span class="p">(</span><span class="n">ys</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="ow">or</span> <span class="p">(</span><span class="n">xs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="ow">or</span> <span class="p">(</span><span class="n">ys</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="ow">or</span> <span class="p">(</span><span class="n">xs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="p">):</span>
+        <span class="n">ys</span> <span class="o">=</span> <span class="n">ys</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
+        <span class="n">xs</span> <span class="o">=</span> <span class="n">xs</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">data</span><span class="p">[</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">]</span> <span class="k">for</span> <span class="n">y</span><span class="p">,</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">ys</span><span class="p">,</span> <span class="n">xs</span><span class="p">)])</span>
+
+    <span class="k">return</span> <span class="p">[</span><span class="n">result</span><span class="p">,</span> <span class="n">ys</span><span class="p">,</span> <span class="n">xs</span><span class="p">,</span> <span class="n">points_density</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="linear_roi"><a class="viewcode-back" href="../../../micropolarray.processing.html#micropolarray.processing.linear_roi.linear_roi">[docs]</a><span class="k">def</span> <span class="nf">linear_roi</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">end</span><span class="p">:</span> <span class="nb">list</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get values</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        data (np.ndarray): _description_</span>
+<span class="sd">        start (list): _description_</span>
+<span class="sd">        end (list): _description_</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        np.ndarray: _description_</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ys</span><span class="p">,</span> <span class="n">xs</span> <span class="o">=</span> <span class="n">DDA</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span>
+
+    <span class="n">vals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">data</span><span class="p">[</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">]</span> <span class="k">for</span> <span class="n">y</span><span class="p">,</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">ys</span><span class="p">,</span> <span class="n">xs</span><span class="p">)])</span>
+
+    <span class="k">return</span> <span class="n">vals</span></div>
+
+
+<div class="viewcode-block" id="DDA"><a class="viewcode-back" href="../../../micropolarray.processing.html#micropolarray.processing.linear_roi.DDA">[docs]</a><span class="k">def</span> <span class="nf">DDA</span><span class="p">(</span><span class="n">start</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">end</span><span class="p">:</span> <span class="nb">list</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Digital_differential_analyzer algorithm for line rasterizing.</span>
+<span class="sd">    Unlike bresenham, works in every quadrant.</span>
+<span class="sd">    NOTE: even if the distance between start and end coordinates is</span>
+<span class="sd">    the same, a different number of points is selected depending on</span>
+<span class="sd">    the line slope, so the ratio between distance and number of</span>
+<span class="sd">    points is also returned.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        start (list): starting point coordinates</span>
+<span class="sd">        end (list): ending point coordinates</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        np.ndarray: interpolated points locations</span>
+<span class="sd">        float: ratio between the distance from start to end point and</span>
+<span class="sd">        the number of returned locations</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">y1</span><span class="p">,</span> <span class="n">x1</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">start</span><span class="p">]</span>
+    <span class="n">y2</span><span class="p">,</span> <span class="n">x2</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">end</span><span class="p">]</span>
+
+    <span class="n">dx</span> <span class="o">=</span> <span class="n">x2</span> <span class="o">-</span> <span class="n">x1</span>
+    <span class="n">dy</span> <span class="o">=</span> <span class="n">y2</span> <span class="o">-</span> <span class="n">y1</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">dx</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">dy</span><span class="p">):</span>
+        <span class="n">step</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">dx</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">step</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">dy</span><span class="p">)</span>
+    <span class="n">dx</span> <span class="o">=</span> <span class="n">dx</span> <span class="o">/</span> <span class="n">step</span>
+    <span class="n">dy</span> <span class="o">=</span> <span class="n">dy</span> <span class="o">/</span> <span class="n">step</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">x1</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">y1</span>
+    <span class="n">xs</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="p">)]</span>
+    <span class="n">ys</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">y</span><span class="p">)]</span>
+
+    <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">while</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="n">step</span><span class="p">:</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">x</span> <span class="o">+</span> <span class="n">dx</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">y</span> <span class="o">+</span> <span class="n">dy</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="c1"># if (int(y) != ys[-1]) and (int(x) != xs[-1]):</span>
+        <span class="n">ys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">y</span><span class="p">))</span>
+        <span class="n">xs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+
+    <span class="n">points_density</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="n">x2</span> <span class="o">-</span> <span class="n">x1</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">y2</span> <span class="o">-</span> <span class="n">y1</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">xs</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ys</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">xs</span><span class="p">),</span> <span class="n">points_density</span></div>
+
+
+<div class="viewcode-block" id="bresenham"><a class="viewcode-back" href="../../../micropolarray.processing.html#micropolarray.processing.linear_roi.bresenham">[docs]</a><span class="k">def</span> <span class="nf">bresenham</span><span class="p">(</span><span class="n">start</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">end</span><span class="p">:</span> <span class="nb">list</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Bresenham algorithm for generating integers on a line.</span>
+<span class="sd">    Efficient BUT works ONLY in the first octant</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        start (list): starting point coordinates</span>
+<span class="sd">        end (list): ending point coordinates</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        np.ndarray: coordinates of the points under the line from</span>
+<span class="sd">        start to end</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">y1</span><span class="p">,</span> <span class="n">x1</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">start</span><span class="p">]</span>
+    <span class="n">y2</span><span class="p">,</span> <span class="n">x2</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">end</span><span class="p">]</span>
+
+    <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">x1</span><span class="p">,</span> <span class="n">y1</span>
+    <span class="n">dx</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">x2</span> <span class="o">-</span> <span class="n">x1</span><span class="p">)</span>
+    <span class="n">dy</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">y2</span> <span class="o">-</span> <span class="n">y1</span><span class="p">)</span>
+    <span class="n">gradient</span> <span class="o">=</span> <span class="n">dy</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">dx</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">gradient</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">dx</span><span class="p">,</span> <span class="n">dy</span> <span class="o">=</span> <span class="n">dy</span><span class="p">,</span> <span class="n">dx</span>
+        <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">y</span><span class="p">,</span> <span class="n">x</span>
+        <span class="n">x1</span><span class="p">,</span> <span class="n">y1</span> <span class="o">=</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x1</span>
+        <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span> <span class="o">=</span> <span class="n">y2</span><span class="p">,</span> <span class="n">x2</span>
+
+    <span class="n">p</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">dy</span> <span class="o">-</span> <span class="n">dx</span>
+    <span class="c1"># Initialize the plotting points</span>
+    <span class="n">xcoordinates</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="p">]</span>
+    <span class="n">ycoordinates</span> <span class="o">=</span> <span class="p">[</span><span class="n">y</span><span class="p">]</span>
+
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">dx</span> <span class="o">+</span> <span class="mi">2</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">p</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="n">y</span> <span class="o">+</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">y</span> <span class="o">&lt;</span> <span class="n">y2</span> <span class="k">else</span> <span class="n">y</span> <span class="o">-</span> <span class="mi">1</span>
+            <span class="n">p</span> <span class="o">=</span> <span class="n">p</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">dy</span> <span class="o">-</span> <span class="n">dx</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">p</span> <span class="o">=</span> <span class="n">p</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">dy</span>
+
+        <span class="n">x</span> <span class="o">=</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="n">x2</span> <span class="k">else</span> <span class="n">x</span> <span class="o">-</span> <span class="mi">1</span>
+
+        <span class="n">xcoordinates</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">ycoordinates</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ycoordinates</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">xcoordinates</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Herve Haudemand.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

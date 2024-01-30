@@ -60,6 +60,14 @@ micropolarray.processing.hotpix\_cleaning module
    :undoc-members:
    :show-inheritance:
 
+micropolarray.processing.linear\_roi module
+-------------------------------------------
+
+.. automodule:: micropolarray.processing.linear_roi
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 micropolarray.processing.nrgf module
 ------------------------------------
 

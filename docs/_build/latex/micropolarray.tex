@@ -64,7 +64,7 @@
 
 
 \title{micropolarray}
-\date{Jan 26, 2024}
+\date{Jan 30, 2024}
 \release{}
 \author{Herve Haudemand}
 \newcommand{\sphinxlogo}{\vbox{}}
@@ -819,13 +819,181 @@ demo\_images{[}3{]} = data{[}y=1, x=1{]}
 
 
 
+\subsubsection{micropolarray.processing.linear\_roi module}
+\label{\detokenize{micropolarray.processing:module-micropolarray.processing.linear_roi}}\label{\detokenize{micropolarray.processing:micropolarray-processing-linear-roi-module}}\index{module@\spxentry{module}!micropolarray.processing.linear\_roi@\spxentry{micropolarray.processing.linear\_roi}}\index{micropolarray.processing.linear\_roi@\spxentry{micropolarray.processing.linear\_roi}!module@\spxentry{module}}\index{DDA() (in module micropolarray.processing.linear\_roi)@\spxentry{DDA()}\spxextra{in module micropolarray.processing.linear\_roi}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{micropolarray.processing:micropolarray.processing.linear_roi.DDA}}
+\pysigstartsignatures
+\pysiglinewithargsret{\sphinxcode{\sphinxupquote{micropolarray.processing.linear\_roi.}}\sphinxbfcode{\sphinxupquote{DDA}}}{\sphinxparam{\DUrole{n,n}{start}\DUrole{p,p}{:}\DUrole{w,w}{  }\DUrole{n,n}{list}}\sphinxparamcomma \sphinxparam{\DUrole{n,n}{end}\DUrole{p,p}{:}\DUrole{w,w}{  }\DUrole{n,n}{list}}}{{ $\rightarrow$ ndarray}}
+\pysigstopsignatures
+\sphinxAtStartPar
+Digital\_differential\_analyzer algorithm for line rasterizing.
+Unlike bresenham, works in every quadrant.
+NOTE: even if the distance between start and end coordinates is
+the same, a different number of points is selected depending on
+the line slope, so the ratio between distance and number of
+points is also returned.
+\begin{quote}\begin{description}
+\sphinxlineitem{Parameters}\begin{itemize}
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{start}} (\sphinxstyleliteralemphasis{\sphinxupquote{list}}) \textendash{} starting point coordinates
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{end}} (\sphinxstyleliteralemphasis{\sphinxupquote{list}}) \textendash{} ending point coordinates
+
+\end{itemize}
+
+\sphinxlineitem{Returns}
+\sphinxAtStartPar
+interpolated points locations
+float: ratio between the distance from start to end point and
+the number of returned locations
+
+\sphinxlineitem{Return type}
+\sphinxAtStartPar
+np.ndarray
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{bresenham() (in module micropolarray.processing.linear\_roi)@\spxentry{bresenham()}\spxextra{in module micropolarray.processing.linear\_roi}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{micropolarray.processing:micropolarray.processing.linear_roi.bresenham}}
+\pysigstartsignatures
+\pysiglinewithargsret{\sphinxcode{\sphinxupquote{micropolarray.processing.linear\_roi.}}\sphinxbfcode{\sphinxupquote{bresenham}}}{\sphinxparam{\DUrole{n,n}{start}\DUrole{p,p}{:}\DUrole{w,w}{  }\DUrole{n,n}{list}}\sphinxparamcomma \sphinxparam{\DUrole{n,n}{end}\DUrole{p,p}{:}\DUrole{w,w}{  }\DUrole{n,n}{list}}}{{ $\rightarrow$ ndarray}}
+\pysigstopsignatures
+\sphinxAtStartPar
+Bresenham algorithm for generating integers on a line.
+Efficient BUT works ONLY in the first octant
+\begin{quote}\begin{description}
+\sphinxlineitem{Parameters}\begin{itemize}
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{start}} (\sphinxstyleliteralemphasis{\sphinxupquote{list}}) \textendash{} starting point coordinates
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{end}} (\sphinxstyleliteralemphasis{\sphinxupquote{list}}) \textendash{} ending point coordinates
+
+\end{itemize}
+
+\sphinxlineitem{Returns}
+\sphinxAtStartPar
+coordinates of the points under the line from
+start to end
+
+\sphinxlineitem{Return type}
+\sphinxAtStartPar
+np.ndarray
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{linear\_roi() (in module micropolarray.processing.linear\_roi)@\spxentry{linear\_roi()}\spxextra{in module micropolarray.processing.linear\_roi}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{micropolarray.processing:micropolarray.processing.linear_roi.linear_roi}}
+\pysigstartsignatures
+\pysiglinewithargsret{\sphinxcode{\sphinxupquote{micropolarray.processing.linear\_roi.}}\sphinxbfcode{\sphinxupquote{linear\_roi}}}{\sphinxparam{\DUrole{n,n}{data}\DUrole{p,p}{:}\DUrole{w,w}{  }\DUrole{n,n}{ndarray}}\sphinxparamcomma \sphinxparam{\DUrole{n,n}{start}\DUrole{p,p}{:}\DUrole{w,w}{  }\DUrole{n,n}{list}}\sphinxparamcomma \sphinxparam{\DUrole{n,n}{end}\DUrole{p,p}{:}\DUrole{w,w}{  }\DUrole{n,n}{list}}}{{ $\rightarrow$ ndarray}}
+\pysigstopsignatures
+\sphinxAtStartPar
+Get values
+\begin{quote}\begin{description}
+\sphinxlineitem{Parameters}\begin{itemize}
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{data}} (\sphinxstyleliteralemphasis{\sphinxupquote{np.ndarray}}) \textendash{} \_description\_
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{start}} (\sphinxstyleliteralemphasis{\sphinxupquote{list}}) \textendash{} \_description\_
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{end}} (\sphinxstyleliteralemphasis{\sphinxupquote{list}}) \textendash{} \_description\_
+
+\end{itemize}
+
+\sphinxlineitem{Returns}
+\sphinxAtStartPar
+\_description\_
+
+\sphinxlineitem{Return type}
+\sphinxAtStartPar
+np.ndarray
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{linear\_roi\_from\_polar() (in module micropolarray.processing.linear\_roi)@\spxentry{linear\_roi\_from\_polar()}\spxextra{in module micropolarray.processing.linear\_roi}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{micropolarray.processing:micropolarray.processing.linear_roi.linear_roi_from_polar}}
+\pysigstartsignatures
+\pysiglinewithargsret{\sphinxcode{\sphinxupquote{micropolarray.processing.linear\_roi.}}\sphinxbfcode{\sphinxupquote{linear\_roi\_from\_polar}}}{\sphinxparam{\DUrole{n,n}{data}\DUrole{p,p}{:}\DUrole{w,w}{  }\DUrole{n,n}{ndarray}}\sphinxparamcomma \sphinxparam{\DUrole{n,n}{center}\DUrole{p,p}{:}\DUrole{w,w}{  }\DUrole{n,n}{list}}\sphinxparamcomma \sphinxparam{\DUrole{n,n}{theta}\DUrole{p,p}{:}\DUrole{w,w}{  }\DUrole{n,n}{float}}\sphinxparamcomma \sphinxparam{\DUrole{n,n}{r}\DUrole{p,p}{:}\DUrole{w,w}{  }\DUrole{n,n}{list\DUrole{w,w}{  }\DUrole{p,p}{|}\DUrole{w,w}{  }None}\DUrole{w,w}{  }\DUrole{o,o}{=}\DUrole{w,w}{  }\DUrole{default_value}{None}}}{{ $\rightarrow$ list}}
+\pysigstopsignatures
+\sphinxAtStartPar
+Returns a linear roi starting from the center and extending
+to r or to the edge of the input data array.
+Angles start vertically and rotate anti\sphinxhyphen{}clockwise (0deg
+corresponds to fixed x and increasing y).
+\begin{quote}\begin{description}
+\sphinxlineitem{Parameters}\begin{itemize}
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{data}} (\sphinxstyleliteralemphasis{\sphinxupquote{np.ndarray}}) \textendash{} input array from which to select a roi
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{center}} (\sphinxstyleliteralemphasis{\sphinxupquote{list}}) \textendash{} center coordinates
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{theta}} (\sphinxstyleliteralemphasis{\sphinxupquote{float}}) \textendash{} angle of the linear roi
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{r}} (\sphinxstyleliteralemphasis{\sphinxupquote{list}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{optional}}) \textendash{} Maximum radius for the roi. Defaults to
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{None.}} \textendash{} 
+
+\end{itemize}
+
+\sphinxlineitem{Returns}
+\sphinxAtStartPar
+1\sphinxhyphen{}dimensional array containing the selected values
+from data
+np.ndarray: roi indexes along the first (y) dimension of data
+np.ndarray: roi indexes along the second (x) dimension of data
+float: ratio between the pixel lenght and the lenght of the
+returned roi (see linear\_roi.DDA)
+
+\sphinxlineitem{Return type}
+\sphinxAtStartPar
+np.ndarray
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+
+
 \subsubsection{micropolarray.processing.nrgf module}
 \label{\detokenize{micropolarray.processing:module-micropolarray.processing.nrgf}}\label{\detokenize{micropolarray.processing:micropolarray-processing-nrgf-module}}\index{module@\spxentry{module}!micropolarray.processing.nrgf@\spxentry{micropolarray.processing.nrgf}}\index{micropolarray.processing.nrgf@\spxentry{micropolarray.processing.nrgf}!module@\spxentry{module}}\index{find\_occulter\_hough() (in module micropolarray.processing.nrgf)@\spxentry{find\_occulter\_hough()}\spxextra{in module micropolarray.processing.nrgf}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{micropolarray.processing:micropolarray.processing.nrgf.find_occulter_hough}}
 \pysigstartsignatures
-\pysiglinewithargsret{\sphinxcode{\sphinxupquote{micropolarray.processing.nrgf.}}\sphinxbfcode{\sphinxupquote{find\_occulter\_hough}}}{\sphinxparam{\DUrole{n,n}{data}\DUrole{p,p}{:}\DUrole{w,w}{  }\DUrole{n,n}{array}}\sphinxparamcomma \sphinxparam{\DUrole{o,o}{**}\DUrole{n,n}{kwargs}}}{{ $\rightarrow$ tuple}}
+\pysiglinewithargsret{\sphinxcode{\sphinxupquote{micropolarray.processing.nrgf.}}\sphinxbfcode{\sphinxupquote{find\_occulter\_hough}}}{\sphinxparam{\DUrole{n,n}{data}\DUrole{p,p}{:}\DUrole{w,w}{  }\DUrole{n,n}{array}}\sphinxparamcomma \sphinxparam{\DUrole{n,n}{minr}\DUrole{p,p}{:}\DUrole{w,w}{  }\DUrole{n,n}{float}\DUrole{w,w}{  }\DUrole{o,o}{=}\DUrole{w,w}{  }\DUrole{default_value}{1}}\sphinxparamcomma \sphinxparam{\DUrole{n,n}{maxr}\DUrole{p,p}{:}\DUrole{w,w}{  }\DUrole{n,n}{float\DUrole{w,w}{  }\DUrole{p,p}{|}\DUrole{w,w}{  }None}\DUrole{w,w}{  }\DUrole{o,o}{=}\DUrole{w,w}{  }\DUrole{default_value}{None}}\sphinxparamcomma \sphinxparam{\DUrole{o,o}{**}\DUrole{n,n}{kwargs}}}{{ $\rightarrow$ tuple}}
 \pysigstopsignatures
 \sphinxAtStartPar
 Uses Hough Gradient from cv2 and computes the coronagraph occulter coordinates. Returns Y, X, Radius of the occulter.
@@ -2696,6 +2864,7 @@ Use this to time function execution
 \item\relax\sphinxstyleindexentry{micropolarray.processing.demodulation\_errors}\sphinxstyleindexpageref{micropolarray.processing:\detokenize{module-micropolarray.processing.demodulation_errors}}
 \item\relax\sphinxstyleindexentry{micropolarray.processing.demosaic}\sphinxstyleindexpageref{micropolarray.processing:\detokenize{module-micropolarray.processing.demosaic}}
 \item\relax\sphinxstyleindexentry{micropolarray.processing.hotpix\_cleaning}\sphinxstyleindexpageref{micropolarray.processing:\detokenize{module-micropolarray.processing.hotpix_cleaning}}
+\item\relax\sphinxstyleindexentry{micropolarray.processing.linear\_roi}\sphinxstyleindexpageref{micropolarray.processing:\detokenize{module-micropolarray.processing.linear_roi}}
 \item\relax\sphinxstyleindexentry{micropolarray.processing.nrgf}\sphinxstyleindexpageref{micropolarray.processing:\detokenize{module-micropolarray.processing.nrgf}}
 \item\relax\sphinxstyleindexentry{micropolarray.processing.rebin}\sphinxstyleindexpageref{micropolarray.processing:\detokenize{module-micropolarray.processing.rebin}}
 \item\relax\sphinxstyleindexentry{micropolarray.processing.shift}\sphinxstyleindexpageref{micropolarray.processing:\detokenize{module-micropolarray.processing.shift}}

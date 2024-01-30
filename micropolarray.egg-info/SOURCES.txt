@@ -36,6 +36,7 @@ micropolarray/processing/demodulation.py
 micropolarray/processing/demodulation_errors.py
 micropolarray/processing/demosaic.py
 micropolarray/processing/hotpix_cleaning.py
+micropolarray/processing/linear_roi.py
 micropolarray/processing/nrgf.py
 micropolarray/processing/rebin.py
 micropolarray/processing/shift.py

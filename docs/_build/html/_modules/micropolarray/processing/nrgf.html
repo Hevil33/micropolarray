@@ -130,9 +130,7 @@
         <span class="nb">tuple</span><span class="p">([</span><span class="n">center</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">center</span><span class="p">[</span><span class="mi">1</span><span class="p">]]),</span>
     <span class="p">)</span>  <span class="c1"># cast it to a tuple (which is hashable)</span>
 
-    <span class="n">theta_condition</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span>
-        <span class="n">phi_coords</span> <span class="o">&gt;=</span> <span class="n">theta_min</span><span class="p">,</span> <span class="n">phi_coords</span> <span class="o">&lt;</span> <span class="n">theta_max</span>
-    <span class="p">)</span>
+    <span class="n">theta_condition</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">phi_coords</span> <span class="o">&gt;=</span> <span class="n">theta_min</span><span class="p">,</span> <span class="n">phi_coords</span> <span class="o">&lt;</span> <span class="n">theta_max</span><span class="p">)</span>
     <span class="n">rho_condition</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span>
         <span class="n">rho_coords</span> <span class="o">&gt;</span> <span class="n">rho_min</span><span class="p">,</span> <span class="n">rho_coords</span> <span class="o">&lt;=</span> <span class="n">rho_max</span>
     <span class="p">)</span>  <span class="c1"># half the radius because half the map</span>
@@ -162,12 +160,9 @@
     <span class="n">i_list</span><span class="p">,</span> <span class="n">j_list</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">width</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">height</span><span class="p">)</span>
     <span class="n">x_coords</span><span class="p">,</span> <span class="n">y_coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">i_list</span><span class="p">,</span> <span class="n">j_list</span><span class="p">)</span>
     <span class="c1"># Map polar coordinates, 0 = horizontal dx, anti-clockwise angles</span>
-    <span class="n">rho_coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span>
-        <span class="p">(</span><span class="n">x_coords</span> <span class="o">-</span> <span class="n">x_center</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">y_coords</span> <span class="o">-</span> <span class="n">y_center</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
-    <span class="p">)</span>
+    <span class="n">rho_coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="n">x_coords</span> <span class="o">-</span> <span class="n">x_center</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">y_coords</span> <span class="o">-</span> <span class="n">y_center</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
     <span class="n">phi_coords</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arctan2</span><span class="p">(</span><span class="n">y_coords</span> <span class="o">-</span> <span class="n">y_center</span><span class="p">,</span> <span class="n">x_coords</span> <span class="o">-</span> <span class="n">x_center</span><span class="p">)</span> <span class="o">*</span> <span class="mi">180</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
-        <span class="o">+</span> <span class="mi">360</span>
+        <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arctan2</span><span class="p">(</span><span class="n">y_coords</span> <span class="o">-</span> <span class="n">y_center</span><span class="p">,</span> <span class="n">x_coords</span> <span class="o">-</span> <span class="n">x_center</span><span class="p">)</span> <span class="o">*</span> <span class="mi">180</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span> <span class="o">+</span> <span class="mi">360</span>
     <span class="p">)</span> <span class="o">%</span> <span class="mi">360</span>
 
     <span class="k">return</span> <span class="n">rho_coords</span><span class="p">,</span> <span class="n">phi_coords</span></div>
@@ -226,9 +221,7 @@
 
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Applying nrgf filter...&quot;</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">rho_min</span><span class="p">,</span> <span class="n">rho_max</span><span class="p">,</span> <span class="n">rho_step</span><span class="p">):</span>
-        <span class="n">rho_condition</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span>
-            <span class="n">rho_coords</span> <span class="o">&gt;</span> <span class="n">r</span><span class="p">,</span> <span class="n">rho_coords</span> <span class="o">&lt;=</span> <span class="n">r</span> <span class="o">+</span> <span class="n">rho_step</span>
-        <span class="p">)</span>
+        <span class="n">rho_condition</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">rho_coords</span> <span class="o">&gt;</span> <span class="n">r</span><span class="p">,</span> <span class="n">rho_coords</span> <span class="o">&lt;=</span> <span class="n">r</span> <span class="o">+</span> <span class="n">rho_step</span><span class="p">)</span>
         <span class="n">condition</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">rho_condition</span><span class="p">,</span> <span class="n">out_phi_condition</span><span class="p">)</span>
         <span class="c1"># condition = np.logical_and(rho_condition, mean_phi_condition)</span>
         <span class="n">mean_condition</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">rho_condition</span><span class="p">,</span> <span class="n">mean_phi_condition</span><span class="p">)</span>
@@ -246,7 +239,9 @@
     <span class="k">return</span> <span class="n">newdata</span></div>
 
 
-<div class="viewcode-block" id="find_occulter_hough"><a class="viewcode-back" href="../../../micropolarray.processing.html#micropolarray.processing.nrgf.find_occulter_hough">[docs]</a><span class="k">def</span> <span class="nf">find_occulter_hough</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+<div class="viewcode-block" id="find_occulter_hough"><a class="viewcode-back" href="../../../micropolarray.processing.html#micropolarray.processing.nrgf.find_occulter_hough">[docs]</a><span class="k">def</span> <span class="nf">find_occulter_hough</span><span class="p">(</span>
+    <span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">minr</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">maxr</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Uses Hough Gradient from cv2 and computes the coronagraph occulter coordinates. Returns Y, X, Radius of the occulter.</span>
 
 <span class="sd">    Args:</span>
@@ -256,8 +251,10 @@
 <span class="sd">        tuple: occulter y, x, r</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">info</span><span class="p">(</span><span class="s2">&quot;Searching occulter, this may take a while...&quot;</span><span class="p">)</span>
-    <span class="n">minr</span> <span class="o">=</span> <span class="mi">1</span>
-    <span class="n">maxr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">maxr</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">maxr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+    <span class="n">minDist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>  <span class="c1"># minimum distance between circles</span>
+
     <span class="n">data</span> <span class="o">=</span> <span class="mi">255</span> <span class="o">*</span> <span class="n">data</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
     <span class="n">blurred</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">medianBlur</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">&quot;uint8&quot;</span><span class="p">),</span> <span class="mi">5</span><span class="p">)</span>
     <span class="n">accumulator</span> <span class="o">=</span> <span class="mi">10</span>
@@ -265,7 +262,7 @@
         <span class="n">image</span><span class="o">=</span><span class="n">blurred</span><span class="p">,</span>
         <span class="n">method</span><span class="o">=</span><span class="n">cv2</span><span class="o">.</span><span class="n">HOUGH_GRADIENT</span><span class="p">,</span>
         <span class="n">dp</span><span class="o">=</span><span class="mf">1.2</span><span class="p">,</span>
-        <span class="n">minDist</span><span class="o">=</span><span class="n">maxr</span><span class="p">,</span>
+        <span class="n">minDist</span><span class="o">=</span><span class="n">minDist</span><span class="p">,</span>
         <span class="n">param1</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span>
         <span class="n">param2</span><span class="o">=</span><span class="n">accumulator</span><span class="p">,</span>
         <span class="n">minRadius</span><span class="o">=</span><span class="n">minr</span><span class="p">,</span>
@@ -279,7 +276,7 @@
                 <span class="n">image</span><span class="o">=</span><span class="n">blurred</span><span class="p">,</span>
                 <span class="n">method</span><span class="o">=</span><span class="n">cv2</span><span class="o">.</span><span class="n">HOUGH_GRADIENT</span><span class="p">,</span>
                 <span class="n">dp</span><span class="o">=</span><span class="mf">1.2</span><span class="p">,</span>
-                <span class="n">minDist</span><span class="o">=</span><span class="n">maxr</span><span class="p">,</span>
+                <span class="n">minDist</span><span class="o">=</span><span class="n">minDist</span><span class="p">,</span>
                 <span class="n">param1</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span>
                 <span class="n">param2</span><span class="o">=</span><span class="n">accumulator</span><span class="p">,</span>
                 <span class="n">minRadius</span><span class="o">=</span><span class="n">minr</span><span class="p">,</span>

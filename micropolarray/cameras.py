@@ -1,4 +1,5 @@
 import numpy as np
+
 from micropolarray.processing.nrgf import roi_from_polar
 
 # TODO: aggiungere tutti i bei dati qua, rendere le camere personalizzabili (caricare dark da cartelle e cose cosi)
@@ -22,9 +23,7 @@ class Camera:
             np.array: Array if in ROI, fill elsewhere
         """
         y, x, r = self.occulter_pos_last
-        roidata = roi_from_polar(
-            data, [y, x], [r + overoccult, 5000], fill=fill
-        )
+        roidata = roi_from_polar(data, [y, x], [r + overoccult, 5000], fill=fill)
 
         return roidata
 
@@ -91,16 +90,20 @@ class PolarCam(Camera):
         self.quantumEff = 0.76  # @470 (nominal, by user manual)
         self.occulter_pos_last = [
             919,
-            950,
-            531,
+            941,
+            536,
         ]  # Occulter y, x, radius [px, px, px] updated January 2023
         self.occulter_pos_2021 = [
             925,
             934,
             532,
         ]  # updated march 27, 2021/2022 campaign
-        self.occulter_radius_sr = 1.1901  # occulter dimension in solar radii
-        self.sun_dimension_pixels = 446  # from standard astropy atan(R_sun/AU)
+        # self.sun_dimension_pixels = 446  # from standard astropy atan(R_sun/AU)
+        self.sun_dimension_pixels = 457  # L1_processing/from sun_occ_dim.py
+        self.occulter_radius_sr = (
+            self.occulter_pos_last[-1] / self.sun_dimension_pixels
+        )  # occulter dimension in solar radii, L1_processing/from sun_occ_dim.py
+        # self.occulter_radius_sr = 1.1901  # occulter dimension in solar radii
 
         self.gain = 9.28
 

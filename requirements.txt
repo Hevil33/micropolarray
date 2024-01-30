@@ -59,9 +59,12 @@ numpy==1.23.5
     #   matplotlib
     #   micropolarray (pyproject.toml)
     #   numba
+    #   opencv-python-headless
     #   pandas
     #   pyerfa
     #   scipy
+opencv-python-headless==4.9.0.80
+    # via micropolarray (pyproject.toml)
 packaging==23.1
     # via
     #   astropy
