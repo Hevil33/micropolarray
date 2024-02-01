@@ -354,46 +354,6 @@ def find_occulter_position(
     return [y_center, x_center, radius]
 
 
-def remove_outliers_simple(original, neighbours=2):
-    """EXPERIMENTAL DO NOT USE, for improving fitting on occulter position"""
-    data = original.copy()
-    for i, element in enumerate(data[neighbours:-neighbours]):
-        median = np.median(data[i - neighbours : i + neighbours])
-        std = np.median(np.abs(data[i - neighbours : i + neighbours] - median))
-        if (element < median - 3 * std) or (element > median + 3 * std):
-            print()
-            print(element)
-            print(data[neighbours:-neighbours])
-            data[i] = median
-            print(data[neighbours:-neighbours])
-    return data
-
-    median = np.median(data)
-
-    median_deviation = np.abs(data - np.median(data))
-    condition = (data < (median + 3 * median_deviation)) | (
-        data > (median - 3 * median_deviation)
-    )
-    data = np.where(condition, data, median)
-    return data
-    extreme = 2
-    outliers = []
-    for i, element in enumerate(data[extreme:-extreme]):
-        mean = np.mean([data[i], data[i + 1]])
-        std = np.std([data[i], data[i + 1]])
-        if (element > (mean + 3 * std)) or (element < (mean - 3 * std)):
-            outliers.append(i + 1)
-    data = np.delete(data, outliers)
-    return data
-
-
-def reject_outliers(data, m=2.0):
-    d = np.abs(data - np.median(data))
-    mdev = np.median(d)
-    s = d / mdev if mdev else np.zeros(len(d))
-    return data[s < m]
-
-
 def sigmoid(x, max, min, slope, intercept):
     sigma = slope * (x - intercept)
     return max * np.exp(sigma) / (1 + np.exp(sigma)) + min

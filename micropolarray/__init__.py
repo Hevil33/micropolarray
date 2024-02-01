@@ -27,7 +27,7 @@ from micropolarray.processing.demosaic import (
     merge_polarizations,
     split_polarizations,
 )
-from micropolarray.processing.hotpix_cleaning import get_hot_pixels
+from micropolarray.processing.image_cleaning import auto_threshold, get_hot_pixels
 from micropolarray.processing.linear_roi import linear_roi, linear_roi_from_polar
 from micropolarray.processing.nrgf import (
     find_occulter_hough,
