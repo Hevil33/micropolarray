@@ -352,4 +352,5 @@ sys.path.insert(0, os.path.abspath(".."))
 # autosummary_generate = True
 # html_theme = "default"
 html_theme = "sphinx_rtd_theme"
+# html_theme = "pydata_sphinx_theme"
 # source_suffix = ['.rst', '.txt']

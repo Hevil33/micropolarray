@@ -320,7 +320,9 @@ class MicropolImage(Image):
                     mij[i, j, :, :] = merge_polarizations(
                         np.repeat(demo_component[np.newaxis, :, :], 4, axis=0)
                     )  # repeat necessary to avoid numba problems
-
+            fit_found_flags = merge_polarizations(
+                np.array(4 * [demodulator.fit_found_flags.astype(float)])
+            )  # idk why but fit_found_flags is >f8 as default
         else:
             mij = demodulator.mij
             splitted_pols = self.single_pol_subimages
@@ -607,6 +609,23 @@ class MicropolImage(Image):
         )
         return fig, ax
 
+    def show_histogram(self, split_pols: bool = True, **kwargs):
+        """Print the histogram of the flattened image data
+
+        Args:
+            split_pols (bool, optional): Whether to overplot histograms of same family pixels separately. Defaults to False.
+            **kwargs (int, optional): arguments to pass to numpy.histogram(), like bins and range.
+        Returns:
+            tuple: fig, ax tuple as returned by matplotlib.pyplot.subplots
+        """
+
+        fig, ax = super().show_histogram()
+        if split_pols:
+            for i, single_pol_subimage in enumerate(self.single_pol_subimages):
+                subhist = np.histogram(single_pol_subimage, **kwargs)
+                ax.stairs(*subhist, label=f"pixel {i}")
+        return fig, ax
+
     # ----------------------------------------------------------------
     # -------------------------- SAVING ------------------------------
     # ----------------------------------------------------------------
@@ -769,7 +788,8 @@ class MicropolImage(Image):
     # -------------------- DATA MANIPULATION -------------------------
     # ----------------------------------------------------------------
     def demosaic(self, demosaic_mode="adjacent") -> MicropolImage:
-        """Returns a demosaiced copy of the image with updated polarization parameters. Demoisacing is done IN PLACE.
+        """Returns a demosaiced copy of the image with updated polarization parameters. Demoisacing is done IN PLACE and
+        using the THEORETICAL MATRIX. If demodulation and demosaicing are required, please use demodulate(demosaic=True)
 
         Args:
             demosaic_mode (str, optional): demosaicing mode (see processing.demosaic). Defaults to "adjacent".

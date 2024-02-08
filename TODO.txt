@@ -5,6 +5,8 @@ refactor della demodulazione con pulizia dark e flat da un'altra parte magari
 cambiare operazioni su flattened arrays se possibile per risparmiare tempo
 implementare lettura di tipi di files diversi dal fits
 
+pulire libreria image_cleaning e aggiungere noise removal (vedere 
+skimage per fare cose bene)
 
 METTERE A POSTO I FIXTO
 faster nrgf filter

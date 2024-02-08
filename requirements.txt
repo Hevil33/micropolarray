@@ -30,6 +30,8 @@ fonttools==4.40.0
     # via matplotlib
 idna==3.4
     # via requests
+imageio==2.33.1
+    # via scikit-image
 imagesize==1.4.1
     # via sphinx
 importlib-metadata==6.7.0
@@ -44,25 +46,33 @@ jinja2==3.1.2
     # via sphinx
 kiwisolver==1.4.4
     # via matplotlib
+lazy-loader==0.3
+    # via scikit-image
 llvmlite==0.40.1rc1
     # via numba
 markupsafe==2.1.3
     # via jinja2
 matplotlib==3.7.1
     # via micropolarray (pyproject.toml)
+networkx==3.1
+    # via scikit-image
 numba==0.57.0
     # via micropolarray (pyproject.toml)
 numpy==1.23.5
     # via
     #   astropy
     #   contourpy
+    #   imageio
     #   matplotlib
     #   micropolarray (pyproject.toml)
     #   numba
     #   opencv-python-headless
     #   pandas
     #   pyerfa
+    #   pywavelets
+    #   scikit-image
     #   scipy
+    #   tifffile
 opencv-python-headless==4.9.0.80
     # via micropolarray (pyproject.toml)
 packaging==23.1
@@ -70,11 +80,15 @@ packaging==23.1
     #   astropy
     #   matplotlib
     #   pytest
+    #   scikit-image
     #   sphinx
 pandas==2.0.2
     # via micropolarray (pyproject.toml)
 pillow==9.5.0
-    # via matplotlib
+    # via
+    #   imageio
+    #   matplotlib
+    #   scikit-image
 pluggy==1.3.0
     # via pytest
 pyerfa==2.0.0.3
@@ -93,12 +107,18 @@ pytz==2023.3
     # via
     #   babel
     #   pandas
+pywavelets==1.4.1
+    # via scikit-image
 pyyaml==6.0
     # via astropy
 requests==2.31.0
     # via sphinx
-scipy==1.10.1
+scikit-image==0.21.0
     # via micropolarray (pyproject.toml)
+scipy==1.10.1
+    # via
+    #   micropolarray (pyproject.toml)
+    #   scikit-image
 six==1.16.0
     # via python-dateutil
 snowballstemmer==2.2.0
@@ -123,6 +143,8 @@ sphinxcontrib-qthelp==1.0.3
     # via sphinx
 sphinxcontrib-serializinghtml==1.1.5
     # via sphinx
+tifffile==2023.7.10
+    # via scikit-image
 tomli==2.0.1
     # via pytest
 tqdm==4.65.0

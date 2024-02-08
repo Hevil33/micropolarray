@@ -29,13 +29,14 @@ You can run the `test.py` script to verify the correct installation of the micop
 
 ## Documentation
 
-Get the simple [jupyter tutorial](https://github.com/Hevil33/micropolarray_master/blob/main/TUTORIAL.ipynb) for a brief introduction.
-
 Documentation is hosted at ReadTheDocs and can be found [HERE](https://micropolarray.readthedocs.io/en/latest/) (html format).
 
 
-
 ## Usage
+
+Get the simple [jupyter tutorial](https://github.com/Hevil33/micropolarray_master/blob/main/TUTORIAL.ipynb) for a brief introduction.
+
+After installation, you can import the library in your python application
 
 ```
 import micropolarray as ml

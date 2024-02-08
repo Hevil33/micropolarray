@@ -70,6 +70,7 @@
              
   <h1>Source code for micropolarray.cameras</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
 <span class="kn">from</span> <span class="nn">micropolarray.processing.nrgf</span> <span class="kn">import</span> <span class="n">roi_from_polar</span>
 
 <span class="c1"># TODO: aggiungere tutti i bei dati qua, rendere le camere personalizzabili (caricare dark da cartelle e cose cosi)</span>
@@ -93,9 +94,7 @@
 <span class="sd">            np.array: Array if in ROI, fill elsewhere</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">r</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">occulter_pos_last</span>
-        <span class="n">roidata</span> <span class="o">=</span> <span class="n">roi_from_polar</span><span class="p">(</span>
-            <span class="n">data</span><span class="p">,</span> <span class="p">[</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">],</span> <span class="p">[</span><span class="n">r</span> <span class="o">+</span> <span class="n">overoccult</span><span class="p">,</span> <span class="mi">5000</span><span class="p">],</span> <span class="n">fill</span><span class="o">=</span><span class="n">fill</span>
-        <span class="p">)</span>
+        <span class="n">roidata</span> <span class="o">=</span> <span class="n">roi_from_polar</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="p">[</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">],</span> <span class="p">[</span><span class="n">r</span> <span class="o">+</span> <span class="n">overoccult</span><span class="p">,</span> <span class="mi">5000</span><span class="p">],</span> <span class="n">fill</span><span class="o">=</span><span class="n">fill</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">roidata</span></div>
 
@@ -162,16 +161,20 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">quantumEff</span> <span class="o">=</span> <span class="mf">0.76</span>  <span class="c1"># @470 (nominal, by user manual)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">occulter_pos_last</span> <span class="o">=</span> <span class="p">[</span>
             <span class="mi">919</span><span class="p">,</span>
-            <span class="mi">950</span><span class="p">,</span>
-            <span class="mi">531</span><span class="p">,</span>
+            <span class="mi">941</span><span class="p">,</span>
+            <span class="mi">536</span><span class="p">,</span>
         <span class="p">]</span>  <span class="c1"># Occulter y, x, radius [px, px, px] updated January 2023</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">occulter_pos_2021</span> <span class="o">=</span> <span class="p">[</span>
             <span class="mi">925</span><span class="p">,</span>
             <span class="mi">934</span><span class="p">,</span>
             <span class="mi">532</span><span class="p">,</span>
         <span class="p">]</span>  <span class="c1"># updated march 27, 2021/2022 campaign</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">occulter_radius_sr</span> <span class="o">=</span> <span class="mf">1.1901</span>  <span class="c1"># occulter dimension in solar radii</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sun_dimension_pixels</span> <span class="o">=</span> <span class="mi">446</span>  <span class="c1"># from standard astropy atan(R_sun/AU)</span>
+        <span class="c1"># self.sun_dimension_pixels = 446  # from standard astropy atan(R_sun/AU)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sun_dimension_pixels</span> <span class="o">=</span> <span class="mi">457</span>  <span class="c1"># L1_processing/from sun_occ_dim.py</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">occulter_radius_sr</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">occulter_pos_last</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">sun_dimension_pixels</span>
+        <span class="p">)</span>  <span class="c1"># occulter dimension in solar radii, L1_processing/from sun_occ_dim.py</span>
+        <span class="c1"># self.occulter_radius_sr = 1.1901  # occulter dimension in solar radii</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">gain</span> <span class="o">=</span> <span class="mf">9.28</span></div>
 

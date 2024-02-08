@@ -249,6 +249,7 @@ def calculate_demodulation_tensor(
     flat_filename: str = None,
     normalizing_S=None,
     tk_boundary: list = None,
+    eff_boundary: list = None,
     DEBUG: bool = False,
 ):
     """Calculates the demodulation tensor images and saves them. Requires a set of images with different polarizations to fit a Malus curve model.
@@ -266,6 +267,7 @@ def calculate_demodulation_tensor(
         flat_filename (str, optional): Flat image filename to correct input images. Defaults to None.
         normalizing_S (float or np.ndarray, optional): maximum signal used to normalize single pixel signal. If not set will be estimated as the 4sigma of the signal distribution.
         tk_boundary (list): if provided, sets the transmittancy [initial guess, boundary_inf, boundary_sup] of the Malus curve (max value). Defaults to [0.5, 0.1, 1.-1.e-6].
+        eff_boundary (list): if provided, sets the efficiency [initial guess, boundary_inf, boundary_sup] of the Malus curve (max value). Defaults to [0.5, 0.1, 1.-1.e-6].
 
     Raises:
         ValueError: Raised if any among [0, 45, 90, -45] is not included in the input polarizations.
@@ -483,6 +485,7 @@ def calculate_demodulation_tensor(
     # calculate normalized data and its error
     # sigma_data = sqrt(e) = sqrt(data / gain) (poisson)
     # sigma_norm = sqrt(data / gain) = sqrt(norm / gain / S) (propagation)
+
     np.divide(all_data_arr, normalizing_S, out=all_data_arr)
     pixel_errors = np.zeros_like(all_data_arr)
     np.divide(all_data_arr, normalizing_S * gain, out=pixel_errors)
@@ -561,6 +564,7 @@ def calculate_demodulation_tensor(
             polarizer_orientations,
             rad_micropol_phases_previsions,
             tk_boundary,
+            eff_boundary,
             DEBUG,
         ]
         for i in range(chunks_n_y * chunks_n_x)
@@ -729,16 +733,21 @@ def compute_demodulation_by_chunk(
     polarizer_orientations,
     rad_micropol_phases_previsions,
     tk_boundary,
+    eff_boundary,
     DEBUG,
 ):
     """Utility function to parallelize calculations."""
     N_MALUS_PARAMS = 3
     N_PIXELS_IN_SUPERPIX = 4
+
+    dof = len(polarizer_orientations) - 2
     if tk_boundary is None:
-        dof = len(polarizer_orientations) - 3
         tk_boundary = [0.5, 0.1, 1.0 - 1.0e-6]
-    else:
-        dof = len(polarizer_orientations) - 2
+        dof -= 1
+    if eff_boundary is None:
+        eff_boundary = [0.5, 0.1, 1.0 - 1.0e-6]
+        dof -= 1
+
     # Preemptly compute the theoretical demo matrix to save time
     theo_modulation_matrix = np.array(
         [
@@ -763,7 +772,7 @@ def compute_demodulation_by_chunk(
     )
     polarizations_rad = np.deg2rad(polarizer_orientations)
     tk_prediction = tk_boundary[0]
-    efficiency_prediction = 0.4
+    efficiency_prediction = eff_boundary[0]
 
     all_zeros = np.zeros(shape=(num_of_points))
     m_ij = np.zeros(
@@ -798,7 +807,7 @@ def compute_demodulation_by_chunk(
 
     bounds = np.zeros(shape=(N_PIXELS_IN_SUPERPIX, 2, N_MALUS_PARAMS))
     bounds[:, 0, 0], bounds[:, 1, 0] = tk_boundary[1:]  # Throughput bounds
-    bounds[:, 0, 1], bounds[:, 1, 1] = 0.1, 1.0  # Efficiency bounds
+    bounds[:, 0, 1], bounds[:, 1, 1] = eff_boundary[1:]  # Efficiency bounds
     bounds[:, 0, 2] = rad_micropol_phases_previsions - 15  # Lower angle bounds
     bounds[:, 1, 2] = rad_micropol_phases_previsions + 15  # Upper angle bounds
 
@@ -881,6 +890,7 @@ def compute_demodulation_by_chunk(
                     colors = ["blue", "orange", "green", "red"]
                     fig, ax = plt.subplots(dpi=200, constrained_layout=True)
                     for i in range(4):
+                        print(f"{np.min(normalized_superpix_arr[:, i]) = :3.2f}")
                         ax.errorbar(
                             np.rad2deg(polarizations_rad),
                             normalized_superpix_arr[:, i],
@@ -911,9 +921,9 @@ def compute_demodulation_by_chunk(
                     plt.show()
 
                 if not fit_success:
-                    m_ij[
-                        :, :, int(super_y / 2), int(super_x / 2)
-                    ] = theo_demodulation_matrix
+                    m_ij[:, :, int(super_y / 2), int(super_x / 2)] = (
+                        theo_demodulation_matrix
+                    )
                     continue
 
                 # Compute modulation matrix and its inverse
@@ -988,12 +998,12 @@ def compute_demodulation_by_chunk(
                 ).reshape(2, 2)
 
             else:  # pixel is in occulter region
-                m_ij[
-                    :, :, int(super_y / 2), int(super_x / 2)
-                ] = theo_demodulation_matrix
-                phase_data[
-                    super_y : super_y + 2, super_x : super_x + 2
-                ] = rad_micropol_phases_previsions.reshape(2, 2)
+                m_ij[:, :, int(super_y / 2), int(super_x / 2)] = (
+                    theo_demodulation_matrix
+                )
+                phase_data[super_y : super_y + 2, super_x : super_x + 2] = (
+                    rad_micropol_phases_previsions.reshape(2, 2)
+                )
                 tk_data[super_y : super_y + 2, super_x : super_x + 2] = np.array(
                     [
                         [tk_prediction, tk_prediction],

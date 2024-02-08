@@ -52,10 +52,10 @@ micropolarray.processing.demosaic module
    :undoc-members:
    :show-inheritance:
 
-micropolarray.processing.hotpix\_cleaning module
-------------------------------------------------
+micropolarray.processing.image\_cleaning module
+-----------------------------------------------
 
-.. automodule:: micropolarray.processing.hotpix_cleaning
+.. automodule:: micropolarray.processing.image_cleaning
    :members:
    :undoc-members:
    :show-inheritance:

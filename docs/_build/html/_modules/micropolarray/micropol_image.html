@@ -391,7 +391,9 @@
                     <span class="n">mij</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">merge_polarizations</span><span class="p">(</span>
                         <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">demo_component</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:],</span> <span class="mi">4</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
                     <span class="p">)</span>  <span class="c1"># repeat necessary to avoid numba problems</span>
-
+            <span class="n">fit_found_flags</span> <span class="o">=</span> <span class="n">merge_polarizations</span><span class="p">(</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="mi">4</span> <span class="o">*</span> <span class="p">[</span><span class="n">demodulator</span><span class="o">.</span><span class="n">fit_found_flags</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)])</span>
+            <span class="p">)</span>  <span class="c1"># idk why but fit_found_flags is &gt;f8 as default</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">mij</span> <span class="o">=</span> <span class="n">demodulator</span><span class="o">.</span><span class="n">mij</span>
             <span class="n">splitted_pols</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">single_pol_subimages</span>
@@ -678,6 +680,23 @@
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span></div>
 
+<div class="viewcode-block" id="MicropolImage.show_histogram"><a class="viewcode-back" href="../../micropolarray.html#micropolarray.micropol_image.MicropolImage.show_histogram">[docs]</a>    <span class="k">def</span> <span class="nf">show_histogram</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">split_pols</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Print the histogram of the flattened image data</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            split_pols (bool, optional): Whether to overplot histograms of same family pixels separately. Defaults to False.</span>
+<span class="sd">            **kwargs (int, optional): arguments to pass to numpy.histogram(), like bins and range.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            tuple: fig, ax tuple as returned by matplotlib.pyplot.subplots</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">show_histogram</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">split_pols</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">single_pol_subimage</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">single_pol_subimages</span><span class="p">):</span>
+                <span class="n">subhist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">histogram</span><span class="p">(</span><span class="n">single_pol_subimage</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">stairs</span><span class="p">(</span><span class="o">*</span><span class="n">subhist</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;pixel </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span></div>
+
     <span class="c1"># ----------------------------------------------------------------</span>
     <span class="c1"># -------------------------- SAVING ------------------------------</span>
     <span class="c1"># ----------------------------------------------------------------</span>
@@ -840,7 +859,8 @@
     <span class="c1"># -------------------- DATA MANIPULATION -------------------------</span>
     <span class="c1"># ----------------------------------------------------------------</span>
 <div class="viewcode-block" id="MicropolImage.demosaic"><a class="viewcode-back" href="../../micropolarray.html#micropolarray.micropol_image.MicropolImage.demosaic">[docs]</a>    <span class="k">def</span> <span class="nf">demosaic</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">demosaic_mode</span><span class="o">=</span><span class="s2">&quot;adjacent&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MicropolImage</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a demosaiced copy of the image with updated polarization parameters. Demoisacing is done IN PLACE.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a demosaiced copy of the image with updated polarization parameters. Demoisacing is done IN PLACE and</span>
+<span class="sd">        using the THEORETICAL MATRIX. If demodulation and demosaicing are required, please use demodulate(demosaic=True)</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            demosaic_mode (str, optional): demosaicing mode (see processing.demosaic). Defaults to &quot;adjacent&quot;.</span>

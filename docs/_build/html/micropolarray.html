@@ -101,6 +101,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#micropolarray.micropol_image.MicropolImage.save_single_pol_images"><code class="docutils literal notranslate"><span class="pre">MicropolImage.save_single_pol_images()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#micropolarray.micropol_image.MicropolImage.shift"><code class="docutils literal notranslate"><span class="pre">MicropolImage.shift()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#micropolarray.micropol_image.MicropolImage.show_demo_images"><code class="docutils literal notranslate"><span class="pre">MicropolImage.show_demo_images()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#micropolarray.micropol_image.MicropolImage.show_histogram"><code class="docutils literal notranslate"><span class="pre">MicropolImage.show_histogram()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#micropolarray.micropol_image.MicropolImage.show_pol_param"><code class="docutils literal notranslate"><span class="pre">MicropolImage.show_pol_param()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#micropolarray.micropol_image.MicropolImage.show_single_pol_images"><code class="docutils literal notranslate"><span class="pre">MicropolImage.show_single_pol_images()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#micropolarray.micropol_image.MicropolImage.show_with_pol_params"><code class="docutils literal notranslate"><span class="pre">MicropolImage.show_with_pol_params()</span></code></a></li>
@@ -229,8 +230,11 @@
 <li class="toctree-l3"><a class="reference internal" href="micropolarray.processing.html#micropolarray.processing.demosaic.split_polarizations"><code class="docutils literal notranslate"><span class="pre">split_polarizations()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="micropolarray.processing.html#module-micropolarray.processing.hotpix_cleaning">micropolarray.processing.hotpix_cleaning module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="micropolarray.processing.html#micropolarray.processing.hotpix_cleaning.get_hot_pixels"><code class="docutils literal notranslate"><span class="pre">get_hot_pixels()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="micropolarray.processing.html#module-micropolarray.processing.image_cleaning">micropolarray.processing.image_cleaning module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="micropolarray.processing.html#micropolarray.processing.image_cleaning.auto_threshold"><code class="docutils literal notranslate"><span class="pre">auto_threshold()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="micropolarray.processing.html#micropolarray.processing.image_cleaning.get_hot_pixels"><code class="docutils literal notranslate"><span class="pre">get_hot_pixels()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="micropolarray.processing.html#micropolarray.processing.image_cleaning.reject_outliers"><code class="docutils literal notranslate"><span class="pre">reject_outliers()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="micropolarray.processing.html#micropolarray.processing.image_cleaning.remove_outliers_simple"><code class="docutils literal notranslate"><span class="pre">remove_outliers_simple()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="micropolarray.processing.html#module-micropolarray.processing.linear_roi">micropolarray.processing.linear_roi module</a><ul>
@@ -245,8 +249,6 @@
 <li class="toctree-l3"><a class="reference internal" href="micropolarray.processing.html#micropolarray.processing.nrgf.find_occulter_position"><code class="docutils literal notranslate"><span class="pre">find_occulter_position()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="micropolarray.processing.html#micropolarray.processing.nrgf.map_polar_coordinates"><code class="docutils literal notranslate"><span class="pre">map_polar_coordinates()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="micropolarray.processing.html#micropolarray.processing.nrgf.nrgf"><code class="docutils literal notranslate"><span class="pre">nrgf()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="micropolarray.processing.html#micropolarray.processing.nrgf.reject_outliers"><code class="docutils literal notranslate"><span class="pre">reject_outliers()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="micropolarray.processing.html#micropolarray.processing.nrgf.remove_outliers_simple"><code class="docutils literal notranslate"><span class="pre">remove_outliers_simple()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="micropolarray.processing.html#micropolarray.processing.nrgf.roi_from_polar"><code class="docutils literal notranslate"><span class="pre">roi_from_polar()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="micropolarray.processing.html#micropolarray.processing.nrgf.sigmoid"><code class="docutils literal notranslate"><span class="pre">sigmoid()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="micropolarray.processing.html#micropolarray.processing.nrgf.tile_double"><code class="docutils literal notranslate"><span class="pre">tile_double()</span></code></a></li>
@@ -415,10 +417,7 @@
 <dd><p>Print the histogram of the flattened image data</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>split_pols</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to overplot histograms of same family pixels separately. Defaults to False.</p></li>
-<li><p><strong>**kwargs</strong> (<em>int</em><em>, </em><em>optional</em>) – arguments to pass to numpy.histogram(), like bins and range.</p></li>
-</ul>
+<dd class="field-odd"><p><strong>**kwargs</strong> (<em>int</em><em>, </em><em>optional</em>) – arguments to pass to numpy.histogram(), like bins and range.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>fig, ax tuple as returned by matplotlib.pyplot.subplots</p>
@@ -543,7 +542,8 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="micropolarray.micropol_image.MicropolImage.demosaic">
 <span class="sig-name descname"><span class="pre">demosaic</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">demosaic_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'adjacent'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#micropolarray.micropol_image.MicropolImage" title="micropolarray.micropol_image.MicropolImage"><span class="pre">MicropolImage</span></a></span></span><a class="reference internal" href="_modules/micropolarray/micropol_image.html#MicropolImage.demosaic"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#micropolarray.micropol_image.MicropolImage.demosaic" title="Permalink to this definition"></a></dt>
-<dd><p>Returns a demosaiced copy of the image with updated polarization parameters. Demoisacing is done IN PLACE.</p>
+<dd><p>Returns a demosaiced copy of the image with updated polarization parameters. Demoisacing is done IN PLACE and
+using the THEORETICAL MATRIX. If demodulation and demosaicing are required, please use demodulate(demosaic=True)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>demosaic_mode</strong> (<em>str</em><em>, </em><em>optional</em>) – demosaicing mode (see processing.demosaic). Defaults to “adjacent”.</p>
@@ -564,7 +564,7 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="micropolarray.micropol_image.MicropolImage.mask_occulter">
-<span class="sig-name descname"><span class="pre">mask_occulter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">919</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">950</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">531</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overoccult</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/micropolarray/micropol_image.html#MicropolImage.mask_occulter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#micropolarray.micropol_image.MicropolImage.mask_occulter" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">mask_occulter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">919</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">941</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">536</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overoccult</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/micropolarray/micropol_image.html#MicropolImage.mask_occulter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#micropolarray.micropol_image.MicropolImage.mask_occulter" title="Permalink to this definition"></a></dt>
 <dd><p>Masks occulter for all image parameters</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -738,6 +738,26 @@ binningxbinning. Sum bins by default.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>a (figure, axis) couple same as matplotlib.pyplot.subplots</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="micropolarray.micropol_image.MicropolImage.show_histogram">
+<span class="sig-name descname"><span class="pre">show_histogram</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">split_pols</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/micropolarray/micropol_image.html#MicropolImage.show_histogram"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#micropolarray.micropol_image.MicropolImage.show_histogram" title="Permalink to this definition"></a></dt>
+<dd><p>Print the histogram of the flattened image data</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>split_pols</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to overplot histograms of same family pixels separately. Defaults to False.</p></li>
+<li><p><strong>**kwargs</strong> (<em>int</em><em>, </em><em>optional</em>) – arguments to pass to numpy.histogram(), like bins and range.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>fig, ax tuple as returned by matplotlib.pyplot.subplots</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>tuple</p>

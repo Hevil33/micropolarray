@@ -69,12 +69,14 @@ class Image:
 
                 try:  # standard format
                     datetimes[idx] = datetime.datetime.strptime(
-                        hul[0].header["DATE-OBS"],
+                        hul[0].header["DATE-OBS"].split(".")[0],
                         "%Y-%m-%dT%H:%M:%S",
                     )
                 except ValueError:  # antarticor format
                     datetimes[idx] = datetime.datetime.strptime(
-                        hul[0].header["DATE-OBS"] + "-" + hul[0].header["TIME-OBS"],
+                        hul[0].header["DATE-OBS"]
+                        + "-"
+                        + hul[0].header["TIME-OBS"].split(".")[0],
                         "%Y-%m-%d-%H:%M:%S",
                     )
                 except KeyError:
@@ -215,7 +217,6 @@ class Image:
         """Print the histogram of the flattened image data
 
         Args:
-            split_pols (bool, optional): Whether to overplot histograms of same family pixels separately. Defaults to False.
             **kwargs (int, optional): arguments to pass to numpy.histogram(), like bins and range.
 
         Returns:
@@ -224,10 +225,6 @@ class Image:
         fig, ax = plt.subplots(dpi=200, constrained_layout=True)
         histo = np.histogram(self.data, **kwargs)
         ax.stairs(*histo, label="Total histogram")
-        if split_pols:
-            for i, single_pol_subimage in enumerate(self.single_pol_subimages):
-                subhist = np.histogram(single_pol_subimage, **kwargs)
-                ax.stairs(*subhist, label=f"pixel {i}")
         ax.set_title("Image histogram", color="black")
         ax.set_xlabel("Signal [DN]")
         ax.set_ylabel("Number of pixels")

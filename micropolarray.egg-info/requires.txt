@@ -5,6 +5,7 @@ dataclasses
 astropy
 matplotlib
 scipy
+scikit-image
 wheel
 tqdm
 pytest
