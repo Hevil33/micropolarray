@@ -14,24 +14,17 @@ from PIL import Image as PILImage
 from micropolarray.cameras import Camera, PolarCam
 from micropolarray.image import Image
 from micropolarray.polarization_functions import AoLP, DoLP, pB
-from micropolarray.processing.chen_wan_liang_calibration import _ifov_jitcorrect
+from micropolarray.processing.chen_wan_liang_calibration import \
+    _ifov_jitcorrect
 from micropolarray.processing.congrid import congrid
 from micropolarray.processing.demodulation import Demodulator
-from micropolarray.processing.demosaic import (
-    demosaic,
-    merge_polarizations,
-    split_polarizations,
-)
+from micropolarray.processing.demosaic import (demosaic, merge_polarizations,
+                                               split_polarizations)
 from micropolarray.processing.nrgf import roi_from_polar
 from micropolarray.processing.rebin import micropolarray_rebin
 from micropolarray.processing.shift import shift_micropol
-from micropolarray.utils import (
-    _make_abs_and_create_dir,
-    fix_data,
-    mean_minus_std,
-    mean_plus_std,
-    timer,
-)
+from micropolarray.utils import (_make_abs_and_create_dir, fix_data,
+                                 mean_minus_std, mean_plus_std, timer)
 
 
 @dataclass
@@ -619,7 +612,7 @@ class MicropolImage(Image):
             tuple: fig, ax tuple as returned by matplotlib.pyplot.subplots
         """
 
-        fig, ax = super().show_histogram()
+        fig, ax = super().show_histogram(**kwargs)
         if split_pols:
             for i, single_pol_subimage in enumerate(self.single_pol_subimages):
                 subhist = np.histogram(single_pol_subimage, **kwargs)
