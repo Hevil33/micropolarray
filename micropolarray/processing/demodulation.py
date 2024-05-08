@@ -872,7 +872,7 @@ def compute_demodulation_by_chunk(
                             sigma=sigma_pix[:, pixel_num],
                             absolute_sigma=True,
                             bounds=bounds[pixel_num],
-                            xtol=1.0e-4,  # may save time
+                            xtol=1.0e-5,  # may save time
                         )
                         fit_success = True
 
