@@ -86,13 +86,13 @@
 <span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
 
 <span class="kn">from</span> <span class="nn">micropolarray.cameras</span> <span class="kn">import</span> <span class="n">PolarCam</span>
-<span class="kn">from</span> <span class="nn">micropolarray.processing.chen_wan_liang_calibration</span> <span class="kn">import</span> \
-    <span class="n">_ifov_jitcorrect</span>
-<span class="kn">from</span> <span class="nn">micropolarray.processing.nrgf</span> <span class="kn">import</span> <span class="p">(</span><span class="n">find_occulter_position</span><span class="p">,</span>
-                                           <span class="n">roi_from_polar</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">micropolarray.processing.rebin</span> <span class="kn">import</span> <span class="p">(</span><span class="n">micropolarray_rebin</span><span class="p">,</span>
-                                            <span class="n">standard_rebin</span><span class="p">,</span>
-                                            <span class="n">trim_to_match_binning</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">micropolarray.processing.chen_wan_liang_calibration</span> <span class="kn">import</span> <span class="n">_ifov_jitcorrect</span>
+<span class="kn">from</span> <span class="nn">micropolarray.processing.nrgf</span> <span class="kn">import</span> <span class="n">find_occulter_position</span><span class="p">,</span> <span class="n">roi_from_polar</span>
+<span class="kn">from</span> <span class="nn">micropolarray.processing.rebin</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">micropolarray_rebin</span><span class="p">,</span>
+    <span class="n">standard_rebin</span><span class="p">,</span>
+    <span class="n">trim_to_match_binning</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span> <span class="nn">micropolarray.utils</span> <span class="kn">import</span> <span class="n">mean_plus_std</span><span class="p">,</span> <span class="n">merge_polarizations</span>
 
 <span class="c1"># Shape of the demodulation matrix</span>
@@ -418,13 +418,15 @@
         <span class="n">flat</span> <span class="o">=</span> <span class="n">micropolarray_rebin</span><span class="p">(</span><span class="n">flat</span><span class="p">,</span> <span class="n">binning</span><span class="p">)</span>
         <span class="c1"># flat_max = np.max(flat, axis=(0, 1))</span>
         <span class="n">flat_max</span> <span class="o">=</span> <span class="n">mean_plus_std</span><span class="p">(</span><span class="n">flat</span><span class="p">,</span> <span class="n">stds_n</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">flat_filename</span> <span class="ow">and</span> <span class="n">dark_filename</span><span class="p">:</span>
-        <span class="n">flat</span> <span class="o">-=</span> <span class="n">dark</span>  <span class="c1"># correct flat too</span>
-        <span class="n">flat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">flat</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="n">flat</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">occulter</span><span class="p">:</span>
-            <span class="n">flat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">occulter_flag</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">flat</span><span class="p">)</span>
-        <span class="c1"># flat_max = np.max(flat, axis=(0, 1))</span>
-        <span class="n">flat_max</span> <span class="o">=</span> <span class="n">mean_plus_std</span><span class="p">(</span><span class="n">flat</span><span class="p">,</span> <span class="n">stds_n</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    if flat_filename and dark_filename:</span>
+<span class="sd">        flat -= dark  # correct flat too</span>
+<span class="sd">        flat = np.where(flat &gt; 0, flat, 1.0)</span>
+<span class="sd">        if occulter:</span>
+<span class="sd">            flat = np.where(occulter_flag, 1.0, flat)</span>
+<span class="sd">        # flat_max = np.max(flat, axis=(0, 1))</span>
+<span class="sd">        flat_max = mean_plus_std(flat, stds_n=1)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">flat_filename</span><span class="p">:</span>
         <span class="n">normalized_flat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">occulter_flag</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">flat</span> <span class="o">/</span> <span class="n">flat_max</span><span class="p">)</span>
 
