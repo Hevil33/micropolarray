@@ -15,13 +15,13 @@ from scipy.optimize import curve_fit
 from tqdm import tqdm
 
 from micropolarray.cameras import PolarCam
-from micropolarray.processing.chen_wan_liang_calibration import \
-    _ifov_jitcorrect
-from micropolarray.processing.nrgf import (find_occulter_position,
-                                           roi_from_polar)
-from micropolarray.processing.rebin import (micropolarray_rebin,
-                                            standard_rebin,
-                                            trim_to_match_binning)
+from micropolarray.processing.chen_wan_liang_calibration import _ifov_jitcorrect
+from micropolarray.processing.nrgf import find_occulter_position, roi_from_polar
+from micropolarray.processing.rebin import (
+    micropolarray_rebin,
+    standard_rebin,
+    trim_to_match_binning,
+)
 from micropolarray.utils import mean_plus_std, merge_polarizations
 
 # Shape of the demodulation matrix
@@ -347,6 +347,7 @@ def calculate_demodulation_tensor(
         flat = micropolarray_rebin(flat, binning)
         # flat_max = np.max(flat, axis=(0, 1))
         flat_max = mean_plus_std(flat, stds_n=1)
+    """
     if flat_filename and dark_filename:
         flat -= dark  # correct flat too
         flat = np.where(flat > 0, flat, 1.0)
@@ -354,6 +355,7 @@ def calculate_demodulation_tensor(
             flat = np.where(occulter_flag, 1.0, flat)
         # flat_max = np.max(flat, axis=(0, 1))
         flat_max = mean_plus_std(flat, stds_n=1)
+    """
     if flat_filename:
         normalized_flat = np.where(occulter_flag, 1.0, flat / flat_max)
 
