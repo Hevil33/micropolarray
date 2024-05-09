@@ -844,6 +844,15 @@ class MicropolImage(Image):
         return rebinned_image
 
     def congrid(self, newdim_y: int, newdim_x: int) -> MicropolImage:
+        """Reshapes the data into any new lenght and width.
+
+        Args:
+            newdim_y (int): new height
+            newdim_x (int): new width
+
+        Returns:
+            MicropolImage: image with reshaped data.
+        """
         # Trim to nearest superpixel
         if (newdim_y % 2) or (newdim_x % 2):
             while newdim_y % 2:
