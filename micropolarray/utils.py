@@ -118,6 +118,14 @@ def median_plus_std(data: np.array, stds_n: int = 1) -> float:
 
 
 def normalize2pi(angles_list):
+    """Returns the list of angles (in degrees) normalized between -90 and 90 degrees.
+
+    Args:
+        angles_list (list): list of angles to normalize
+
+    Returns:
+        list: list of normalized angles
+    """
     if type(angles_list) is not list:
         angles_list = [
             angles_list,

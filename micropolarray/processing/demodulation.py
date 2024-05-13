@@ -22,7 +22,7 @@ from micropolarray.processing.rebin import (
     standard_rebin,
     trim_to_match_binning,
 )
-from micropolarray.utils import mean_plus_std, merge_polarizations
+from micropolarray.utils import mean_plus_std, merge_polarizations, normalize2pi
 
 # Shape of the demodulation matrix
 N_PIXELS_IN_SUPERPIX = 4
@@ -101,6 +101,34 @@ class Demodulator:
         ) as firsthul:
             _ = np.array(firsthul[0].data)
         return _
+
+    @property
+    def angle_dic(self) -> dict:
+        phis_ij = [
+            np.mean(self.phi[0::2, 0::2]),
+            np.mean(self.phi[0::2, 1::2]),
+            np.mean(self.phi[1::2, 0::2]),
+            np.mean(self.phi[1::2, 1::2]),
+        ]
+
+        phis_ij = normalize2pi(phis_ij)
+        print(phis_ij)
+        angle_dic = {}
+        assigned_indexes = set()
+        all_indexes = set([0, 1, 2, 3])
+        for i in [0, 45, -45, 90]:
+            index = phis_ij.index(min(phis_ij, key=lambda x: abs(x - i)))
+            angle_dic[i] = index
+            assigned_indexes.add(index)
+
+        # if not all indexes were assigned, assume that the 90 pixel fitted to -90 instead and was then assigned to the wrong index
+        if all_indexes - assigned_indexes:
+            print(all_indexes)
+            print(assigned_indexes)
+            print(all_indexes - assigned_indexes)
+            angle_dic[90] = list(all_indexes - assigned_indexes)[0]
+
+        return angle_dic
 
     def _get_demodulation_tensor(self):
         """Reads files "MIJ.fits" from path folder and returns a (3,4,y,x)

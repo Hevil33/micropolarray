@@ -140,6 +140,7 @@ class TestDemodulation:
                 2,
             )
         )
+        assert demodulator.angle_dic == {0: 0, 45: 1, -45: 2, 90: 3}
 
         assert (
             demodulator.fit_found_flags.shape == demodulator.mij[0, 0].shape
