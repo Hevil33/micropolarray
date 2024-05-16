@@ -22,20 +22,10 @@ def main():
         "/home/herve/dottorato/antarticor/herve/campagna_2022/results/2021_12_11/corona_0/corona.fits"
     )
 
-    fig, ax = image.show()
-    thresh = threshold_otsu(image.data[image.data < 1.0e-5])
-    ax.axvline(x=thresh)
+    nrfg = ml.nrgf(image.data, 1500, 2078, rho_min=300)
 
-    y, x, r = ml.find_occulter_hough(
-        # np.where(image.data < thresh, 0, image.data), minr=200, maxr=800
-        image.data,
-        # minr=200,
-        # maxr=800,
-    )
-    print(y, x, r)
-
-    ax.add_artist(plt.Circle((x, y), r))
-
+    fig, ax = plt.subplots(dpi=200)
+    ax.imshow(nrfg)
     plt.show()
 
 

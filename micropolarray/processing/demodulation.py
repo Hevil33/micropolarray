@@ -104,6 +104,11 @@ class Demodulator:
 
     @property
     def angle_dic(self) -> dict:
+        """Dictionary representing the correlation between pix family and fitted angle
+
+        Returns:
+            dict: key[value] where key is the angle and value is the pixel family index (y, x) with fast index x
+        """
         phis_ij = [
             np.mean(self.phi[0::2, 0::2]),
             np.mean(self.phi[0::2, 1::2]),
@@ -112,7 +117,6 @@ class Demodulator:
         ]
 
         phis_ij = normalize2pi(phis_ij)
-        print(phis_ij)
         angle_dic = {}
         assigned_indexes = set()
         all_indexes = set([0, 1, 2, 3])
@@ -123,9 +127,6 @@ class Demodulator:
 
         # if not all indexes were assigned, assume that the 90 pixel fitted to -90 instead and was then assigned to the wrong index
         if all_indexes - assigned_indexes:
-            print(all_indexes)
-            print(assigned_indexes)
-            print(all_indexes - assigned_indexes)
             angle_dic[90] = list(all_indexes - assigned_indexes)[0]
 
         return angle_dic

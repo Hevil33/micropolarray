@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from astropy.io import fits
 
+from micropolarray.processing.shift import shift
 from micropolarray.utils import _make_abs_and_create_dir, fix_data
 
 
@@ -129,6 +130,22 @@ class Image:
             self.header["NAXIS1"] = input_data.shape[1]
             self.header["NAXIS2"] = input_data.shape[0]
 
+    def shift(self, y: int, x: int) -> Image:
+        """Shifts image by y, x pixels and fills with 0 the remaining space. Positive numbers for up/right shift and negative for down/left shift.
+
+        Args:
+            y (int): vertical shift in pix
+            x (int): horizontal shift in pix
+
+        Returns:
+            Image: shifted image copied from the original
+        """
+        # newdata = shift(self.data, y, x)
+        newdata = shift(self.data, y, x)
+        newimage = Image(newdata)
+
+        return newimage
+
     # ----------------------------------------------------------------
     # -------------------------- SAVING ------------------------------
     # ----------------------------------------------------------------
@@ -183,7 +200,7 @@ class Image:
     # ------------------------------ SHOW ----------------------------
     # ----------------------------------------------------------------
 
-    def show(self, cmap="Greys_r", vmin=None, vmax=None) -> tuple:
+    def show(self, cmap="Greys_r", vmin=None, vmax=None, **kwargs) -> tuple:
         """Shows the image data
 
         Args:
@@ -202,7 +219,7 @@ class Image:
             vmin = np.min(data_to_plot)
         if vmax is None:
             vmax = np.max(data_to_plot)
-        pos = imageax.imshow(data_to_plot, cmap=cmap, vmin=vmin, vmax=vmax)
+        pos = imageax.imshow(data_to_plot, cmap=cmap, vmin=vmin, vmax=vmax, **kwargs)
         imageax.set_title(
             f"Image data (avrg {np.mean(data_to_plot, where=np.where(data_to_plot>0, True, False)):3.2f}+-{np.std(data_to_plot, where=np.where(data_to_plot>0, True, False)):3.2f})",
             color="black",

@@ -1,10 +1,7 @@
 import numpy as np
 from numba import njit
 
-from micropolarray.processing.demosaic import (
-    merge_polarizations,
-    split_polarizations,
-)
+from micropolarray.processing.demosaic import merge_polarizations, split_polarizations
 
 
 @njit

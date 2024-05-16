@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from numpy.lib.stride_tricks import as_strided
 from scipy.optimize import curve_fit
+from tqdm import tqdm
 
 
 def roi_from_polar(
@@ -149,7 +150,7 @@ def nrgf(
     rho_step = step
 
     print("Applying nrgf filter...")
-    for r in range(rho_min, rho_max, rho_step):
+    for r in tqdm(range(rho_min, rho_max, rho_step)):
         rho_condition = np.logical_and(rho_coords > r, rho_coords <= r + rho_step)
         condition = np.logical_and(rho_condition, out_phi_condition)
         # condition = np.logical_and(rho_condition, mean_phi_condition)
