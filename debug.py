@@ -22,10 +22,7 @@ def main():
         "/home/herve/dottorato/antarticor/herve/campagna_2022/results/2021_12_11/corona_0/corona.fits"
     )
 
-    nrfg = ml.nrgf(image.data, 1500, 2078, rho_min=300)
-
-    fig, ax = plt.subplots(dpi=200)
-    ax.imshow(nrfg)
+    fig, ax, fig2, ax2 = image.show_with_pol_params()
     plt.show()
 
 

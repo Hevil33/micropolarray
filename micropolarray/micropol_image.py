@@ -468,10 +468,26 @@ class MicropolImage(Image):
         image_fig.colorbar(
             mappable, ax=imageax, label="[DN]", fraction=data_ratio * 0.05
         )
-        stokes_fig, stokesax = plt.subplots(
-            2, 3, figsize=(14, 6), constrained_layout=True
-        )
+        stokes_fig, stokesax = self.show_pol_params(cmap=cmap)
 
+        return image_fig, imageax, stokes_fig, stokesax
+
+    def show_pol_params(self, cmap="Greys_r", figsize=None, **kwargs) -> tuple:
+        """Returns a tuple containing figure and axis of polarization parameters (3x2 subplots). User must call plt.show after this is called.
+
+        Args:
+            cmap (str, optional): colormap string. Defaults to "Greys_r".
+
+        Returns:
+            tuple: a (figure, axis) couple same as
+            matplotlib.pyplot.subplots for the six polarization parameters
+        """
+        data_ratio = self.data.shape[0] / self.data.shape[1]
+        if figsize is None:
+            figsize = (14, 6)
+        stokes_fig, stokesax = plt.subplots(
+            2, 3, figsize=figsize, constrained_layout=True, **kwargs
+        )
         stokesax = stokesax.ravel()
         for parameter, axis in zip(self.polparam_list, stokesax):
             avg = np.mean(parameter.data)
@@ -499,7 +515,7 @@ class MicropolImage(Image):
                 fraction=data_ratio * 0.05,
             )
 
-        return image_fig, imageax, stokes_fig, stokesax
+        return stokes_fig, stokesax
 
     def show_single_pol_images(self, cmap="Greys_r", **kwargs):
         """Plots the four polarizations images.
