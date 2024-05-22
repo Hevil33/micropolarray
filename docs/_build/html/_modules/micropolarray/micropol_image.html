@@ -1,20 +1,22 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../../">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>micropolarray.micropol_image &mdash; micropolarray  documentation</title>
-      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+
+  
   <!--[if lt IE 9]>
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=b3ba4146"></script>
-        <script src="../../_static/doctools.js?v=888ff710"></script>
-        <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
+        <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -105,7 +107,9 @@
 <span class="p">)</span>
 
 
-<div class="viewcode-block" id="PolParam"><a class="viewcode-back" href="../../micropolarray.html#micropolarray.micropol_image.PolParam">[docs]</a><span class="nd">@dataclass</span>
+<div class="viewcode-block" id="PolParam">
+<a class="viewcode-back" href="../../micropolarray.html#micropolarray.micropol_image.PolParam">[docs]</a>
+<span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">PolParam</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Auxiliary class for polarization parameters.</span>
 
@@ -124,10 +128,13 @@
     <span class="n">fix_data</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span></div>
 
 
+
 <span class="n">DEFAULT_ANGLES_DIC</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># sets the micropolarizer orientations with a dictionary {angle : position in superpix 1-&gt;3}</span>
 
 
-<div class="viewcode-block" id="set_default_angles"><a class="viewcode-back" href="../../micropolarray.html#micropolarray.micropol_image.set_default_angles">[docs]</a><span class="k">def</span> <span class="nf">set_default_angles</span><span class="p">(</span><span class="n">angles_dic</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+<div class="viewcode-block" id="set_default_angles">
+<a class="viewcode-back" href="../../micropolarray.html#micropolarray.micropol_image.set_default_angles">[docs]</a>
+<span class="k">def</span> <span class="nf">set_default_angles</span><span class="p">(</span><span class="n">angles_dic</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Sets the default micropolarizer orientations for images.</span>
 
 <span class="sd">    Args:</span>
@@ -137,7 +144,10 @@
     <span class="n">DEFAULT_ANGLES_DIC</span> <span class="o">=</span> <span class="n">angles_dic</span></div>
 
 
-<div class="viewcode-block" id="MicropolImage"><a class="viewcode-back" href="../../micropolarray.html#micropolarray.micropol_image.MicropolImage">[docs]</a><span class="k">class</span> <span class="nc">MicropolImage</span><span class="p">(</span><span class="n">Image</span><span class="p">):</span>
+
+<div class="viewcode-block" id="MicropolImage">
+<a class="viewcode-back" href="../../micropolarray.html#micropolarray.micropol_image.MicropolImage">[docs]</a>
+<span class="k">class</span> <span class="nc">MicropolImage</span><span class="p">(</span><span class="n">Image</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Micro-polarizer array image class. Can be initialized from a 2d array, a list of 1 or more file names (use the boolean keyword averageimages to select if sum or average is taken) or another MicropolImage. Dark and flat micropolarray images can also be provided to automatically correct the result.&quot;&quot;&quot;</span>
 
     <span class="n">first_call</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># Avoid repeating messages</span>
@@ -306,7 +316,9 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">newdata</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">Stokes_vec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_theo_Stokes_vec_components</span><span class="p">()</span>
 
-<div class="viewcode-block" id="MicropolImage.demodulate"><a class="viewcode-back" href="../../micropolarray.html#micropolarray.micropol_image.MicropolImage.demodulate">[docs]</a>    <span class="k">def</span> <span class="nf">demodulate</span><span class="p">(</span>
+<div class="viewcode-block" id="MicropolImage.demodulate">
+<a class="viewcode-back" href="../../micropolarray.html#micropolarray.micropol_image.MicropolImage.demodulate">[docs]</a>
+    <span class="k">def</span> <span class="nf">demodulate</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">demodulator</span><span class="p">:</span> <span class="n">Demodulator</span><span class="p">,</span>
         <span class="n">demosaicing</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
@@ -333,6 +345,7 @@
 
         <span class="n">info</span><span class="p">(</span><span class="s2">&quot;Image correctly demodulated&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">demodulated_image</span></div>
+
 
     <span class="k">def</span> <span class="nf">_get_theo_Stokes_vec_components</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -449,7 +462,9 @@
 
         <span class="k">return</span> <span class="n">S</span>
 
-<div class="viewcode-block" id="MicropolImage.subtract_dark"><a class="viewcode-back" href="../../micropolarray.html#micropolarray.micropol_image.MicropolImage.subtract_dark">[docs]</a>    <span class="k">def</span> <span class="nf">subtract_dark</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dark</span><span class="p">:</span> <span class="n">MicropolImage</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MicropolImage</span><span class="p">:</span>
+<div class="viewcode-block" id="MicropolImage.subtract_dark">
+<a class="viewcode-back" href="../../micropolarray.html#micropolarray.micropol_image.MicropolImage.subtract_dark">[docs]</a>
+    <span class="k">def</span> <span class="nf">subtract_dark</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dark</span><span class="p">:</span> <span class="n">MicropolImage</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MicropolImage</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Correctly subtracts the input dark image from the image</span>
 
 <span class="sd">        Args:</span>
@@ -464,7 +479,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_dark_subtracted</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">return</span> <span class="bp">self</span></div>
 
-<div class="viewcode-block" id="MicropolImage.correct_flat"><a class="viewcode-back" href="../../micropolarray.html#micropolarray.micropol_image.MicropolImage.correct_flat">[docs]</a>    <span class="k">def</span> <span class="nf">correct_flat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">flat</span><span class="p">:</span> <span class="n">MicropolImage</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MicropolImage</span><span class="p">:</span>
+
+<div class="viewcode-block" id="MicropolImage.correct_flat">
+<a class="viewcode-back" href="../../micropolarray.html#micropolarray.micropol_image.MicropolImage.correct_flat">[docs]</a>
+    <span class="k">def</span> <span class="nf">correct_flat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">flat</span><span class="p">:</span> <span class="n">MicropolImage</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MicropolImage</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Normalizes the flat and uses it to correStokes_vecct the image.</span>
 
 <span class="sd">        Args:</span>
@@ -487,7 +505,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_flat_subtracted</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">return</span> <span class="bp">self</span></div>
 
-<div class="viewcode-block" id="MicropolImage.correct_ifov"><a class="viewcode-back" href="../../micropolarray.html#micropolarray.micropol_image.MicropolImage.correct_ifov">[docs]</a>    <span class="k">def</span> <span class="nf">correct_ifov</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MicropolImage</span><span class="p">:</span>
+
+<div class="viewcode-block" id="MicropolImage.correct_ifov">
+<a class="viewcode-back" href="../../micropolarray.html#micropolarray.micropol_image.MicropolImage.correct_ifov">[docs]</a>
+    <span class="k">def</span> <span class="nf">correct_ifov</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MicropolImage</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Corrects differences in single pixels fields of view inside each superpixel</span>
 
 <span class="sd">        Returns:</span>
@@ -498,11 +519,14 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_update_data_and_Stokes</span><span class="p">(</span><span class="n">corrected_data</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span></div>
 
+
     <span class="c1"># ----------------------------------------------------------------</span>
     <span class="c1"># ------------------------------ SHOW ----------------------------</span>
     <span class="c1"># ----------------------------------------------------------------</span>
 
-<div class="viewcode-block" id="MicropolImage.show_with_pol_params"><a class="viewcode-back" href="../../micropolarray.html#micropolarray.micropol_image.MicropolImage.show_with_pol_params">[docs]</a>    <span class="k">def</span> <span class="nf">show_with_pol_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;Greys_r&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+<div class="viewcode-block" id="MicropolImage.show_with_pol_params">
+<a class="viewcode-back" href="../../micropolarray.html#micropolarray.micropol_image.MicropolImage.show_with_pol_params">[docs]</a>
+    <span class="k">def</span> <span class="nf">show_with_pol_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;Greys_r&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a tuple containing figure and axis of the plotted</span>
 <span class="sd">        data, and figure and axis of polarization parameters (3x2</span>
 <span class="sd">        subplots). User must callplt.show after this is called.</span>
@@ -539,10 +563,29 @@
         <span class="n">image_fig</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span>
             <span class="n">mappable</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">imageax</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;[DN]&quot;</span><span class="p">,</span> <span class="n">fraction</span><span class="o">=</span><span class="n">data_ratio</span> <span class="o">*</span> <span class="mf">0.05</span>
         <span class="p">)</span>
-        <span class="n">stokes_fig</span><span class="p">,</span> <span class="n">stokesax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span>
-            <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span> <span class="n">constrained_layout</span><span class="o">=</span><span class="kc">True</span>
-        <span class="p">)</span>
+        <span class="n">stokes_fig</span><span class="p">,</span> <span class="n">stokesax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">show_pol_params</span><span class="p">(</span><span class="n">cmap</span><span class="o">=</span><span class="n">cmap</span><span class="p">)</span>
 
+        <span class="k">return</span> <span class="n">image_fig</span><span class="p">,</span> <span class="n">imageax</span><span class="p">,</span> <span class="n">stokes_fig</span><span class="p">,</span> <span class="n">stokesax</span></div>
+
+
+<div class="viewcode-block" id="MicropolImage.show_pol_params">
+<a class="viewcode-back" href="../../micropolarray.html#micropolarray.micropol_image.MicropolImage.show_pol_params">[docs]</a>
+    <span class="k">def</span> <span class="nf">show_pol_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;Greys_r&quot;</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a tuple containing figure and axis of polarization parameters (3x2 subplots). User must call plt.show after this is called.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            cmap (str, optional): colormap string. Defaults to &quot;Greys_r&quot;.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            tuple: a (figure, axis) couple same as</span>
+<span class="sd">            matplotlib.pyplot.subplots for the six polarization parameters</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">data_ratio</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">figsize</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
+        <span class="n">stokes_fig</span><span class="p">,</span> <span class="n">stokesax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span>
+            <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="n">figsize</span><span class="p">,</span> <span class="n">constrained_layout</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+        <span class="p">)</span>
         <span class="n">stokesax</span> <span class="o">=</span> <span class="n">stokesax</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">parameter</span><span class="p">,</span> <span class="n">axis</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">polparam_list</span><span class="p">,</span> <span class="n">stokesax</span><span class="p">):</span>
             <span class="n">avg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">parameter</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
@@ -570,9 +613,12 @@
                 <span class="n">fraction</span><span class="o">=</span><span class="n">data_ratio</span> <span class="o">*</span> <span class="mf">0.05</span><span class="p">,</span>
             <span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">image_fig</span><span class="p">,</span> <span class="n">imageax</span><span class="p">,</span> <span class="n">stokes_fig</span><span class="p">,</span> <span class="n">stokesax</span></div>
+        <span class="k">return</span> <span class="n">stokes_fig</span><span class="p">,</span> <span class="n">stokesax</span></div>
 
-<div class="viewcode-block" id="MicropolImage.show_single_pol_images"><a class="viewcode-back" href="../../micropolarray.html#micropolarray.micropol_image.MicropolImage.show_single_pol_images">[docs]</a>    <span class="k">def</span> <span class="nf">show_single_pol_images</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;Greys_r&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+<div class="viewcode-block" id="MicropolImage.show_single_pol_images">
+<a class="viewcode-back" href="../../micropolarray.html#micropolarray.micropol_image.MicropolImage.show_single_pol_images">[docs]</a>
+    <span class="k">def</span> <span class="nf">show_single_pol_images</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;Greys_r&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Plots the four polarizations images.</span>
 
 <span class="sd">        Args:</span>
@@ -600,7 +646,10 @@
             <span class="p">)</span>
         <span class="k">return</span> <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span></div>
 
-<div class="viewcode-block" id="MicropolImage.show_demo_images"><a class="viewcode-back" href="../../micropolarray.html#micropolarray.micropol_image.MicropolImage.show_demo_images">[docs]</a>    <span class="k">def</span> <span class="nf">show_demo_images</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;Greys_r&quot;</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+<div class="viewcode-block" id="MicropolImage.show_demo_images">
+<a class="viewcode-back" href="../../micropolarray.html#micropolarray.micropol_image.MicropolImage.show_demo_images">[docs]</a>
+    <span class="k">def</span> <span class="nf">show_demo_images</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;Greys_r&quot;</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Plots the four demosaiced images.</span>
 
 <span class="sd">        Args:</span>
@@ -642,7 +691,10 @@
             <span class="p">)</span>
         <span class="k">return</span> <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span></div>
 
-<div class="viewcode-block" id="MicropolImage.show_pol_param"><a class="viewcode-back" href="../../micropolarray.html#micropolarray.micropol_image.MicropolImage.show_pol_param">[docs]</a>    <span class="k">def</span> <span class="nf">show_pol_param</span><span class="p">(</span>
+
+<div class="viewcode-block" id="MicropolImage.show_pol_param">
+<a class="viewcode-back" href="../../micropolarray.html#micropolarray.micropol_image.MicropolImage.show_pol_param">[docs]</a>
+    <span class="k">def</span> <span class="nf">show_pol_param</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">polparam</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;Greys_r&quot;</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Plots a single polarization parameter given as input</span>
@@ -680,7 +732,10 @@
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span></div>
 
-<div class="viewcode-block" id="MicropolImage.show_histogram"><a class="viewcode-back" href="../../micropolarray.html#micropolarray.micropol_image.MicropolImage.show_histogram">[docs]</a>    <span class="k">def</span> <span class="nf">show_histogram</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">split_pols</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+<div class="viewcode-block" id="MicropolImage.show_histogram">
+<a class="viewcode-back" href="../../micropolarray.html#micropolarray.micropol_image.MicropolImage.show_histogram">[docs]</a>
+    <span class="k">def</span> <span class="nf">show_histogram</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">split_pols</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Print the histogram of the flattened image data</span>
 
 <span class="sd">        Args:</span>
@@ -697,11 +752,14 @@
                 <span class="n">ax</span><span class="o">.</span><span class="n">stairs</span><span class="p">(</span><span class="o">*</span><span class="n">subhist</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;pixel </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span></div>
 
+
     <span class="c1"># ----------------------------------------------------------------</span>
     <span class="c1"># -------------------------- SAVING ------------------------------</span>
     <span class="c1"># ----------------------------------------------------------------</span>
 
-<div class="viewcode-block" id="MicropolImage.save_single_pol_images"><a class="viewcode-back" href="../../micropolarray.html#micropolarray.micropol_image.MicropolImage.save_single_pol_images">[docs]</a>    <span class="k">def</span> <span class="nf">save_single_pol_images</span><span class="p">(</span>
+<div class="viewcode-block" id="MicropolImage.save_single_pol_images">
+<a class="viewcode-back" href="../../micropolarray.html#micropolarray.micropol_image.MicropolImage.save_single_pol_images">[docs]</a>
+    <span class="k">def</span> <span class="nf">save_single_pol_images</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">fixto</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Saves the four polarized images as fits files</span>
@@ -739,7 +797,10 @@
             <span class="n">hdu</span><span class="o">.</span><span class="n">writeto</span><span class="p">(</span><span class="n">filename_with_ID</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;All params successfully saved to &quot;</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s1">&quot;&#39;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="MicropolImage.save_param_as_fits"><a class="viewcode-back" href="../../micropolarray.html#micropolarray.micropol_image.MicropolImage.save_param_as_fits">[docs]</a>    <span class="k">def</span> <span class="nf">save_param_as_fits</span><span class="p">(</span>
+
+<div class="viewcode-block" id="MicropolImage.save_param_as_fits">
+<a class="viewcode-back" href="../../micropolarray.html#micropolarray.micropol_image.MicropolImage.save_param_as_fits">[docs]</a>
+    <span class="k">def</span> <span class="nf">save_param_as_fits</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">polparam</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -786,7 +847,10 @@
         <span class="n">hdu</span><span class="o">.</span><span class="n">writeto</span><span class="p">(</span><span class="n">filename_with_ID</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="n">filename_with_ID</span><span class="si">}</span><span class="s1">&quot; </span><span class="si">{</span><span class="n">polparam</span><span class="o">.</span><span class="n">ID</span><span class="si">}</span><span class="s1"> successfully saved&#39;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="MicropolImage.save_all_pol_params_as_fits"><a class="viewcode-back" href="../../micropolarray.html#micropolarray.micropol_image.MicropolImage.save_all_pol_params_as_fits">[docs]</a>    <span class="k">def</span> <span class="nf">save_all_pol_params_as_fits</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+
+<div class="viewcode-block" id="MicropolImage.save_all_pol_params_as_fits">
+<a class="viewcode-back" href="../../micropolarray.html#micropolarray.micropol_image.MicropolImage.save_all_pol_params_as_fits">[docs]</a>
+    <span class="k">def</span> <span class="nf">save_all_pol_params_as_fits</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Saves the image and all polarization parameters as fits file with the same name</span>
 
 <span class="sd">        Args:</span>
@@ -818,7 +882,10 @@
             <span class="n">hdu</span><span class="o">.</span><span class="n">writeto</span><span class="p">(</span><span class="n">filename_with_ID</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;All params successfully saved to &quot;</span><span class="si">{</span><span class="n">group_filename</span><span class="si">}</span><span class="s1">&quot;&#39;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="MicropolImage.save_demosaiced_images_as_fits"><a class="viewcode-back" href="../../micropolarray.html#micropolarray.micropol_image.MicropolImage.save_demosaiced_images_as_fits">[docs]</a>    <span class="k">def</span> <span class="nf">save_demosaiced_images_as_fits</span><span class="p">(</span>
+
+<div class="viewcode-block" id="MicropolImage.save_demosaiced_images_as_fits">
+<a class="viewcode-back" href="../../micropolarray.html#micropolarray.micropol_image.MicropolImage.save_demosaiced_images_as_fits">[docs]</a>
+    <span class="k">def</span> <span class="nf">save_demosaiced_images_as_fits</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">fixto</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Saves the four demosaiced images as fits files</span>
@@ -855,10 +922,13 @@
             <span class="n">hdu</span><span class="o">.</span><span class="n">writeto</span><span class="p">(</span><span class="n">new_filename</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Demosaiced images successfully saved to &quot;</span><span class="si">{</span><span class="n">group_filename</span><span class="si">}</span><span class="s1">_POLX.fits&quot;&#39;</span><span class="p">)</span></div>
 
+
     <span class="c1"># ----------------------------------------------------------------</span>
     <span class="c1"># -------------------- DATA MANIPULATION -------------------------</span>
     <span class="c1"># ----------------------------------------------------------------</span>
-<div class="viewcode-block" id="MicropolImage.demosaic"><a class="viewcode-back" href="../../micropolarray.html#micropolarray.micropol_image.MicropolImage.demosaic">[docs]</a>    <span class="k">def</span> <span class="nf">demosaic</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">demosaic_mode</span><span class="o">=</span><span class="s2">&quot;adjacent&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MicropolImage</span><span class="p">:</span>
+<div class="viewcode-block" id="MicropolImage.demosaic">
+<a class="viewcode-back" href="../../micropolarray.html#micropolarray.micropol_image.MicropolImage.demosaic">[docs]</a>
+    <span class="k">def</span> <span class="nf">demosaic</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">demosaic_mode</span><span class="o">=</span><span class="s2">&quot;adjacent&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MicropolImage</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a demosaiced copy of the image with updated polarization parameters. Demoisacing is done IN PLACE and</span>
 <span class="sd">        using the THEORETICAL MATRIX. If demodulation and demosaicing are required, please use demodulate(demosaic=True)</span>
 
@@ -875,7 +945,10 @@
 
         <span class="k">return</span> <span class="bp">self</span></div>
 
-<div class="viewcode-block" id="MicropolImage.rebin"><a class="viewcode-back" href="../../micropolarray.html#micropolarray.micropol_image.MicropolImage.rebin">[docs]</a>    <span class="k">def</span> <span class="nf">rebin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">binning</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MicropolImage</span><span class="p">:</span>
+
+<div class="viewcode-block" id="MicropolImage.rebin">
+<a class="viewcode-back" href="../../micropolarray.html#micropolarray.micropol_image.MicropolImage.rebin">[docs]</a>
+    <span class="k">def</span> <span class="nf">rebin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">binning</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MicropolImage</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Rebins the micropolarizer array image, binned each</span>
 <span class="sd">        binningxbinning. Sum bins by default.</span>
 
@@ -914,7 +987,19 @@
 
         <span class="k">return</span> <span class="n">rebinned_image</span></div>
 
-<div class="viewcode-block" id="MicropolImage.congrid"><a class="viewcode-back" href="../../micropolarray.html#micropolarray.micropol_image.MicropolImage.congrid">[docs]</a>    <span class="k">def</span> <span class="nf">congrid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">newdim_y</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">newdim_x</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MicropolImage</span><span class="p">:</span>
+
+<div class="viewcode-block" id="MicropolImage.congrid">
+<a class="viewcode-back" href="../../micropolarray.html#micropolarray.micropol_image.MicropolImage.congrid">[docs]</a>
+    <span class="k">def</span> <span class="nf">congrid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">newdim_y</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">newdim_x</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MicropolImage</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Reshapes a MicropolImage into any new lenght and width. This is done separately for each pixel family.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            newdim_y (int): new height</span>
+<span class="sd">            newdim_x (int): new width</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            MicropolImage: image with reshaped data.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Trim to nearest superpixel</span>
         <span class="k">if</span> <span class="p">(</span><span class="n">newdim_y</span> <span class="o">%</span> <span class="mi">2</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">newdim_x</span> <span class="o">%</span> <span class="mi">2</span><span class="p">):</span>
             <span class="k">while</span> <span class="n">newdim_y</span> <span class="o">%</span> <span class="mi">2</span><span class="p">:</span>
@@ -937,7 +1022,10 @@
         <span class="p">]</span>
         <span class="k">return</span> <span class="n">newimage</span></div>
 
-<div class="viewcode-block" id="MicropolImage.rotate"><a class="viewcode-back" href="../../micropolarray.html#micropolarray.micropol_image.MicropolImage.rotate">[docs]</a>    <span class="k">def</span> <span class="nf">rotate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">angle</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MicropolImage</span><span class="p">:</span>
+
+<div class="viewcode-block" id="MicropolImage.rotate">
+<a class="viewcode-back" href="../../micropolarray.html#micropolarray.micropol_image.MicropolImage.rotate">[docs]</a>
+    <span class="k">def</span> <span class="nf">rotate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">angle</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MicropolImage</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Rotates an image of angle degrees, counter-clockwise.&quot;&quot;&quot;</span>
 
         <span class="n">single_pols</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">single_pol_subimages</span>
@@ -958,7 +1046,10 @@
 
         <span class="k">return</span> <span class="n">newimage</span></div>
 
-<div class="viewcode-block" id="MicropolImage.mask_occulter"><a class="viewcode-back" href="../../micropolarray.html#micropolarray.micropol_image.MicropolImage.mask_occulter">[docs]</a>    <span class="k">def</span> <span class="nf">mask_occulter</span><span class="p">(</span>
+
+<div class="viewcode-block" id="MicropolImage.mask_occulter">
+<a class="viewcode-back" href="../../micropolarray.html#micropolarray.micropol_image.MicropolImage.mask_occulter">[docs]</a>
+    <span class="k">def</span> <span class="nf">mask_occulter</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">y</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">PolarCam</span><span class="p">()</span><span class="o">.</span><span class="n">occulter_pos_last</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
         <span class="n">x</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">PolarCam</span><span class="p">()</span><span class="o">.</span><span class="n">occulter_pos_last</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
@@ -1008,7 +1099,10 @@
                 <span class="n">include_superpixels</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
             <span class="p">)</span></div>
 
-<div class="viewcode-block" id="MicropolImage.shift"><a class="viewcode-back" href="../../micropolarray.html#micropolarray.micropol_image.MicropolImage.shift">[docs]</a>    <span class="k">def</span> <span class="nf">shift</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MicropolImage</span><span class="p">:</span>
+
+<div class="viewcode-block" id="MicropolImage.shift">
+<a class="viewcode-back" href="../../micropolarray.html#micropolarray.micropol_image.MicropolImage.shift">[docs]</a>
+    <span class="k">def</span> <span class="nf">shift</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MicropolImage</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Shifts image by y, x pixels and fills with 0 the remaining space. Positive numbers for up/right shift and negative for down/left shift. Image is split into polarizations, each one is shifted, then they are merged again.</span>
 
 <span class="sd">        Args:</span>
@@ -1025,7 +1119,10 @@
 
         <span class="k">return</span> <span class="n">newimage</span></div>
 
-<div class="viewcode-block" id="MicropolImage.clean_hot_pixels"><a class="viewcode-back" href="../../micropolarray.html#micropolarray.micropol_image.MicropolImage.clean_hot_pixels">[docs]</a>    <span class="k">def</span> <span class="nf">clean_hot_pixels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">flagged_hot_pix_map</span><span class="p">:</span> <span class="n">MicropolImage</span><span class="p">):</span>
+
+<div class="viewcode-block" id="MicropolImage.clean_hot_pixels">
+<a class="viewcode-back" href="../../micropolarray.html#micropolarray.micropol_image.MicropolImage.clean_hot_pixels">[docs]</a>
+    <span class="k">def</span> <span class="nf">clean_hot_pixels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">flagged_hot_pix_map</span><span class="p">:</span> <span class="n">MicropolImage</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a copy of the image with gaussian smeared pixels where flagged_hot_pix_map == 1.</span>
 
 <span class="sd">        Args:</span>
@@ -1044,6 +1141,7 @@
         <span class="n">newimage</span> <span class="o">=</span> <span class="n">MicropolImage</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="n">newimage</span><span class="o">.</span><span class="n">_update_data_and_Stokes</span><span class="p">(</span><span class="n">merge_polarizations</span><span class="p">(</span><span class="n">subimages</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">newimage</span></div>
+
 
     <span class="c1"># ----------------------------------------------------------------</span>
     <span class="c1"># ------------------------ OVERLOADING ---------------------------</span>
@@ -1088,6 +1186,7 @@
             <span class="c1"># newdata = np.where(second != 0, self.data / second, 4096)</span>
             <span class="n">newdata</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">divide</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">second</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="n">second</span> <span class="o">!=</span> <span class="mf">0.0</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">MicropolImage</span><span class="p">(</span><span class="n">newdata</span><span class="p">,</span> <span class="n">angle_dic</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">angle_dic</span><span class="p">)</span></div>
+
 
 
 <span class="c1"># provide shorter aliases</span>

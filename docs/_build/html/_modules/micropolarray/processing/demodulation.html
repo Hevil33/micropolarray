@@ -1,20 +1,22 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../../../">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>micropolarray.processing.demodulation &mdash; micropolarray  documentation</title>
-      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
+
+  
   <!--[if lt IE 9]>
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
         <script src="../../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=b3ba4146"></script>
-        <script src="../../../_static/doctools.js?v=888ff710"></script>
-        <script src="../../../_static/sphinx_highlight.js?v=4825356b"></script>
+        <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -93,14 +95,16 @@
     <span class="n">standard_rebin</span><span class="p">,</span>
     <span class="n">trim_to_match_binning</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">micropolarray.utils</span> <span class="kn">import</span> <span class="n">mean_plus_std</span><span class="p">,</span> <span class="n">merge_polarizations</span>
+<span class="kn">from</span> <span class="nn">micropolarray.utils</span> <span class="kn">import</span> <span class="n">mean_plus_std</span><span class="p">,</span> <span class="n">merge_polarizations</span><span class="p">,</span> <span class="n">normalize2pi</span>
 
 <span class="c1"># Shape of the demodulation matrix</span>
 <span class="n">N_PIXELS_IN_SUPERPIX</span> <span class="o">=</span> <span class="mi">4</span>
 <span class="n">N_MALUS_PARAMS</span> <span class="o">=</span> <span class="mi">3</span>
 
 
-<div class="viewcode-block" id="Demodulator"><a class="viewcode-back" href="../../../micropolarray.processing.html#micropolarray.processing.demodulation.Demodulator">[docs]</a><span class="k">class</span> <span class="nc">Demodulator</span><span class="p">:</span>
+<div class="viewcode-block" id="Demodulator">
+<a class="viewcode-back" href="../../../micropolarray.processing.html#micropolarray.processing.demodulation.Demodulator">[docs]</a>
+<span class="k">class</span> <span class="nc">Demodulator</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Demodulation class needed for MicropolImage</span>
 <span class="sd">    demodulation.&quot;&quot;&quot;</span>
 
@@ -173,6 +177,35 @@
             <span class="n">_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">firsthul</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">_</span>
 
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">angle_dic</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Dictionary representing the correlation between pix family and fitted angle</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dict: key[value] where key is the angle and value is the pixel family index (y, x) with fast index x</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">phis_ij</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">phi</span><span class="p">[</span><span class="mi">0</span><span class="p">::</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">::</span><span class="mi">2</span><span class="p">]),</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">phi</span><span class="p">[</span><span class="mi">0</span><span class="p">::</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">::</span><span class="mi">2</span><span class="p">]),</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">phi</span><span class="p">[</span><span class="mi">1</span><span class="p">::</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">::</span><span class="mi">2</span><span class="p">]),</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">phi</span><span class="p">[</span><span class="mi">1</span><span class="p">::</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">::</span><span class="mi">2</span><span class="p">]),</span>
+        <span class="p">]</span>
+
+        <span class="n">phis_ij</span> <span class="o">=</span> <span class="n">normalize2pi</span><span class="p">(</span><span class="n">phis_ij</span><span class="p">)</span>
+        <span class="n">angle_dic</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">assigned_indexes</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="n">all_indexes</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">45</span><span class="p">,</span> <span class="o">-</span><span class="mi">45</span><span class="p">,</span> <span class="mi">90</span><span class="p">]:</span>
+            <span class="n">index</span> <span class="o">=</span> <span class="n">phis_ij</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">phis_ij</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">abs</span><span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">i</span><span class="p">)))</span>
+            <span class="n">angle_dic</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">index</span>
+            <span class="n">assigned_indexes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+
+        <span class="c1"># if not all indexes were assigned, assume that the 90 pixel fitted to -90 instead and was then assigned to the wrong index</span>
+        <span class="k">if</span> <span class="n">all_indexes</span> <span class="o">-</span> <span class="n">assigned_indexes</span><span class="p">:</span>
+            <span class="n">angle_dic</span><span class="p">[</span><span class="mi">90</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">all_indexes</span> <span class="o">-</span> <span class="n">assigned_indexes</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">angle_dic</span>
+
     <span class="k">def</span> <span class="nf">_get_demodulation_tensor</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Reads files &quot;MIJ.fits&quot; from path folder and returns a (3,4,y,x)</span>
 <span class="sd">        numpy array representing the demodulation tensor.</span>
@@ -234,7 +267,9 @@
 
         <span class="k">return</span> <span class="n">Mij</span><span class="p">,</span> <span class="n">fit_found_flags</span>
 
-<div class="viewcode-block" id="Demodulator.show"><a class="viewcode-back" href="../../../micropolarray.processing.html#micropolarray.processing.demodulation.Demodulator.show">[docs]</a>    <span class="k">def</span> <span class="nf">show</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;Greys&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+<div class="viewcode-block" id="Demodulator.show">
+<a class="viewcode-back" href="../../../micropolarray.processing.html#micropolarray.processing.demodulation.Demodulator.show">[docs]</a>
+    <span class="k">def</span> <span class="nf">show</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;Greys&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Shows the demodulation tensor</span>
 
 <span class="sd">        Args:</span>
@@ -269,7 +304,10 @@
 
         <span class="k">return</span> <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span></div>
 
-<div class="viewcode-block" id="Demodulator.rebin"><a class="viewcode-back" href="../../../micropolarray.processing.html#micropolarray.processing.demodulation.Demodulator.rebin">[docs]</a>    <span class="k">def</span> <span class="nf">rebin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">binning</span><span class="p">):</span>  <span class="c1"># TODO</span>
+
+<div class="viewcode-block" id="Demodulator.rebin">
+<a class="viewcode-back" href="../../../micropolarray.processing.html#micropolarray.processing.demodulation.Demodulator.rebin">[docs]</a>
+    <span class="k">def</span> <span class="nf">rebin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">binning</span><span class="p">):</span>  <span class="c1"># TODO</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;DO NOT USE THIS, calculate the tensor from the binned images&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mij</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">/</span> <span class="n">binning</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span>
             <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mij</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">/</span> <span class="n">binning</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span>
@@ -295,19 +333,29 @@
 
         <span class="k">return</span> <span class="n">new_demodulator</span></div>
 
-<div class="viewcode-block" id="Demodulator.rot90"><a class="viewcode-back" href="../../../micropolarray.processing.html#micropolarray.processing.demodulation.Demodulator.rot90">[docs]</a>    <span class="k">def</span> <span class="nf">rot90</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Demodulator.rot90">
+<a class="viewcode-back" href="../../../micropolarray.processing.html#micropolarray.processing.demodulation.Demodulator.rot90">[docs]</a>
+    <span class="k">def</span> <span class="nf">rot90</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
         <span class="c1"># NB: rotation could switch micropol positions inside superpixel, but for demo matrix all px in superpix are equal</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_malus_params</span><span class="p">):</span>
             <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_pixels_in_superpix</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">mij</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">rot90</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mij</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">],</span> <span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Demodulator.flip"><a class="viewcode-back" href="../../../micropolarray.processing.html#micropolarray.processing.demodulation.Demodulator.flip">[docs]</a>    <span class="k">def</span> <span class="nf">flip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Demodulator.flip">
+<a class="viewcode-back" href="../../../micropolarray.processing.html#micropolarray.processing.demodulation.Demodulator.flip">[docs]</a>
+    <span class="k">def</span> <span class="nf">flip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_malus_params</span><span class="p">):</span>
             <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_pixels_in_superpix</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">mij</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">flip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mij</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">)</span></div></div>
+                <span class="bp">self</span><span class="o">.</span><span class="n">mij</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">flip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mij</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">)</span></div>
+</div>
 
 
-<div class="viewcode-block" id="calculate_demodulation_tensor"><a class="viewcode-back" href="../../../micropolarray.processing.html#micropolarray.processing.demodulation.calculate_demodulation_tensor">[docs]</a><span class="k">def</span> <span class="nf">calculate_demodulation_tensor</span><span class="p">(</span>
+
+<div class="viewcode-block" id="calculate_demodulation_tensor">
+<a class="viewcode-back" href="../../../micropolarray.processing.html#micropolarray.processing.demodulation.calculate_demodulation_tensor">[docs]</a>
+<span class="k">def</span> <span class="nf">calculate_demodulation_tensor</span><span class="p">(</span>
     <span class="n">polarizer_orientations</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
     <span class="n">filenames_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
     <span class="n">micropol_phases_previsions</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
@@ -799,7 +847,10 @@
     <span class="k">return</span></div>
 
 
-<div class="viewcode-block" id="compute_demodulation_by_chunk"><a class="viewcode-back" href="../../../micropolarray.processing.html#micropolarray.processing.demodulation.compute_demodulation_by_chunk">[docs]</a><span class="k">def</span> <span class="nf">compute_demodulation_by_chunk</span><span class="p">(</span>
+
+<div class="viewcode-block" id="compute_demodulation_by_chunk">
+<a class="viewcode-back" href="../../../micropolarray.processing.html#micropolarray.processing.demodulation.compute_demodulation_by_chunk">[docs]</a>
+<span class="k">def</span> <span class="nf">compute_demodulation_by_chunk</span><span class="p">(</span>
     <span class="n">splitted_normalized_dara_arr</span><span class="p">,</span>
     <span class="n">splitted_pixel_erorrs</span><span class="p">,</span>
     <span class="n">splitted_occulter_flag</span><span class="p">,</span>
@@ -1096,13 +1147,17 @@
     <span class="k">return</span> <span class="n">m_ij</span><span class="p">,</span> <span class="n">tk_data</span><span class="p">,</span> <span class="n">eff_data</span><span class="p">,</span> <span class="n">phase_data</span><span class="p">,</span> <span class="n">fit_found</span><span class="p">,</span> <span class="n">covariance_tensor</span><span class="p">,</span> <span class="n">chisq_data</span></div>
 
 
-<div class="viewcode-block" id="Malus"><a class="viewcode-back" href="../../../micropolarray.processing.html#micropolarray.processing.demodulation.Malus">[docs]</a><span class="k">def</span> <span class="nf">Malus</span><span class="p">(</span><span class="n">angle</span><span class="p">,</span> <span class="n">throughput</span><span class="p">,</span> <span class="n">efficiency</span><span class="p">,</span> <span class="n">phase</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Malus">
+<a class="viewcode-back" href="../../../micropolarray.processing.html#micropolarray.processing.demodulation.Malus">[docs]</a>
+<span class="k">def</span> <span class="nf">Malus</span><span class="p">(</span><span class="n">angle</span><span class="p">,</span> <span class="n">throughput</span><span class="p">,</span> <span class="n">efficiency</span><span class="p">,</span> <span class="n">phase</span><span class="p">):</span>
     <span class="c1"># original</span>
     <span class="n">modulated_efficiency</span> <span class="o">=</span> <span class="n">efficiency</span> <span class="o">*</span> <span class="p">(</span>
         <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">phase</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">angle</span><span class="p">)</span>
         <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">phase</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">angle</span><span class="p">)</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">throughput</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="n">modulated_efficiency</span><span class="p">)</span></div>
+
 </pre></div>
 
            </div>

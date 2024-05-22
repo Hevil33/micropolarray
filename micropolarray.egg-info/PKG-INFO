@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: micropolarray
-Version: 1.2.11
+Version: 1.2.13
 Summary: micropolarizer array data utilities
 Home-page: https://github.com/Hevil33/micropolarray_master
 Author: Hervé Haudemand
@@ -44,7 +44,7 @@ Classifier: Programming Language :: Python :: 3
 Requires-Python: >=3.8
 Description-Content-Type: text/markdown
 License-File: LICENSE
-Requires-Dist: numpy<1.24.0
+Requires-Dist: numpy>=1.26.4
 Requires-Dist: pandas
 Requires-Dist: numba
 Requires-Dist: dataclasses

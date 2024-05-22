@@ -1,20 +1,22 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../../../">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>micropolarray.processing.demodulation_errors &mdash; micropolarray  documentation</title>
-      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
+
+  
   <!--[if lt IE 9]>
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
         <script src="../../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=b3ba4146"></script>
-        <script src="../../../_static/doctools.js?v=888ff710"></script>
-        <script src="../../../_static/sphinx_highlight.js?v=4825356b"></script>
+        <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -81,7 +83,9 @@
 <span class="kn">from</span> <span class="nn">.demosaic</span> <span class="kn">import</span> <span class="n">split_polarizations</span>
 
 
-<div class="viewcode-block" id="MicropolImageError"><a class="viewcode-back" href="../../../micropolarray.processing.html#micropolarray.processing.demodulation_errors.MicropolImageError">[docs]</a><span class="k">class</span> <span class="nc">MicropolImageError</span><span class="p">:</span>
+<div class="viewcode-block" id="MicropolImageError">
+<a class="viewcode-back" href="../../../micropolarray.processing.html#micropolarray.processing.demodulation_errors.MicropolImageError">[docs]</a>
+<span class="k">class</span> <span class="nc">MicropolImageError</span><span class="p">:</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">image</span><span class="p">:</span> <span class="n">MicropolImage</span><span class="p">,</span> <span class="n">image_error</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">demodulator</span><span class="p">:</span> <span class="n">Demodulator</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -93,7 +97,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">sigma_AoLP</span> <span class="o">=</span> <span class="n">get_error_on_AoLP</span><span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">Stokes_vec</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sigma_S</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="get_error_on_Stokes"><a class="viewcode-back" href="../../../micropolarray.processing.html#micropolarray.processing.demodulation_errors.get_error_on_Stokes">[docs]</a><span class="k">def</span> <span class="nf">get_error_on_Stokes</span><span class="p">(</span>
+
+<div class="viewcode-block" id="get_error_on_Stokes">
+<a class="viewcode-back" href="../../../micropolarray.processing.html#micropolarray.processing.demodulation_errors.get_error_on_Stokes">[docs]</a>
+<span class="k">def</span> <span class="nf">get_error_on_Stokes</span><span class="p">(</span>
     <span class="n">image_error</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">demodulator</span><span class="p">:</span> <span class="n">Demodulator</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns the error on the image, propagated through the demodulation matrix. If M[i, j] is the demodulation matrix, sigma_I[k] are the four pixel values in a superpixel, and S[i, j] is the Stokes vector, returns the matrix product</span>
@@ -123,7 +130,10 @@
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">S_variance</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="get_error_on_pB"><a class="viewcode-back" href="../../../micropolarray.processing.html#micropolarray.processing.demodulation_errors.get_error_on_pB">[docs]</a><span class="k">def</span> <span class="nf">get_error_on_pB</span><span class="p">(</span><span class="n">S</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">sigma_S</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+
+<div class="viewcode-block" id="get_error_on_pB">
+<a class="viewcode-back" href="../../../micropolarray.processing.html#micropolarray.processing.demodulation_errors.get_error_on_pB">[docs]</a>
+<span class="k">def</span> <span class="nf">get_error_on_pB</span><span class="p">(</span><span class="n">S</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">sigma_S</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
     <span class="n">I</span><span class="p">,</span> <span class="n">Q</span><span class="p">,</span> <span class="n">U</span> <span class="o">=</span> <span class="n">S</span>
     <span class="n">sigma_I</span><span class="p">,</span> <span class="n">sigma_Q</span><span class="p">,</span> <span class="n">sigma_U</span> <span class="o">=</span> <span class="n">sigma_S</span>
 
@@ -132,7 +142,10 @@
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">pb_var</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="get_error_on_DoLP"><a class="viewcode-back" href="../../../micropolarray.processing.html#micropolarray.processing.demodulation_errors.get_error_on_DoLP">[docs]</a><span class="k">def</span> <span class="nf">get_error_on_DoLP</span><span class="p">(</span><span class="n">S</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">sigma_S</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+
+<div class="viewcode-block" id="get_error_on_DoLP">
+<a class="viewcode-back" href="../../../micropolarray.processing.html#micropolarray.processing.demodulation_errors.get_error_on_DoLP">[docs]</a>
+<span class="k">def</span> <span class="nf">get_error_on_DoLP</span><span class="p">(</span><span class="n">S</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">sigma_S</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
     <span class="n">I</span><span class="p">,</span> <span class="n">Q</span><span class="p">,</span> <span class="n">U</span> <span class="o">=</span> <span class="n">S</span>
     <span class="n">sigma_I</span><span class="p">,</span> <span class="n">sigma_Q</span><span class="p">,</span> <span class="n">sigma_U</span> <span class="o">=</span> <span class="n">sigma_S</span>
 
@@ -145,7 +158,10 @@
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">dolp_var</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="get_error_on_AoLP"><a class="viewcode-back" href="../../../micropolarray.processing.html#micropolarray.processing.demodulation_errors.get_error_on_AoLP">[docs]</a><span class="k">def</span> <span class="nf">get_error_on_AoLP</span><span class="p">(</span><span class="n">S</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">sigma_S</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+
+<div class="viewcode-block" id="get_error_on_AoLP">
+<a class="viewcode-back" href="../../../micropolarray.processing.html#micropolarray.processing.demodulation_errors.get_error_on_AoLP">[docs]</a>
+<span class="k">def</span> <span class="nf">get_error_on_AoLP</span><span class="p">(</span><span class="n">S</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">sigma_S</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
     <span class="n">I</span><span class="p">,</span> <span class="n">Q</span><span class="p">,</span> <span class="n">U</span> <span class="o">=</span> <span class="n">S</span>
     <span class="n">sigma_I</span><span class="p">,</span> <span class="n">sigma_Q</span><span class="p">,</span> <span class="n">sigma_U</span> <span class="o">=</span> <span class="n">sigma_S</span>
 
@@ -154,6 +170,7 @@
     <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">aolp_var</span><span class="p">)</span></div>
+
 </pre></div>
 
            </div>

@@ -1,20 +1,22 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../../">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>micropolarray.cameras &mdash; micropolarray  documentation</title>
-      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+
+  
   <!--[if lt IE 9]>
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=b3ba4146"></script>
-        <script src="../../_static/doctools.js?v=888ff710"></script>
-        <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
+        <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -76,11 +78,15 @@
 <span class="c1"># TODO: aggiungere tutti i bei dati qua, rendere le camere personalizzabili (caricare dark da cartelle e cose cosi)</span>
 
 
-<div class="viewcode-block" id="Camera"><a class="viewcode-back" href="../../micropolarray.html#micropolarray.cameras.Camera">[docs]</a><span class="k">class</span> <span class="nc">Camera</span><span class="p">:</span>
+<div class="viewcode-block" id="Camera">
+<a class="viewcode-back" href="../../micropolarray.html#micropolarray.cameras.Camera">[docs]</a>
+<span class="k">class</span> <span class="nc">Camera</span><span class="p">:</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">pass</span>
 
-<div class="viewcode-block" id="Camera.occulter_roi"><a class="viewcode-back" href="../../micropolarray.html#micropolarray.cameras.Camera.occulter_roi">[docs]</a>    <span class="k">def</span> <span class="nf">occulter_roi</span><span class="p">(</span>
+<div class="viewcode-block" id="Camera.occulter_roi">
+<a class="viewcode-back" href="../../micropolarray.html#micropolarray.cameras.Camera.occulter_roi">[docs]</a>
+    <span class="k">def</span> <span class="nf">occulter_roi</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">fill</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">overoccult</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the array in the polar ROI, else fill</span>
@@ -98,7 +104,10 @@
 
         <span class="k">return</span> <span class="n">roidata</span></div>
 
-<div class="viewcode-block" id="Camera.occulter_mask"><a class="viewcode-back" href="../../micropolarray.html#micropolarray.cameras.Camera.occulter_mask">[docs]</a>    <span class="k">def</span> <span class="nf">occulter_mask</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">overoccult</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">rmax</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+
+<div class="viewcode-block" id="Camera.occulter_mask">
+<a class="viewcode-back" href="../../micropolarray.html#micropolarray.cameras.Camera.occulter_mask">[docs]</a>
+    <span class="k">def</span> <span class="nf">occulter_mask</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">overoccult</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">rmax</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns an array of True inside the roi, False elsewhere. Useful for mean/std operations (where=occulter_mask).</span>
 
 <span class="sd">        Args:</span>
@@ -120,10 +129,14 @@
             <span class="kc">True</span><span class="p">,</span>
             <span class="kc">False</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="k">return</span> <span class="n">occulter_mask</span></div></div>
+        <span class="k">return</span> <span class="n">occulter_mask</span></div>
+</div>
 
 
-<div class="viewcode-block" id="Kasi"><a class="viewcode-back" href="../../micropolarray.html#micropolarray.cameras.Kasi">[docs]</a><span class="k">class</span> <span class="nc">Kasi</span><span class="p">(</span><span class="n">Camera</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Kasi">
+<a class="viewcode-back" href="../../micropolarray.html#micropolarray.cameras.Kasi">[docs]</a>
+<span class="k">class</span> <span class="nc">Kasi</span><span class="p">(</span><span class="n">Camera</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># self.angle_dic = {-45: 0, 0: 1, 90: 2, 45: 3}  # old</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">angle_dic</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">45</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">45</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">90</span><span class="p">:</span> <span class="mi">3</span><span class="p">}</span>  <span class="c1"># new</span>
@@ -135,7 +148,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">w_image</span> <span class="o">=</span> <span class="mi">4096</span></div>
 
 
-<div class="viewcode-block" id="PolarCam"><a class="viewcode-back" href="../../micropolarray.html#micropolarray.cameras.PolarCam">[docs]</a><span class="k">class</span> <span class="nc">PolarCam</span><span class="p">(</span><span class="n">Camera</span><span class="p">):</span>
+
+<div class="viewcode-block" id="PolarCam">
+<a class="viewcode-back" href="../../micropolarray.html#micropolarray.cameras.PolarCam">[docs]</a>
+<span class="k">class</span> <span class="nc">PolarCam</span><span class="p">(</span><span class="n">Camera</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># self.angle_dic = {90: 0, 45: 1, -45: 2, 0: 3}  # My ref system</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">angle_dic</span> <span class="o">=</span> <span class="p">{</span>
@@ -179,7 +195,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">gain</span> <span class="o">=</span> <span class="mf">9.28</span></div>
 
 
-<div class="viewcode-block" id="Antarticor"><a class="viewcode-back" href="../../micropolarray.html#micropolarray.cameras.Antarticor">[docs]</a><span class="k">class</span> <span class="nc">Antarticor</span><span class="p">:</span>
+
+<div class="viewcode-block" id="Antarticor">
+<a class="viewcode-back" href="../../micropolarray.html#micropolarray.cameras.Antarticor">[docs]</a>
+<span class="k">class</span> <span class="nc">Antarticor</span><span class="p">:</span>
     <span class="c1"># AntarctiCor</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">aperture</span> <span class="o">=</span> <span class="mi">50</span>  <span class="c1"># [mm]</span>
@@ -193,6 +212,7 @@
         <span class="c1"># Other</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">Topal</span> <span class="o">=</span> <span class="mf">0.27</span>  <span class="c1"># opal transmittance []</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">const</span> <span class="o">=</span> <span class="mf">1.083</span> <span class="o">*</span> <span class="mi">10</span> <span class="o">**</span> <span class="p">(</span><span class="o">-</span><span class="mi">5</span><span class="p">)</span>  <span class="c1"># constant []</span></div>
+
 </pre></div>
 
            </div>

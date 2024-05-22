@@ -1,20 +1,22 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../../../">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>micropolarray.processing.linear_roi &mdash; micropolarray  documentation</title>
-      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
+
+  
   <!--[if lt IE 9]>
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
         <script src="../../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=b3ba4146"></script>
-        <script src="../../../_static/doctools.js?v=888ff710"></script>
-        <script src="../../../_static/sphinx_highlight.js?v=4825356b"></script>
+        <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -79,7 +81,9 @@
 <span class="kn">from</span> <span class="nn">micropolarray.utils</span> <span class="kn">import</span> <span class="n">normalize2pi</span>
 
 
-<div class="viewcode-block" id="linear_roi_from_polar"><a class="viewcode-back" href="../../../micropolarray.processing.html#micropolarray.processing.linear_roi.linear_roi_from_polar">[docs]</a><span class="k">def</span> <span class="nf">linear_roi_from_polar</span><span class="p">(</span>
+<div class="viewcode-block" id="linear_roi_from_polar">
+<a class="viewcode-back" href="../../../micropolarray.processing.html#micropolarray.processing.linear_roi.linear_roi_from_polar">[docs]</a>
+<span class="k">def</span> <span class="nf">linear_roi_from_polar</span><span class="p">(</span>
     <span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
     <span class="n">center</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
     <span class="n">theta</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
@@ -138,7 +142,10 @@
     <span class="k">return</span> <span class="p">[</span><span class="n">result</span><span class="p">,</span> <span class="n">ys</span><span class="p">,</span> <span class="n">xs</span><span class="p">,</span> <span class="n">points_density</span><span class="p">]</span></div>
 
 
-<div class="viewcode-block" id="linear_roi"><a class="viewcode-back" href="../../../micropolarray.processing.html#micropolarray.processing.linear_roi.linear_roi">[docs]</a><span class="k">def</span> <span class="nf">linear_roi</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">end</span><span class="p">:</span> <span class="nb">list</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+
+<div class="viewcode-block" id="linear_roi">
+<a class="viewcode-back" href="../../../micropolarray.processing.html#micropolarray.processing.linear_roi.linear_roi">[docs]</a>
+<span class="k">def</span> <span class="nf">linear_roi</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">end</span><span class="p">:</span> <span class="nb">list</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Get values</span>
 
 <span class="sd">    Args:</span>
@@ -156,7 +163,10 @@
     <span class="k">return</span> <span class="n">vals</span></div>
 
 
-<div class="viewcode-block" id="DDA"><a class="viewcode-back" href="../../../micropolarray.processing.html#micropolarray.processing.linear_roi.DDA">[docs]</a><span class="k">def</span> <span class="nf">DDA</span><span class="p">(</span><span class="n">start</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">end</span><span class="p">:</span> <span class="nb">list</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+
+<div class="viewcode-block" id="DDA">
+<a class="viewcode-back" href="../../../micropolarray.processing.html#micropolarray.processing.linear_roi.DDA">[docs]</a>
+<span class="k">def</span> <span class="nf">DDA</span><span class="p">(</span><span class="n">start</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">end</span><span class="p">:</span> <span class="nb">list</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Digital_differential_analyzer algorithm for line rasterizing.</span>
 <span class="sd">    Unlike bresenham, works in every quadrant.</span>
 <span class="sd">    NOTE: even if the distance between start and end coordinates is</span>
@@ -203,7 +213,10 @@
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ys</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">xs</span><span class="p">),</span> <span class="n">points_density</span></div>
 
 
-<div class="viewcode-block" id="bresenham"><a class="viewcode-back" href="../../../micropolarray.processing.html#micropolarray.processing.linear_roi.bresenham">[docs]</a><span class="k">def</span> <span class="nf">bresenham</span><span class="p">(</span><span class="n">start</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">end</span><span class="p">:</span> <span class="nb">list</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+
+<div class="viewcode-block" id="bresenham">
+<a class="viewcode-back" href="../../../micropolarray.processing.html#micropolarray.processing.linear_roi.bresenham">[docs]</a>
+<span class="k">def</span> <span class="nf">bresenham</span><span class="p">(</span><span class="n">start</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">end</span><span class="p">:</span> <span class="nb">list</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Bresenham algorithm for generating integers on a line.</span>
 <span class="sd">    Efficient BUT works ONLY in the first octant</span>
 
@@ -247,6 +260,7 @@
         <span class="n">ycoordinates</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ycoordinates</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">xcoordinates</span><span class="p">)</span></div>
+
 
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
