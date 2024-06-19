@@ -140,6 +140,22 @@ def normalize2pi(angles_list):
     return angles_list
 
 
+def normalize2piarray(data: np.ndarray):
+    """Returns the array of angles (in radians) normalized between -pi/2 and pi/2.
+
+    Args:
+        angles_list (np.ndarray): array of angles to normalize
+
+    Returns:
+        list: array of normalized angles
+    """
+    while np.any(data > np.pi / 2):
+        data = np.where(data > np.pi / 2, data - np.pi, data)
+    while np.any(data <= -np.pi / 2):
+        data = np.where(data <= -np.pi / 2, data + np.pi, data)
+    return data
+
+
 def align_keywords_and_data(header, data, sun_center, platescale, binning=1):
     """Fixes antarticor keywords and data to reflect each other.
 

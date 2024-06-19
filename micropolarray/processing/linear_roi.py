@@ -14,7 +14,7 @@ def linear_roi_from_polar(
     theta: float,
     r: list = None,
 ) -> list:
-    """Returns a linear roi starting from the center and extending
+    """Performs a linear roi starting from the center and extending
     to r or to the edge of the input data array.
     Angles start horizontally and rotate anti-clockwise (0deg
     corresponds to fixed y and increasing x).
@@ -31,23 +31,28 @@ def linear_roi_from_polar(
         from data
         np.ndarray: roi indexes along the first (y) dimension of data
         np.ndarray: roi indexes along the second (x) dimension of data
-        float: ratio between the pixel lenght and the lenght of the
-        returned roi (see linear_roi.DDA)
+        float: ratio between the lenght of the roi in pixels and its lenght in elements (see linear_roi.DDA). In other words, pixels/elements_n. Its inverse is number of elements per pixel.
     """
     y1, x1 = center
     y2, x2 = float(y1), float(x1)
 
     if r is None:
-        r = 1.0e18
+        r = [0, 1.0e18]
 
     theta_rad = np.deg2rad(theta)
 
+    # keep running along theta from center until minimum radius to get start of line
+    while np.sqrt((center[1] - x1) ** 2 + (center[0] - y1) ** 2) < r[0]:
+        y1 = y1 - np.sin(theta_rad)
+        x1 = x1 + np.cos(theta_rad)
+
+    # keep running along theta from center until end of image is reached to get end of line
     while (
         (y2 < data.shape[0] - 1)
         and (y2 > 1)
         and (x2 < data.shape[1] - 1)
         and (x2 > 1)
-        and (np.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2) < r - 1)
+        and (np.sqrt((x2 - center[1]) ** 2 + (y2 - center[0]) ** 2) < r[1] - 1)
     ):
         y2 = y2 - np.sin(theta_rad)
         x2 = x2 + np.cos(theta_rad)

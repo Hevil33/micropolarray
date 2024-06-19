@@ -124,6 +124,12 @@ class TestMicropolImage:
         binned_image_4 = ml.MicropolImage(dummy_data_16).rebin(4)
         assert np.all(binned_image_4.data == generate_dummy_data(4) * 16)
 
+        binned_image = ml.Image(dummy_data_16).rebin(2)
+        assert np.all(binned_image.data == np.ones(shape=(8, 8)) * (1 + 2 + 3 + 4))
+
+        binned_image = ml.Image(dummy_data_16).rebin(4)
+        assert np.all(binned_image.data == np.ones(shape=(4, 4)) * (1 + 2 + 3 + 4) * 4)
+
     def test_pol_parameters(self, generate_dummy_data):
         """Test if polarization parameters are correcly computed"""
 

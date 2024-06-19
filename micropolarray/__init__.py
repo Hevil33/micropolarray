@@ -45,6 +45,7 @@ from micropolarray.utils import (
     median_minus_std,
     median_plus_std,
     normalize2pi,
+    normalize2piarray,
     sigma_DN,
 )
 

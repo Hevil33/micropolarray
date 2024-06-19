@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from astropy.io import fits
 
+from micropolarray.processing.rebin import standard_rebin
 from micropolarray.processing.shift import shift
 from micropolarray.utils import _make_abs_and_create_dir, fix_data
 
@@ -145,6 +146,29 @@ class Image:
         newimage = Image(newdata)
 
         return newimage
+
+    def rebin(self, binning: int) -> Image:
+        """Rebins the image, binned each binningxbinning. Sum bins by default.
+
+        Args:
+            binning (int): binning to perform. A value of n will be translated in a nxn binning.
+
+        Raises:
+            ValueError: negative binning provided
+
+        Returns:
+            Image: copy of the input image, rebinned.
+        """
+        if binning <= 0:
+            raise ValueError(f"Negative binning {binning}x{binning}")
+        rebinned_image = Image(self)
+        rebinned_data = standard_rebin(
+            np.array(rebinned_image.data, dtype=float),
+            binning,
+        )
+        rebinned_image.data = rebinned_data
+
+        return rebinned_image
 
     # ----------------------------------------------------------------
     # -------------------------- SAVING ------------------------------
