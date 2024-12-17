@@ -962,18 +962,19 @@ class MicropolImage(Image):
                 include_superpixels=False,
             )
 
-    def shift(self, y: int, x: int) -> MicropolImage:
+    def shift(self, y: int, x: int, missing: float = 0) -> MicropolImage:
         """Shifts image by y, x pixels and fills with 0 the remaining space. Positive numbers for up/right shift and negative for down/left shift. Image is split into polarizations, each one is shifted, then they are merged again.
 
         Args:
             y (int): vertical shift in pix
             x (int): horizontal shift in pix
+            missing (float, optional): value used for filling missin values. Defaults to 0.
 
         Returns:
             MicropolImage: shifted image copied from the original
         """
         # newdata = shift(self.data, y, x)
-        newdata = shift_micropol(self.data, y, x)
+        newdata = shift_micropol(self.data, y, x, missing)
         newimage = MicropolImage(self)
         newimage._update_data_and_Stokes(newdata)
 

@@ -48,9 +48,11 @@ def linear_roi_from_polar(
 
     # keep running along theta from center until end of image is reached to get end of line
     while (
-        (y2 < data.shape[0] - 1)
+        # (y2 < data.shape[0] - 1)
+        (y2 < data.shape[0])
         and (y2 > 1)
-        and (x2 < data.shape[1] - 1)
+        # and (x2 < data.shape[1] - 1)
+        and (x2 < data.shape[1])
         and (x2 > 1)
         and (np.sqrt((x2 - center[1]) ** 2 + (y2 - center[0]) ** 2) < r[1] - 1)
     ):
@@ -72,22 +74,24 @@ def linear_roi_from_polar(
     return [result, ys, xs, points_density]
 
 
-def linear_roi(data: np.ndarray, start: list, end: list) -> np.ndarray:
+def linear_roi(data: np.ndarray, start: list, end: list) -> list:
     """Get values
 
     Args:
-        data (np.ndarray): _description_
-        start (list): _description_
-        end (list): _description_
+        data (np.ndarray): data on which to perform the roi
+        start (list): (y, x) starting point in pixel
+        end (list): (y, x) ending point in pixel
 
     Returns:
-        np.ndarray: _description_
+        list: 1d array of y coordinates, 1d array of x coordinates, values of data calculated at rois
     """
-    ys, xs = DDA(start, end)
+    ys, xs, density = DDA(start, end)
+    # print(f"{xs, ys = }")
+    # print(f"{start, end = }")
 
     vals = np.array([data[y, x] for y, x in zip(ys, xs)])
 
-    return vals
+    return ys, xs, vals
 
 
 def DDA(start: list, end: list) -> np.ndarray:

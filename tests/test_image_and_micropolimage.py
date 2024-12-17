@@ -197,3 +197,35 @@ class TestMicropolImage:
         image2 = ml.MicropolImage(50 * np.ones_like(image1.data))
 
         print(image1.AoLP)
+
+    def test_shift(self):
+        dummy_data_16 = np.array(
+            [
+                [0, 1, 2, 3],
+                [4, 5, 6, 7],
+                [0, 1, 2, 3],
+                [4, 5, 6, 7],
+            ]
+        )
+        image = ml.Image(dummy_data_16)
+        shifted_image = image.shift(1, 0)
+        theo_shifted = np.array(
+            [
+                [0, 0, 0, 0],
+                [0, 1, 2, 3],
+                [4, 5, 6, 7],
+                [0, 1, 2, 3],
+            ]
+        )
+        assert np.all(theo_shifted == shifted_image.data)
+        image = ml.MicropolImage(dummy_data_16)
+        shifted_micropol = image.shift(0, -1)
+        theo_shifted = np.array(
+            [
+                [2, 3, 0, 0],
+                [6, 7, 0, 0],
+                [2, 3, 0, 0],
+                [6, 7, 0, 0],
+            ]
+        )
+        assert np.all(theo_shifted == shifted_micropol.data)

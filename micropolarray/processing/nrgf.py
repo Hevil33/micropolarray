@@ -60,6 +60,11 @@ def roi_from_polar(
         tuple([center[0], center[1]]),
     )  # cast it to a tuple (which is hashable)
 
+    if False:  # show polar coords
+        fig, ax = plt.subplots()
+        ax.imshow(phi_coords, origin="lower")
+        plt.show()
+
     theta_condition = np.logical_and(phi_coords >= theta_min, phi_coords < theta_max)
     rho_condition = np.logical_and(
         rho_coords > rho_min, rho_coords <= rho_max

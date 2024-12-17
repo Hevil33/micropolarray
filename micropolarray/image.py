@@ -131,18 +131,19 @@ class Image:
             self.header["NAXIS1"] = input_data.shape[1]
             self.header["NAXIS2"] = input_data.shape[0]
 
-    def shift(self, y: int, x: int) -> Image:
+    def shift(self, y: int, x: int, missing: float = 0) -> Image:
         """Shifts image by y, x pixels and fills with 0 the remaining space. Positive numbers for up/right shift and negative for down/left shift.
 
         Args:
             y (int): vertical shift in pix
             x (int): horizontal shift in pix
+            missing (float, optional): value used for filling missing values. Defaults to 0
 
         Returns:
             Image: shifted image copied from the original
         """
         # newdata = shift(self.data, y, x)
-        newdata = shift(self.data, y, x)
+        newdata = shift(self.data, y, x, missing)
         newimage = Image(newdata)
 
         return newimage

@@ -192,7 +192,7 @@ class Demodulator:
 
         return Mij, fit_found_flags
 
-    def show(self, vmin=-1, vmax=1, cmap="Greys") -> tuple:
+    def show(self, vmin=-1, vmax=1, cmap="Greys", dpi=300, **kwargs) -> tuple:
         """Shows the demodulation tensor
 
         Args:
@@ -206,11 +206,12 @@ class Demodulator:
         fig, ax = plt.subplots(
             3,
             4,
-            dpi=300,
-            figsize=(4, 3),
-            constrained_layout=True,
+            dpi=dpi,
+            # figsize=figsize,
+            # constrained_layout=True,
             sharex="col",
             sharey="row",
+            **kwargs,
         )
         for i in range(3):
             for j in range(4):
@@ -365,7 +366,7 @@ def calculate_demodulation_tensor(
     # Collect dark
     if dark_filename:
         with fits.open(dark_filename) as file:
-            dark = np.array(file[0].data, dtype=np.float)
+            dark = np.array(file[0].data, dtype=float)
             dark = micropolarray_rebin(dark, binning)
     # Collect flat field, normalize it
     if flat_filename:
@@ -839,8 +840,12 @@ def compute_demodulation_by_chunk(
     bounds = np.zeros(shape=(N_PIXELS_IN_SUPERPIX, 2, N_MALUS_PARAMS))
     bounds[:, 0, 0], bounds[:, 1, 0] = tk_boundary[1:]  # Throughput bounds
     bounds[:, 0, 1], bounds[:, 1, 1] = eff_boundary[1:]  # Efficiency bounds
-    bounds[:, 0, 2] = rad_micropol_phases_previsions - 15  # Lower angle bounds
-    bounds[:, 1, 2] = rad_micropol_phases_previsions + 15  # Upper angle bounds
+    bounds[:, 0, 2] = rad_micropol_phases_previsions - np.deg2rad(
+        15
+    )  # Lower angle bounds
+    bounds[:, 1, 2] = rad_micropol_phases_previsions + np.deg2rad(
+        15
+    )  # Upper angle bounds
 
     # Fit for each superpixel. Use theoretical demodulation matrix for
     # occulter if present.

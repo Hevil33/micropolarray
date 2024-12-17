@@ -5,8 +5,8 @@ from micropolarray.processing.demosaic import merge_polarizations, split_polariz
 
 
 @njit
-def shift(data: np.ndarray, y: int, x: int):
-    newdata = np.zeros_like(data)
+def shift(data: np.ndarray, y: int, x: int, missing_value: float):
+    newdata = missing_value * np.ones_like(data)
     for j in range((y > 0) * y, newdata.shape[0] - np.abs(y) * (y < 0)):
         for i in range((x > 0) * x, newdata.shape[1] - np.abs(x) * (x < 0)):
             newdata[j, i] = data[j - y, i - x]
@@ -14,7 +14,7 @@ def shift(data: np.ndarray, y: int, x: int):
     return newdata
 
 
-def shift_micropol(data: np.ndarray, y: int, x: int):
+def shift_micropol(data: np.ndarray, y: int, x: int, missing_value: float):
     """Splits the image into single polarizations, shifts each of them by y,x and then merges them back.
 
     Args:
@@ -26,9 +26,9 @@ def shift_micropol(data: np.ndarray, y: int, x: int):
         np.ndarray: shifted array
     """
     single_pol_subimages = split_polarizations(data)
-    new_single_pol_subimages = np.zeros_like(single_pol_subimages)
+    new_single_pol_subimages = missing_value * np.ones_like(single_pol_subimages)
 
     for i, image in enumerate(single_pol_subimages):
-        new_single_pol_subimages[i, :, :] = shift(image, y, x)
+        new_single_pol_subimages[i, :, :] = shift(image, y, x, missing_value)
 
     return merge_polarizations(new_single_pol_subimages)
