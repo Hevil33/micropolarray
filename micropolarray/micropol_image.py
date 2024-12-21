@@ -1008,12 +1008,36 @@ class MicropolImage(Image):
             newdata = self.data + second.data
             newimage = MicropolImage(self)
             newimage._update_data_and_Stokes(newdata)
+        else:
+            newdata = self.data + second
+            newimage = MicropolImage(newdata, angle_dic=self.angle_dic)
+
+        newimage.header = self.header
+        return newimage
+
+        # CHANGED 2024/12/21: keep the header of the first image
+        if type(self) is type(second):
+            newdata = self.data + second.data
+            newimage = MicropolImage(self)
+            newimage._update_data_and_Stokes(newdata)
             return newimage
         else:
             newdata = self.data + second
             return MicropolImage(newdata, angle_dic=self.angle_dic)
 
     def __sub__(self, second) -> MicropolImage:
+        if type(self) is type(second):
+            newdata = self.data - second.data
+            newimage = MicropolImage(self)
+            newimage._update_data_and_Stokes(newdata)
+        else:
+            newdata = self.data - second
+            newimage = MicropolImage(newdata, angle_dic=self.angle_dic)
+
+        newimage.header = self.header
+        return newimage
+
+        # CHANGED 2024/12/21: keep the header of the first image
         if type(self) is type(second):
             newdata = self.data - second.data
             newimage = MicropolImage(self)
@@ -1028,12 +1052,36 @@ class MicropolImage(Image):
             newdata = self.data * second.data
             newimage = MicropolImage(self)
             newimage._update_data_and_Stokes(newdata)
+        else:
+            newdata = self.data * second
+            newimage = MicropolImage(newdata, angle_dic=self.angle_dic)
+
+        newimage.header = self.header
+        return newimage
+
+        # CHANGED 2024/12/21: keep the header of the first image
+        if type(self) is type(second):
+            newdata = self.data * second.data
+            newimage = MicropolImage(self)
+            newimage._update_data_and_Stokes(newdata)
             return newimage
         else:
             newdata = self.data * second
             return MicropolImage(newdata, angle_dic=self.angle_dic)
 
     def __truediv__(self, second) -> MicropolImage:
+        if type(self) is type(second):
+            newdata = np.divide(self.data, second.data, where=second.data != 0.0)
+            newimage = MicropolImage(self)
+            newimage._update_data_and_Stokes(newdata)
+        else:
+            newdata = np.divide(self.data, second, where=second != 0.0)
+            newimage = MicropolImage(newdata, angle_dic=self.angle_dic)
+
+        newimage.header = self.header
+        return newimage
+
+        # CHANGED 2024/12/21: keep the header of the first image
         if type(self) is type(second):
             newdata = np.divide(self.data, second.data, where=second.data != 0.0)
             newimage = MicropolImage(self)

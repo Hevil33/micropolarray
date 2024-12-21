@@ -83,6 +83,7 @@
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">astropy.io</span> <span class="kn">import</span> <span class="n">fits</span>
 
+<span class="kn">from</span> <span class="nn">micropolarray.processing.rebin</span> <span class="kn">import</span> <span class="n">standard_rebin</span>
 <span class="kn">from</span> <span class="nn">micropolarray.processing.shift</span> <span class="kn">import</span> <span class="n">shift</span>
 <span class="kn">from</span> <span class="nn">micropolarray.utils</span> <span class="kn">import</span> <span class="n">_make_abs_and_create_dir</span><span class="p">,</span> <span class="n">fix_data</span>
 
@@ -207,21 +208,48 @@
 
 <div class="viewcode-block" id="Image.shift">
 <a class="viewcode-back" href="../../micropolarray.html#micropolarray.image.Image.shift">[docs]</a>
-    <span class="k">def</span> <span class="nf">shift</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Image</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">shift</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">missing</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Image</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Shifts image by y, x pixels and fills with 0 the remaining space. Positive numbers for up/right shift and negative for down/left shift.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            y (int): vertical shift in pix</span>
 <span class="sd">            x (int): horizontal shift in pix</span>
+<span class="sd">            missing (float, optional): value used for filling missing values. Defaults to 0</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            Image: shifted image copied from the original</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># newdata = shift(self.data, y, x)</span>
-        <span class="n">newdata</span> <span class="o">=</span> <span class="n">shift</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+        <span class="n">newdata</span> <span class="o">=</span> <span class="n">shift</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">missing</span><span class="p">)</span>
         <span class="n">newimage</span> <span class="o">=</span> <span class="n">Image</span><span class="p">(</span><span class="n">newdata</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">newimage</span></div>
+
+
+<div class="viewcode-block" id="Image.rebin">
+<a class="viewcode-back" href="../../micropolarray.html#micropolarray.image.Image.rebin">[docs]</a>
+    <span class="k">def</span> <span class="nf">rebin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">binning</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Image</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Rebins the image, binned each binningxbinning. Sum bins by default.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            binning (int): binning to perform. A value of n will be translated in a nxn binning.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: negative binning provided</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Image: copy of the input image, rebinned.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">binning</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Negative binning </span><span class="si">{</span><span class="n">binning</span><span class="si">}</span><span class="s2">x</span><span class="si">{</span><span class="n">binning</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">rebinned_image</span> <span class="o">=</span> <span class="n">Image</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">rebinned_data</span> <span class="o">=</span> <span class="n">standard_rebin</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">rebinned_image</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">),</span>
+            <span class="n">binning</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">rebinned_image</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">rebinned_data</span>
+
+        <span class="k">return</span> <span class="n">rebinned_image</span></div>
 
 
     <span class="c1"># ----------------------------------------------------------------</span>

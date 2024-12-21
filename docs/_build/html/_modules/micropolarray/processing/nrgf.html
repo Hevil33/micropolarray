@@ -135,6 +135,11 @@
         <span class="nb">tuple</span><span class="p">([</span><span class="n">center</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">center</span><span class="p">[</span><span class="mi">1</span><span class="p">]]),</span>
     <span class="p">)</span>  <span class="c1"># cast it to a tuple (which is hashable)</span>
 
+    <span class="k">if</span> <span class="kc">False</span><span class="p">:</span>  <span class="c1"># show polar coords</span>
+        <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">phi_coords</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s2">&quot;lower&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
     <span class="n">theta_condition</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">phi_coords</span> <span class="o">&gt;=</span> <span class="n">theta_min</span><span class="p">,</span> <span class="n">phi_coords</span> <span class="o">&lt;</span> <span class="n">theta_max</span><span class="p">)</span>
     <span class="n">rho_condition</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span>
         <span class="n">rho_coords</span> <span class="o">&gt;</span> <span class="n">rho_min</span><span class="p">,</span> <span class="n">rho_coords</span> <span class="o">&lt;=</span> <span class="n">rho_max</span>

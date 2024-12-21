@@ -64,7 +64,7 @@
 
 
 \title{micropolarray}
-\date{May 22, 2024}
+\date{Dec 17, 2024}
 \release{}
 \author{Herve Haudemand}
 \newcommand{\sphinxlogo}{\vbox{}}
@@ -553,7 +553,7 @@ DO NOT USE THIS, calculate the tensor from the binned images
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{micropolarray.processing:micropolarray.processing.demodulation.Demodulator.show}}
 \pysigstartsignatures
-\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{show}}}{\sphinxparam{\DUrole{n}{vmin}\DUrole{o}{=}\DUrole{default_value}{\sphinxhyphen{}1}}\sphinxparamcomma \sphinxparam{\DUrole{n}{vmax}\DUrole{o}{=}\DUrole{default_value}{1}}\sphinxparamcomma \sphinxparam{\DUrole{n}{cmap}\DUrole{o}{=}\DUrole{default_value}{\textquotesingle{}Greys\textquotesingle{}}}}{{ $\rightarrow$ tuple}}
+\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{show}}}{\sphinxparam{\DUrole{n}{vmin}\DUrole{o}{=}\DUrole{default_value}{\sphinxhyphen{}1}}\sphinxparamcomma \sphinxparam{\DUrole{n}{vmax}\DUrole{o}{=}\DUrole{default_value}{1}}\sphinxparamcomma \sphinxparam{\DUrole{n}{cmap}\DUrole{o}{=}\DUrole{default_value}{\textquotesingle{}Greys\textquotesingle{}}}\sphinxparamcomma \sphinxparam{\DUrole{n}{dpi}\DUrole{o}{=}\DUrole{default_value}{300}}\sphinxparamcomma \sphinxparam{\DUrole{o}{**}\DUrole{n}{kwargs}}}{{ $\rightarrow$ tuple}}
 \pysigstopsignatures
 \sphinxAtStartPar
 Shows the demodulation tensor
@@ -975,7 +975,7 @@ np.ndarray
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{micropolarray.processing:micropolarray.processing.linear_roi.linear_roi}}
 \pysigstartsignatures
-\pysiglinewithargsret{\sphinxcode{\sphinxupquote{micropolarray.processing.linear\_roi.}}\sphinxbfcode{\sphinxupquote{linear\_roi}}}{\sphinxparam{\DUrole{n}{data}\DUrole{p}{:}\DUrole{w}{ }\DUrole{n}{ndarray}}\sphinxparamcomma \sphinxparam{\DUrole{n}{start}\DUrole{p}{:}\DUrole{w}{ }\DUrole{n}{list}}\sphinxparamcomma \sphinxparam{\DUrole{n}{end}\DUrole{p}{:}\DUrole{w}{ }\DUrole{n}{list}}}{{ $\rightarrow$ ndarray}}
+\pysiglinewithargsret{\sphinxcode{\sphinxupquote{micropolarray.processing.linear\_roi.}}\sphinxbfcode{\sphinxupquote{linear\_roi}}}{\sphinxparam{\DUrole{n}{data}\DUrole{p}{:}\DUrole{w}{ }\DUrole{n}{ndarray}}\sphinxparamcomma \sphinxparam{\DUrole{n}{start}\DUrole{p}{:}\DUrole{w}{ }\DUrole{n}{list}}\sphinxparamcomma \sphinxparam{\DUrole{n}{end}\DUrole{p}{:}\DUrole{w}{ }\DUrole{n}{list}}}{{ $\rightarrow$ list}}
 \pysigstopsignatures
 \sphinxAtStartPar
 Get values
@@ -983,25 +983,25 @@ Get values
 \sphinxlineitem{Parameters}\begin{itemize}
 \item {} 
 \sphinxAtStartPar
-\sphinxstyleliteralstrong{\sphinxupquote{data}} (\sphinxstyleliteralemphasis{\sphinxupquote{np.ndarray}}) \textendash{} \_description\_
+\sphinxstyleliteralstrong{\sphinxupquote{data}} (\sphinxstyleliteralemphasis{\sphinxupquote{np.ndarray}}) \textendash{} data on which to perform the roi
 
 \item {} 
 \sphinxAtStartPar
-\sphinxstyleliteralstrong{\sphinxupquote{start}} (\sphinxstyleliteralemphasis{\sphinxupquote{list}}) \textendash{} \_description\_
+\sphinxstyleliteralstrong{\sphinxupquote{start}} (\sphinxstyleliteralemphasis{\sphinxupquote{list}}) \textendash{} (y, x) starting point in pixel
 
 \item {} 
 \sphinxAtStartPar
-\sphinxstyleliteralstrong{\sphinxupquote{end}} (\sphinxstyleliteralemphasis{\sphinxupquote{list}}) \textendash{} \_description\_
+\sphinxstyleliteralstrong{\sphinxupquote{end}} (\sphinxstyleliteralemphasis{\sphinxupquote{list}}) \textendash{} (y, x) ending point in pixel
 
 \end{itemize}
 
 \sphinxlineitem{Returns}
 \sphinxAtStartPar
-\_description\_
+1d array of y coordinates, 1d array of x coordinates, values of data calculated at rois
 
 \sphinxlineitem{Return type}
 \sphinxAtStartPar
-np.ndarray
+list
 
 \end{description}\end{quote}
 
@@ -1015,7 +1015,7 @@ np.ndarray
 \pysiglinewithargsret{\sphinxcode{\sphinxupquote{micropolarray.processing.linear\_roi.}}\sphinxbfcode{\sphinxupquote{linear\_roi\_from\_polar}}}{\sphinxparam{\DUrole{n}{data}\DUrole{p}{:}\DUrole{w}{ }\DUrole{n}{ndarray}}\sphinxparamcomma \sphinxparam{\DUrole{n}{center}\DUrole{p}{:}\DUrole{w}{ }\DUrole{n}{list}}\sphinxparamcomma \sphinxparam{\DUrole{n}{theta}\DUrole{p}{:}\DUrole{w}{ }\DUrole{n}{float}}\sphinxparamcomma \sphinxparam{\DUrole{n}{r}\DUrole{p}{:}\DUrole{w}{ }\DUrole{n}{list}\DUrole{w}{ }\DUrole{o}{=}\DUrole{w}{ }\DUrole{default_value}{None}}}{{ $\rightarrow$ list}}
 \pysigstopsignatures
 \sphinxAtStartPar
-Returns a linear roi starting from the center and extending
+Performs a linear roi starting from the center and extending
 to r or to the edge of the input data array.
 Angles start horizontally and rotate anti\sphinxhyphen{}clockwise (0deg
 corresponds to fixed y and increasing x).
@@ -1049,8 +1049,7 @@ corresponds to fixed y and increasing x).
 from data
 np.ndarray: roi indexes along the first (y) dimension of data
 np.ndarray: roi indexes along the second (x) dimension of data
-float: ratio between the pixel lenght and the lenght of the
-returned roi (see linear\_roi.DDA)
+float: ratio between the lenght of the roi in pixels and its lenght in elements (see linear\_roi.DDA). In other words, pixels/elements\_n. Its inverse is number of elements per pixel.
 
 \sphinxlineitem{Return type}
 \sphinxAtStartPar
@@ -1472,7 +1471,7 @@ int, int
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{micropolarray.processing:micropolarray.processing.shift.shift}}
 \pysigstartsignatures
-\pysiglinewithargsret{\sphinxcode{\sphinxupquote{micropolarray.processing.shift.}}\sphinxbfcode{\sphinxupquote{shift}}}{\sphinxparam{\DUrole{n}{data}\DUrole{p}{:}\DUrole{w}{ }\DUrole{n}{ndarray}}\sphinxparamcomma \sphinxparam{\DUrole{n}{y}\DUrole{p}{:}\DUrole{w}{ }\DUrole{n}{int}}\sphinxparamcomma \sphinxparam{\DUrole{n}{x}\DUrole{p}{:}\DUrole{w}{ }\DUrole{n}{int}}}{}
+\pysiglinewithargsret{\sphinxcode{\sphinxupquote{micropolarray.processing.shift.}}\sphinxbfcode{\sphinxupquote{shift}}}{\sphinxparam{\DUrole{n}{data}\DUrole{p}{:}\DUrole{w}{ }\DUrole{n}{ndarray}}\sphinxparamcomma \sphinxparam{\DUrole{n}{y}\DUrole{p}{:}\DUrole{w}{ }\DUrole{n}{int}}\sphinxparamcomma \sphinxparam{\DUrole{n}{x}\DUrole{p}{:}\DUrole{w}{ }\DUrole{n}{int}}\sphinxparamcomma \sphinxparam{\DUrole{n}{missing\_value}\DUrole{p}{:}\DUrole{w}{ }\DUrole{n}{float}}}{}
 \pysigstopsignatures
 \end{fulllineitems}
 
@@ -1481,7 +1480,7 @@ int, int
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{micropolarray.processing:micropolarray.processing.shift.shift_micropol}}
 \pysigstartsignatures
-\pysiglinewithargsret{\sphinxcode{\sphinxupquote{micropolarray.processing.shift.}}\sphinxbfcode{\sphinxupquote{shift\_micropol}}}{\sphinxparam{\DUrole{n}{data}\DUrole{p}{:}\DUrole{w}{ }\DUrole{n}{ndarray}}\sphinxparamcomma \sphinxparam{\DUrole{n}{y}\DUrole{p}{:}\DUrole{w}{ }\DUrole{n}{int}}\sphinxparamcomma \sphinxparam{\DUrole{n}{x}\DUrole{p}{:}\DUrole{w}{ }\DUrole{n}{int}}}{}
+\pysiglinewithargsret{\sphinxcode{\sphinxupquote{micropolarray.processing.shift.}}\sphinxbfcode{\sphinxupquote{shift\_micropol}}}{\sphinxparam{\DUrole{n}{data}\DUrole{p}{:}\DUrole{w}{ }\DUrole{n}{ndarray}}\sphinxparamcomma \sphinxparam{\DUrole{n}{y}\DUrole{p}{:}\DUrole{w}{ }\DUrole{n}{int}}\sphinxparamcomma \sphinxparam{\DUrole{n}{x}\DUrole{p}{:}\DUrole{w}{ }\DUrole{n}{int}}\sphinxparamcomma \sphinxparam{\DUrole{n}{missing\_value}\DUrole{p}{:}\DUrole{w}{ }\DUrole{n}{float}}}{}
 \pysigstopsignatures
 \sphinxAtStartPar
 Splits the image into single polarizations, shifts each of them by y,x and then merges them back.
@@ -1664,6 +1663,36 @@ Basic image class. Can be initialized from a filename, a filenames list, a numpy
 \pysigstopsignatures
 \end{fulllineitems}
 
+\index{rebin() (micropolarray.image.Image method)@\spxentry{rebin()}\spxextra{micropolarray.image.Image method}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{micropolarray:micropolarray.image.Image.rebin}}
+\pysigstartsignatures
+\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{rebin}}}{\sphinxparam{\DUrole{n}{binning}\DUrole{p}{:}\DUrole{w}{ }\DUrole{n}{int}}}{{ $\rightarrow$ {\hyperref[\detokenize{micropolarray:micropolarray.image.Image}]{\sphinxcrossref{Image}}}}}
+\pysigstopsignatures
+\sphinxAtStartPar
+Rebins the image, binned each binningxbinning. Sum bins by default.
+\begin{quote}\begin{description}
+\sphinxlineitem{Parameters}
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{binning}} (\sphinxstyleliteralemphasis{\sphinxupquote{int}}) \textendash{} binning to perform. A value of n will be translated in a nxn binning.
+
+\sphinxlineitem{Raises}
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{ValueError}} \textendash{} negative binning provided
+
+\sphinxlineitem{Returns}
+\sphinxAtStartPar
+copy of the input image, rebinned.
+
+\sphinxlineitem{Return type}
+\sphinxAtStartPar
+{\hyperref[\detokenize{micropolarray:micropolarray.image.Image}]{\sphinxcrossref{Image}}}
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
 \index{save\_as\_fits() (micropolarray.image.Image method)@\spxentry{save\_as\_fits()}\spxextra{micropolarray.image.Image method}}
 
 \begin{fulllineitems}
@@ -1720,7 +1749,7 @@ Saves the image as a raw binary file
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{micropolarray:micropolarray.image.Image.shift}}
 \pysigstartsignatures
-\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{shift}}}{\sphinxparam{\DUrole{n}{y}\DUrole{p}{:}\DUrole{w}{ }\DUrole{n}{int}}\sphinxparamcomma \sphinxparam{\DUrole{n}{x}\DUrole{p}{:}\DUrole{w}{ }\DUrole{n}{int}}}{{ $\rightarrow$ {\hyperref[\detokenize{micropolarray:micropolarray.image.Image}]{\sphinxcrossref{Image}}}}}
+\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{shift}}}{\sphinxparam{\DUrole{n}{y}\DUrole{p}{:}\DUrole{w}{ }\DUrole{n}{int}}\sphinxparamcomma \sphinxparam{\DUrole{n}{x}\DUrole{p}{:}\DUrole{w}{ }\DUrole{n}{int}}\sphinxparamcomma \sphinxparam{\DUrole{n}{missing}\DUrole{p}{:}\DUrole{w}{ }\DUrole{n}{float}\DUrole{w}{ }\DUrole{o}{=}\DUrole{w}{ }\DUrole{default_value}{0}}}{{ $\rightarrow$ {\hyperref[\detokenize{micropolarray:micropolarray.image.Image}]{\sphinxcrossref{Image}}}}}
 \pysigstopsignatures
 \sphinxAtStartPar
 Shifts image by y, x pixels and fills with 0 the remaining space. Positive numbers for up/right shift and negative for down/left shift.
@@ -1733,6 +1762,10 @@ Shifts image by y, x pixels and fills with 0 the remaining space. Positive numbe
 \item {} 
 \sphinxAtStartPar
 \sphinxstyleliteralstrong{\sphinxupquote{x}} (\sphinxstyleliteralemphasis{\sphinxupquote{int}}) \textendash{} horizontal shift in pix
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{missing}} (\sphinxstyleliteralemphasis{\sphinxupquote{float}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{optional}}) \textendash{} value used for filling missing values. Defaults to 0
 
 \end{itemize}
 
@@ -2310,7 +2343,7 @@ Saves the four polarized images as fits files
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{micropolarray:micropolarray.micropol_image.MicropolImage.shift}}
 \pysigstartsignatures
-\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{shift}}}{\sphinxparam{\DUrole{n}{y}\DUrole{p}{:}\DUrole{w}{ }\DUrole{n}{int}}\sphinxparamcomma \sphinxparam{\DUrole{n}{x}\DUrole{p}{:}\DUrole{w}{ }\DUrole{n}{int}}}{{ $\rightarrow$ {\hyperref[\detokenize{micropolarray:micropolarray.micropol_image.MicropolImage}]{\sphinxcrossref{MicropolImage}}}}}
+\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{shift}}}{\sphinxparam{\DUrole{n}{y}\DUrole{p}{:}\DUrole{w}{ }\DUrole{n}{int}}\sphinxparamcomma \sphinxparam{\DUrole{n}{x}\DUrole{p}{:}\DUrole{w}{ }\DUrole{n}{int}}\sphinxparamcomma \sphinxparam{\DUrole{n}{missing}\DUrole{p}{:}\DUrole{w}{ }\DUrole{n}{float}\DUrole{w}{ }\DUrole{o}{=}\DUrole{w}{ }\DUrole{default_value}{0}}}{{ $\rightarrow$ {\hyperref[\detokenize{micropolarray:micropolarray.micropol_image.MicropolImage}]{\sphinxcrossref{MicropolImage}}}}}
 \pysigstopsignatures
 \sphinxAtStartPar
 Shifts image by y, x pixels and fills with 0 the remaining space. Positive numbers for up/right shift and negative for down/left shift. Image is split into polarizations, each one is shifted, then they are merged again.
@@ -2323,6 +2356,10 @@ Shifts image by y, x pixels and fills with 0 the remaining space. Positive numbe
 \item {} 
 \sphinxAtStartPar
 \sphinxstyleliteralstrong{\sphinxupquote{x}} (\sphinxstyleliteralemphasis{\sphinxupquote{int}}) \textendash{} horizontal shift in pix
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{missing}} (\sphinxstyleliteralemphasis{\sphinxupquote{float}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{optional}}) \textendash{} value used for filling missin values. Defaults to 0.
 
 \end{itemize}
 
@@ -2971,6 +3008,32 @@ Returns the list of angles (in degrees) normalized between \sphinxhyphen{}90 and
 \sphinxlineitem{Returns}
 \sphinxAtStartPar
 list of normalized angles
+
+\sphinxlineitem{Return type}
+\sphinxAtStartPar
+list
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{normalize2piarray() (in module micropolarray.utils)@\spxentry{normalize2piarray()}\spxextra{in module micropolarray.utils}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{micropolarray:micropolarray.utils.normalize2piarray}}
+\pysigstartsignatures
+\pysiglinewithargsret{\sphinxcode{\sphinxupquote{micropolarray.utils.}}\sphinxbfcode{\sphinxupquote{normalize2piarray}}}{\sphinxparam{\DUrole{n}{data}\DUrole{p}{:}\DUrole{w}{ }\DUrole{n}{ndarray}}}{}
+\pysigstopsignatures
+\sphinxAtStartPar
+Returns the array of angles (in radians) normalized between \sphinxhyphen{}pi/2 and pi/2.
+\begin{quote}\begin{description}
+\sphinxlineitem{Parameters}
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{angles\_list}} (\sphinxstyleliteralemphasis{\sphinxupquote{np.ndarray}}) \textendash{} array of angles to normalize
+
+\sphinxlineitem{Returns}
+\sphinxAtStartPar
+array of normalized angles
 
 \sphinxlineitem{Return type}
 \sphinxAtStartPar

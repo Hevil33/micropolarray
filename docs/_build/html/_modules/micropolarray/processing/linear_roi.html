@@ -89,7 +89,7 @@
     <span class="n">theta</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
     <span class="n">r</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns a linear roi starting from the center and extending</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Performs a linear roi starting from the center and extending</span>
 <span class="sd">    to r or to the edge of the input data array.</span>
 <span class="sd">    Angles start horizontally and rotate anti-clockwise (0deg</span>
 <span class="sd">    corresponds to fixed y and increasing x).</span>
@@ -106,23 +106,30 @@
 <span class="sd">        from data</span>
 <span class="sd">        np.ndarray: roi indexes along the first (y) dimension of data</span>
 <span class="sd">        np.ndarray: roi indexes along the second (x) dimension of data</span>
-<span class="sd">        float: ratio between the pixel lenght and the lenght of the</span>
-<span class="sd">        returned roi (see linear_roi.DDA)</span>
+<span class="sd">        float: ratio between the lenght of the roi in pixels and its lenght in elements (see linear_roi.DDA). In other words, pixels/elements_n. Its inverse is number of elements per pixel.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">y1</span><span class="p">,</span> <span class="n">x1</span> <span class="o">=</span> <span class="n">center</span>
     <span class="n">y2</span><span class="p">,</span> <span class="n">x2</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">y1</span><span class="p">),</span> <span class="nb">float</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">r</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">r</span> <span class="o">=</span> <span class="mf">1.0e18</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">1.0e18</span><span class="p">]</span>
 
     <span class="n">theta_rad</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span>
 
+    <span class="c1"># keep running along theta from center until minimum radius to get start of line</span>
+    <span class="k">while</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="n">center</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">x1</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">center</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">y1</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+        <span class="n">y1</span> <span class="o">=</span> <span class="n">y1</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">theta_rad</span><span class="p">)</span>
+        <span class="n">x1</span> <span class="o">=</span> <span class="n">x1</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">theta_rad</span><span class="p">)</span>
+
+    <span class="c1"># keep running along theta from center until end of image is reached to get end of line</span>
     <span class="k">while</span> <span class="p">(</span>
-        <span class="p">(</span><span class="n">y2</span> <span class="o">&lt;</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="c1"># (y2 &lt; data.shape[0] - 1)</span>
+        <span class="p">(</span><span class="n">y2</span> <span class="o">&lt;</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
         <span class="ow">and</span> <span class="p">(</span><span class="n">y2</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">)</span>
-        <span class="ow">and</span> <span class="p">(</span><span class="n">x2</span> <span class="o">&lt;</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="c1"># and (x2 &lt; data.shape[1] - 1)</span>
+        <span class="ow">and</span> <span class="p">(</span><span class="n">x2</span> <span class="o">&lt;</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
         <span class="ow">and</span> <span class="p">(</span><span class="n">x2</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">)</span>
-        <span class="ow">and</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="n">x2</span> <span class="o">-</span> <span class="n">x1</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">y2</span> <span class="o">-</span> <span class="n">y1</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">r</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="ow">and</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="n">x2</span> <span class="o">-</span> <span class="n">center</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">y2</span> <span class="o">-</span> <span class="n">center</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">r</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
     <span class="p">):</span>
         <span class="n">y2</span> <span class="o">=</span> <span class="n">y2</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">theta_rad</span><span class="p">)</span>
         <span class="n">x2</span> <span class="o">=</span> <span class="n">x2</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">theta_rad</span><span class="p">)</span>
@@ -145,22 +152,24 @@
 
 <div class="viewcode-block" id="linear_roi">
 <a class="viewcode-back" href="../../../micropolarray.processing.html#micropolarray.processing.linear_roi.linear_roi">[docs]</a>
-<span class="k">def</span> <span class="nf">linear_roi</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">end</span><span class="p">:</span> <span class="nb">list</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">linear_roi</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">end</span><span class="p">:</span> <span class="nb">list</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Get values</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        data (np.ndarray): _description_</span>
-<span class="sd">        start (list): _description_</span>
-<span class="sd">        end (list): _description_</span>
+<span class="sd">        data (np.ndarray): data on which to perform the roi</span>
+<span class="sd">        start (list): (y, x) starting point in pixel</span>
+<span class="sd">        end (list): (y, x) ending point in pixel</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        np.ndarray: _description_</span>
+<span class="sd">        list: 1d array of y coordinates, 1d array of x coordinates, values of data calculated at rois</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">ys</span><span class="p">,</span> <span class="n">xs</span> <span class="o">=</span> <span class="n">DDA</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span>
+    <span class="n">ys</span><span class="p">,</span> <span class="n">xs</span><span class="p">,</span> <span class="n">density</span> <span class="o">=</span> <span class="n">DDA</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span>
+    <span class="c1"># print(f&quot;{xs, ys = }&quot;)</span>
+    <span class="c1"># print(f&quot;{start, end = }&quot;)</span>
 
     <span class="n">vals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">data</span><span class="p">[</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">]</span> <span class="k">for</span> <span class="n">y</span><span class="p">,</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">ys</span><span class="p">,</span> <span class="n">xs</span><span class="p">)])</span>
 
-    <span class="k">return</span> <span class="n">vals</span></div>
+    <span class="k">return</span> <span class="n">ys</span><span class="p">,</span> <span class="n">xs</span><span class="p">,</span> <span class="n">vals</span></div>
 
 
 

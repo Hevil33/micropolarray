@@ -66,6 +66,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#module-micropolarray.image">micropolarray.image module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#micropolarray.image.Image"><code class="docutils literal notranslate"><span class="pre">Image</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#micropolarray.image.Image.data"><code class="docutils literal notranslate"><span class="pre">Image.data</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#micropolarray.image.Image.rebin"><code class="docutils literal notranslate"><span class="pre">Image.rebin()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#micropolarray.image.Image.save_as_fits"><code class="docutils literal notranslate"><span class="pre">Image.save_as_fits()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#micropolarray.image.Image.save_as_raw"><code class="docutils literal notranslate"><span class="pre">Image.save_as_raw()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#micropolarray.image.Image.shift"><code class="docutils literal notranslate"><span class="pre">Image.shift()</span></code></a></li>
@@ -141,6 +142,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#micropolarray.utils.median_minus_std"><code class="docutils literal notranslate"><span class="pre">median_minus_std()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#micropolarray.utils.median_plus_std"><code class="docutils literal notranslate"><span class="pre">median_plus_std()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#micropolarray.utils.normalize2pi"><code class="docutils literal notranslate"><span class="pre">normalize2pi()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#micropolarray.utils.normalize2piarray"><code class="docutils literal notranslate"><span class="pre">normalize2piarray()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#micropolarray.utils.sigma_DN"><code class="docutils literal notranslate"><span class="pre">sigma_DN()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#micropolarray.utils.timer"><code class="docutils literal notranslate"><span class="pre">timer()</span></code></a></li>
 </ul>
@@ -365,6 +367,26 @@
 <dd></dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="micropolarray.image.Image.rebin">
+<span class="sig-name descname"><span class="pre">rebin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">binning</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#micropolarray.image.Image" title="micropolarray.image.Image"><span class="pre">Image</span></a></span></span><a class="reference internal" href="_modules/micropolarray/image.html#Image.rebin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#micropolarray.image.Image.rebin" title="Link to this definition"></a></dt>
+<dd><p>Rebins the image, binned each binningxbinning. Sum bins by default.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>binning</strong> (<em>int</em>) – binning to perform. A value of n will be translated in a nxn binning.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – negative binning provided</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>copy of the input image, rebinned.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#micropolarray.image.Image" title="micropolarray.image.Image">Image</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="micropolarray.image.Image.save_as_fits">
 <span class="sig-name descname"><span class="pre">save_as_fits</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fixto</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/micropolarray/image.html#Image.save_as_fits"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#micropolarray.image.Image.save_as_fits" title="Link to this definition"></a></dt>
 <dd><p>Saves image as fits with current header</p>
@@ -397,13 +419,14 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="micropolarray.image.Image.shift">
-<span class="sig-name descname"><span class="pre">shift</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#micropolarray.image.Image" title="micropolarray.image.Image"><span class="pre">Image</span></a></span></span><a class="reference internal" href="_modules/micropolarray/image.html#Image.shift"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#micropolarray.image.Image.shift" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">shift</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">missing</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#micropolarray.image.Image" title="micropolarray.image.Image"><span class="pre">Image</span></a></span></span><a class="reference internal" href="_modules/micropolarray/image.html#Image.shift"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#micropolarray.image.Image.shift" title="Link to this definition"></a></dt>
 <dd><p>Shifts image by y, x pixels and fills with 0 the remaining space. Positive numbers for up/right shift and negative for down/left shift.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>y</strong> (<em>int</em>) – vertical shift in pix</p></li>
 <li><p><strong>x</strong> (<em>int</em>) – horizontal shift in pix</p></li>
+<li><p><strong>missing</strong> (<em>float</em><em>, </em><em>optional</em>) – value used for filling missing values. Defaults to 0</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -747,13 +770,14 @@ binningxbinning. Sum bins by default.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="micropolarray.micropol_image.MicropolImage.shift">
-<span class="sig-name descname"><span class="pre">shift</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#micropolarray.micropol_image.MicropolImage" title="micropolarray.micropol_image.MicropolImage"><span class="pre">MicropolImage</span></a></span></span><a class="reference internal" href="_modules/micropolarray/micropol_image.html#MicropolImage.shift"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#micropolarray.micropol_image.MicropolImage.shift" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">shift</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">missing</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#micropolarray.micropol_image.MicropolImage" title="micropolarray.micropol_image.MicropolImage"><span class="pre">MicropolImage</span></a></span></span><a class="reference internal" href="_modules/micropolarray/micropol_image.html#MicropolImage.shift"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#micropolarray.micropol_image.MicropolImage.shift" title="Link to this definition"></a></dt>
 <dd><p>Shifts image by y, x pixels and fills with 0 the remaining space. Positive numbers for up/right shift and negative for down/left shift. Image is split into polarizations, each one is shifted, then they are merged again.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>y</strong> (<em>int</em>) – vertical shift in pix</p></li>
 <li><p><strong>x</strong> (<em>int</em>) – horizontal shift in pix</p></li>
+<li><p><strong>missing</strong> (<em>float</em><em>, </em><em>optional</em>) – value used for filling missin values. Defaults to 0.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1145,6 +1169,23 @@ data [units of B_sun] = data[DN] * get_Bsun_units(mean_Bsun_brightness, texp_ima
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>list of normalized angles</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="micropolarray.utils.normalize2piarray">
+<span class="sig-prename descclassname"><span class="pre">micropolarray.utils.</span></span><span class="sig-name descname"><span class="pre">normalize2piarray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/micropolarray/utils.html#normalize2piarray"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#micropolarray.utils.normalize2piarray" title="Link to this definition"></a></dt>
+<dd><p>Returns the array of angles (in radians) normalized between -pi/2 and pi/2.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>angles_list</strong> (<em>np.ndarray</em>) – array of angles to normalize</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>array of normalized angles</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>list</p>

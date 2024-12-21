@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019/Debian) (preloaded format=pdflatex 2024.3.16)  22 MAY 2024 16:26
+This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019/Debian) (preloaded format=pdflatex 2024.3.16)  17 DEC 2024 16:36
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -935,7 +935,7 @@ Overfull \hbox (22.3289pt too wide) in paragraph at lines 691--691
  []
 
 [6] [7] [8] [9] [10] [11]
-Underfull \hbox (badness 5681) in paragraph at lines 1552--1555
+Underfull \hbox (badness 5681) in paragraph at lines 1551--1554
 \T1/qtm/m/n/10 Re-turns an ar-ray of True in-side the roi, False else-where. Us
 e-ful for mean/std op-er-a-tions
  []
@@ -952,13 +952,13 @@ Chapter 2.
 [25] [26
 
 ]
-Overfull \hbox (40.37172pt too wide) in paragraph at lines 3042--3043
+Overfull \hbox (40.37172pt too wide) in paragraph at lines 3105--3106
 []\T1/txtt/m/n/10 micropolarray.processing.chen_wan_liang_calibration\T1/qtm/m/
 n/10 ,
  []
 
 
-Overfull \hbox (3.62183pt too wide) in paragraph at lines 3046--3047
+Overfull \hbox (3.62183pt too wide) in paragraph at lines 3109--3110
 []\T1/txtt/m/n/10 micropolarray.processing.demodulation_errors\T1/qtm/m/n/10 ,
  []
 
@@ -1301,124 +1301,113 @@ crop-o-lar-
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 214--216
+Underfull \hbox (badness 10000) in paragraph at lines 215--217
 []\T1/txtt/m/n/10 nparr_from_binary() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 in mod-ul
 e mi-crop-o-lar-
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 220--221
+Underfull \hbox (badness 10000) in paragraph at lines 221--222
 []\T1/txtt/m/n/10 occulter_mask() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 mi-crop-o-lar
 -ray.cameras.Camera
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 221--222
+Underfull \hbox (badness 10000) in paragraph at lines 222--223
 []\T1/txtt/m/n/10 occulter_roi() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 mi-crop-o-lar-
 ray.cameras.Camera
  []
 
 
-Overfull \hbox (7.26245pt too wide) in paragraph at lines 228--230
+Overfull \hbox (7.26245pt too wide) in paragraph at lines 229--231
 []\T1/txtt/m/n/10 phi \T1/qtm/m/n/10 (\T1/qtm/m/it/10 mi-crop-o-lar-ray.process
 ing.demodulation.Demodulator
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 230--232
+Underfull \hbox (badness 10000) in paragraph at lines 231--233
 []\T1/txtt/m/n/10 pol0 \T1/qtm/m/n/10 (\T1/qtm/m/it/10 mi-crop-o-lar-ray.microp
 ol_image.MicropolImage
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 232--234
+Underfull \hbox (badness 10000) in paragraph at lines 233--235
 []\T1/txtt/m/n/10 pol45 \T1/qtm/m/n/10 (\T1/qtm/m/it/10 mi-crop-o-lar-ray.micro
 pol_image.MicropolImage
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 234--236
+Underfull \hbox (badness 10000) in paragraph at lines 235--237
 []\T1/txtt/m/n/10 pol90 \T1/qtm/m/n/10 (\T1/qtm/m/it/10 mi-crop-o-lar-ray.micro
 pol_image.MicropolImage
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 240--242
+Underfull \hbox (badness 10000) in paragraph at lines 241--243
 []\T1/txtt/m/n/10 polparam_list \T1/qtm/m/n/10 (\T1/qtm/m/it/10 mi-crop-o-lar-
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 242--244
+Underfull \hbox (badness 10000) in paragraph at lines 243--245
 []\T1/txtt/m/n/10 print_trimming_info() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 in mod-
 ule mi-crop-o-lar-
  []
 
 
-Overfull \hbox (0.81238pt too wide) in paragraph at lines 251--253
+Overfull \hbox (0.81238pt too wide) in paragraph at lines 253--255
 []\T1/txtt/m/n/10 rebin() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 mi-crop-o-lar-ray.mic
 ropol_image.MicropolImage
  []
 
 
-Overfull \hbox (28.26239pt too wide) in paragraph at lines 253--255
+Overfull \hbox (28.26239pt too wide) in paragraph at lines 255--257
 []\T1/txtt/m/n/10 rebin() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 mi-crop-o-lar-ray.pro
 cessing.demodulation.Demodulator
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 255--257
+Underfull \hbox (badness 10000) in paragraph at lines 257--259
 []\T1/txtt/m/n/10 reject_outliers() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 in mod-ule 
 mi-crop-o-lar-
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 259--261
+Underfull \hbox (badness 10000) in paragraph at lines 261--263
 []\T1/txtt/m/n/10 roi_from_polar() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 in mod-ule m
 i-crop-o-lar-
  []
 
 
-Overfull \hbox (28.26239pt too wide) in paragraph at lines 261--263
+Overfull \hbox (28.26239pt too wide) in paragraph at lines 263--265
 []\T1/txtt/m/n/10 rot90() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 mi-crop-o-lar-ray.pro
 cessing.demodulation.Demodulator
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 263--265
+Underfull \hbox (badness 10000) in paragraph at lines 265--267
 []\T1/txtt/m/n/10 rotate() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 mi-crop-o-lar-
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 263--265
+Underfull \hbox (badness 10000) in paragraph at lines 265--267
 \T1/qtm/m/it/10 ray.micropol_image.MicropolImage method\T1/qtm/m/n/10 ),
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 268--270
+Underfull \hbox (badness 10000) in paragraph at lines 270--272
 []\T1/txtt/m/n/10 save_all_pol_params_as_fits() \T1/qtm/m/n/10 (\T1/qtm/m/it/10
  mi-crop-o-lar-
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 268--270
-\T1/qtm/m/it/10 ray.micropol_image.MicropolImage method\T1/qtm/m/n/10 ),
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 272--274
-[]\T1/txtt/m/n/10 save_demosaiced_images_as_fits() \T1/qtm/m/n/10 (\T1/qtm/m/it
-/10 mi-crop-o-lar-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 272--274
+Underfull \hbox (badness 10000) in paragraph at lines 270--272
 \T1/qtm/m/it/10 ray.micropol_image.MicropolImage method\T1/qtm/m/n/10 ),
  []
 
 
 Underfull \hbox (badness 10000) in paragraph at lines 274--276
-[]\T1/txtt/m/n/10 save_param_as_fits() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 mi-crop-
-o-lar-
+[]\T1/txtt/m/n/10 save_demosaiced_images_as_fits() \T1/qtm/m/n/10 (\T1/qtm/m/it
+/10 mi-crop-o-lar-
  []
 
 
@@ -1428,8 +1417,8 @@ Underfull \hbox (badness 10000) in paragraph at lines 274--276
 
 
 Underfull \hbox (badness 10000) in paragraph at lines 276--278
-[]\T1/txtt/m/n/10 save_single_pol_images() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 mi-c
-rop-o-lar-
+[]\T1/txtt/m/n/10 save_param_as_fits() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 mi-crop-
+o-lar-
  []
 
 
@@ -1439,172 +1428,183 @@ Underfull \hbox (badness 10000) in paragraph at lines 276--278
 
 
 Underfull \hbox (badness 10000) in paragraph at lines 278--280
+[]\T1/txtt/m/n/10 save_single_pol_images() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 mi-c
+rop-o-lar-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 278--280
+\T1/qtm/m/it/10 ray.micropol_image.MicropolImage method\T1/qtm/m/n/10 ),
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 280--282
 []\T1/txtt/m/n/10 set_default_angles() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 in mod-u
 le mi-crop-o-lar-
  []
 
-
-Overfull \hbox (0.81238pt too wide) in paragraph at lines 282--284
+[31]
+Overfull \hbox (0.81238pt too wide) in paragraph at lines 284--286
 []\T1/txtt/m/n/10 shift() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 mi-crop-o-lar-ray.mic
 ropol_image.MicropolImage
  []
 
-[31]
-Underfull \hbox (badness 10000) in paragraph at lines 284--286
+
+Underfull \hbox (badness 10000) in paragraph at lines 286--288
 []\T1/txtt/m/n/10 shift_micropol() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 in mod-ule m
 i-crop-o-lar-
  []
 
 
-Overfull \hbox (23.0124pt too wide) in paragraph at lines 287--289
+Overfull \hbox (23.0124pt too wide) in paragraph at lines 289--291
 []\T1/txtt/m/n/10 show() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 mi-crop-o-lar-ray.proc
 essing.demodulation.Demodulator
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 289--291
+Underfull \hbox (badness 10000) in paragraph at lines 291--293
 []\T1/txtt/m/n/10 show_demo_images() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 mi-crop-o-
 lar-
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 289--291
+Underfull \hbox (badness 10000) in paragraph at lines 291--293
 \T1/qtm/m/it/10 ray.micropol_image.MicropolImage method\T1/qtm/m/n/10 ),
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 291--292
+Underfull \hbox (badness 10000) in paragraph at lines 293--294
 []\T1/txtt/m/n/10 show_histogram() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 mi-crop-o-la
 r-ray.image.Image
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 292--294
+Underfull \hbox (badness 10000) in paragraph at lines 294--296
 []\T1/txtt/m/n/10 show_histogram() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 mi-crop-o-la
 r-
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 292--294
+Underfull \hbox (badness 10000) in paragraph at lines 294--296
 \T1/qtm/m/it/10 ray.micropol_image.MicropolImage method\T1/qtm/m/n/10 ),
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 294--296
+Underfull \hbox (badness 10000) in paragraph at lines 296--298
 []\T1/txtt/m/n/10 show_pol_param() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 mi-crop-o-la
 r-
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 294--296
+Underfull \hbox (badness 10000) in paragraph at lines 296--298
 \T1/qtm/m/it/10 ray.micropol_image.MicropolImage method\T1/qtm/m/n/10 ),
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 296--298
+Underfull \hbox (badness 10000) in paragraph at lines 298--300
 []\T1/txtt/m/n/10 show_pol_params() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 mi-crop-o-l
 ar-
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 296--298
+Underfull \hbox (badness 10000) in paragraph at lines 298--300
 \T1/qtm/m/it/10 ray.micropol_image.MicropolImage method\T1/qtm/m/n/10 ),
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 298--300
+Underfull \hbox (badness 10000) in paragraph at lines 300--302
 []\T1/txtt/m/n/10 show_single_pol_images() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 mi-c
 rop-o-lar-
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 298--300
+Underfull \hbox (badness 10000) in paragraph at lines 300--302
 \T1/qtm/m/it/10 ray.micropol_image.MicropolImage method\T1/qtm/m/n/10 ),
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 300--302
+Underfull \hbox (badness 10000) in paragraph at lines 302--304
 []\T1/txtt/m/n/10 show_with_pol_params() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 mi-cro
 p-o-lar-
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 300--302
+Underfull \hbox (badness 10000) in paragraph at lines 302--304
 \T1/qtm/m/it/10 ray.micropol_image.MicropolImage method\T1/qtm/m/n/10 ),
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 304--306
+Underfull \hbox (badness 10000) in paragraph at lines 306--308
 []\T1/txtt/m/n/10 single_pol_subimages \T1/qtm/m/n/10 (\T1/qtm/m/it/10 mi-crop-
 o-lar-
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 306--308
+Underfull \hbox (badness 10000) in paragraph at lines 308--310
 []\T1/txtt/m/n/10 split_polarizations() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 in mod-
 ule mi-crop-o-lar-
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 308--310
+Underfull \hbox (badness 10000) in paragraph at lines 310--312
 []\T1/txtt/m/n/10 standard_jitrebin() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 in mod-ul
 e mi-crop-o-lar-
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 310--312
+Underfull \hbox (badness 10000) in paragraph at lines 312--314
 []\T1/txtt/m/n/10 standard_rebin() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 in mod-ule m
 i-crop-o-lar-
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 312--314
+Underfull \hbox (badness 10000) in paragraph at lines 314--316
 []\T1/txtt/m/n/10 subtract_dark() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 mi-crop-o-lar
 -
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 312--314
+Underfull \hbox (badness 10000) in paragraph at lines 314--316
 \T1/qtm/m/it/10 ray.micropol_image.MicropolImage method\T1/qtm/m/n/10 ),
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 319--320
+Underfull \hbox (badness 10000) in paragraph at lines 321--322
 []\T1/txtt/m/n/10 tile_double() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 in mod-ule mi-c
 rop-o-lar-
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 321--322
+Underfull \hbox (badness 10000) in paragraph at lines 323--324
 []\T1/txtt/m/n/10 title \T1/qtm/m/n/10 (\T1/qtm/m/it/10 mi-crop-o-lar-ray.micro
 pol_image.PolParam at-
  []
 
 
-Overfull \hbox (2.01247pt too wide) in paragraph at lines 322--324
+Overfull \hbox (2.01247pt too wide) in paragraph at lines 324--326
 []\T1/txtt/m/n/10 tk \T1/qtm/m/n/10 (\T1/qtm/m/it/10 mi-crop-o-lar-ray.processi
 ng.demodulation.Demodulator
  []
 
 [32])
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 3058.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 3058.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 3121.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 3121.
  (./micropolarray.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 3058.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 3058.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 3121.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 3121.
 
 Package rerunfilecheck Info: File `micropolarray.out' has not changed.
-(rerunfilecheck)             Checksum: 748C5A85E87DFC44C972894D9CA5D9F6;5626.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 3058.
+(rerunfilecheck)             Checksum: A3540D93ADB9D394D31EEF92C0669553;5626.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 3121.
  ) 
 Here is how much of TeX's memory you used:
- 15424 strings out of 481239
- 241534 string characters out of 5920377
- 510289 words of memory out of 5000000
- 30111 multiletter control sequences out of 15000+600000
+ 15428 strings out of 481239
+ 241658 string characters out of 5920377
+ 510399 words of memory out of 5000000
+ 30113 multiletter control sequences out of 15000+600000
  584084 words of font info for 66 fonts, out of 8000000 for 9000
  1142 hyphenation exceptions out of 8191
- 38i,11n,51p,2128b,695s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 38i,12n,51p,2128b,693s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/share/texmf/fonts/enc/dvips/tex-gyre/q-ec.enc}{/usr/share/texmf/fonts/e
 nc/dvips/tex-gyre/q-ts1.enc}</usr/share/texlive/texmf-dist/fonts/type1/public/a
 msfonts/cm/cmsy10.pfb></usr/share/texmf/fonts/type1/public/tex-gyre/qhvb.pfb></
@@ -1615,10 +1615,10 @@ e/texmf-dist/fonts/type1/public/txfonts/t1xbtt.pfb></usr/share/texlive/texmf-di
 st/fonts/type1/public/txfonts/t1xbtt.pfb></usr/share/texlive/texmf-dist/fonts/t
 ype1/public/txfonts/t1xtt.pfb></usr/share/texlive/texmf-dist/fonts/type1/public
 /txfonts/t1xtt.pfb>
-Output written on micropolarray.pdf (36 pages, 233366 bytes).
+Output written on micropolarray.pdf (36 pages, 234615 bytes).
 PDF statistics:
- 744 PDF objects out of 1000 (max. 8388607)
- 684 compressed objects within 7 object streams
- 191 named destinations out of 1000 (max. 500000)
+ 751 PDF objects out of 1000 (max. 8388607)
+ 691 compressed objects within 7 object streams
+ 193 named destinations out of 1000 (max. 500000)
  229 words of extra memory for PDF output out of 10000 (max. 10000000)
 

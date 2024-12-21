@@ -1102,18 +1102,19 @@
 
 <div class="viewcode-block" id="MicropolImage.shift">
 <a class="viewcode-back" href="../../micropolarray.html#micropolarray.micropol_image.MicropolImage.shift">[docs]</a>
-    <span class="k">def</span> <span class="nf">shift</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MicropolImage</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">shift</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">missing</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MicropolImage</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Shifts image by y, x pixels and fills with 0 the remaining space. Positive numbers for up/right shift and negative for down/left shift. Image is split into polarizations, each one is shifted, then they are merged again.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            y (int): vertical shift in pix</span>
 <span class="sd">            x (int): horizontal shift in pix</span>
+<span class="sd">            missing (float, optional): value used for filling missin values. Defaults to 0.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            MicropolImage: shifted image copied from the original</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># newdata = shift(self.data, y, x)</span>
-        <span class="n">newdata</span> <span class="o">=</span> <span class="n">shift_micropol</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+        <span class="n">newdata</span> <span class="o">=</span> <span class="n">shift_micropol</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">missing</span><span class="p">)</span>
         <span class="n">newimage</span> <span class="o">=</span> <span class="n">MicropolImage</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="n">newimage</span><span class="o">.</span><span class="n">_update_data_and_Stokes</span><span class="p">(</span><span class="n">newdata</span><span class="p">)</span>
 
