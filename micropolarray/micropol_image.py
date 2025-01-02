@@ -918,6 +918,7 @@ class MicropolImage(Image):
         x: int = PolarCam().occulter_pos_last[1],
         r: int = PolarCam().occulter_pos_last[2],
         overoccult: int = 0,
+        fill: float = 0.0,
     ) -> None:
         """Masks occulter for all image parameters
 
@@ -936,16 +937,12 @@ class MicropolImage(Image):
         r = r + overoccult
 
         self.data = roi_from_polar(
-            self.data,
-            (y, x),
-            [r, 2 * np.max([self.height, self.width])],
+            self.data, (y, x), [r, 2 * np.max([self.height, self.width])], fill=fill
         )
         if self._is_demosaiced:
             self.demosaiced_images = [
                 roi_from_polar(
-                    data,
-                    (y, x),
-                    (r, 2 * np.max([self.height, self.width])),
+                    data, (y, x), (r, 2 * np.max([self.height, self.width])), fill=fill
                 )
                 for data in self.demosaiced_images
             ]
@@ -960,6 +957,7 @@ class MicropolImage(Image):
                 (y, x),
                 [r, 2 * np.max(self.Stokes_vec[i].shape)],
                 include_superpixels=False,
+                fill=fill,
             )
 
     def shift(self, y: int, x: int, missing: float = 0) -> MicropolImage:
